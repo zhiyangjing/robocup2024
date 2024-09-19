@@ -13,12 +13,13 @@ int main()
     ser.setPort("/dev/ttyUSB0");
     serial::Timeout to = serial::Timeout::simpleTimeout(3000);
     ser.setTimeout(to);
+
     ser.open();
 
     if (ser.isOpen())
     {
         // 设置主循环的频率，比如500Hz
-        ros::Rate looprate(50);
+        ros::Rate looprate(500);
 
         // 主循环，持续执行，直到ros::ok()返回false
         while (ros::ok())
