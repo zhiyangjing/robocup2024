@@ -1,5 +1,5 @@
 <launch>
-    <param name="speed" value="0"></param>
-    <param name="angle" value="0"></param>
+    <param name="speed" value="1"></param>
+    <param name="angle" value="100"></param>
     <node name="test_pkg" pkg="test_pkg" type="test_pkg" output="screen"></node>
 </launch>
