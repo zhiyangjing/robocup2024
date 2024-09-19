@@ -18,7 +18,7 @@ int main()
     if (ser.isOpen())
     {
         // 设置主循环的频率，比如500Hz
-        ros::Rate looprate(500);
+        ros::Rate looprate(50);
 
         // 主循环，持续执行，直到ros::ok()返回false
         while (ros::ok())
