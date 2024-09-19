@@ -17,6 +17,12 @@ echo "Current host: $HOSTNAME"
 if [[ "$HOSTNAME" == *"Jing"* ]]; then
     # 如果主机名包含 'WSL'，则在 WSL 中运行的操作
     echo "Running in WSL. Performing Git operations..."
+
+    # 检查是否有更改需要提交
+    if [[ -z $(git status --porcelain) ]]; then
+        echo "No changes to commit. Exiting."
+        exit 0
+    fi
     
     # 添加所有文件到暂存区
     git add .
@@ -37,7 +43,7 @@ elif [[ "$HOSTNAME" == *"nano"* ]]; then
     git pull origin
     
     # 运行 catkin_make
-    catkin_make
+    # catkin_make
 else
     echo "Unknown host. Please run this script on WSL or Linux."
     exit 1
