@@ -24,7 +24,8 @@ int main()
         }
     }
     ros::Rate looprate(50);
-    while (ros::ok()) {
+    while (ros::ok())
+    {
         ros::spinOnce;
         looprate.sleep();
     }
@@ -34,8 +35,9 @@ int main()
 void USART_SEND(serial::Serial &ser_loc, int angle, int speed)
 {
     cout << "[DEBUG] USART_SEND called___ angle: " << angle << " speed: " << speed << endl;
-    auto *tx_buf = new uint8_t[9];
-    tx_buf = (uint8_t *)"R200W2\r\n\0";
-    ser_loc.write(tx_buf, 8);
+    // auto *tx_buf = new uint8_t[9];
+    // tx_buf = (uint8_t *)"R200W2\r\n\0";
+    const char *tx_buf = "R200W2\r\n\0";
+    ser_loc.write(reinterpret_cast<const uint8_t *>(tx_buf), 8);
     delete[] tx_buf;
 }
