@@ -39,5 +39,4 @@ void USART_SEND(serial::Serial &ser_loc, int angle, int speed)
     // tx_buf = (uint8_t *)"R200W2\r\n\0";
     const char *tx_buf = "R200W2\r\n\0";
     ser_loc.write(reinterpret_cast<const uint8_t *>(tx_buf), 8);
-    delete[] tx_buf;
 }
