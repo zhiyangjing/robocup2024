@@ -58,7 +58,7 @@ void USART_SEND(serial::Serial &ser_loc, int angle, int speed)
 
     // 格式化字符串
     char tx_buf[9];
-    sprintf(tx_buf, "R%03dW%d", angle, speed);
+    sprintf(tx_buf, "R%03dW%d\r\n\0", angle, speed);
 
     // 输出调试信息
     cout << "[DEBUG] tx_buf content: " << tx_buf << endl;
