@@ -10,7 +10,7 @@ void USART_SEND(serial::Serial &ser_loc, int angle, int speed);
 int main()
 {
     ser.setBaudrate(115200);
-    ser.setPort("/dev/ttyUSB1");
+    ser.setPort("/dev/ttyUSB0");
     serial::Timeout to = serial::Timeout::simpleTimeout(3000);
     ser.setTimeout(to);
     ser.open();
