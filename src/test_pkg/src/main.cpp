@@ -20,10 +20,13 @@ int main()
         int index = 1000000;
         for (int i = 0; i < index; i++)
         {
-            USART_SEND(ser, 100, 3);
+            int angle = 0, speed = 0;
+            ros::param::get("angle", angle);
+            ros::param::get("speed", speed);
+            USART_SEND(ser, angle, speed);
         }
     }
-    ros::Rate looprate(50);
+    ros::Rate looprate(500);
     while (ros::ok())
     {
         ros::spinOnce;
