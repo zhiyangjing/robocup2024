@@ -6,8 +6,14 @@ using namespace std;
 serial::Serial ser;
 void USART_SEND(serial::Serial &ser_loc, int angle, int speed);
 
-int main()
+int main(int argc, char **argv)
 {
+    // 初始化 ROS 节点
+    ros::init(argc, argv, "test_pkg");
+
+    // 创建 NodeHandle，用来与 ROS 通信
+    ros::NodeHandle nh;
+
     // 设置串口参数
     ser.setBaudrate(115200);
     ser.setPort("/dev/ttyUSB0");
@@ -52,7 +58,7 @@ void USART_SEND(serial::Serial &ser_loc, int angle, int speed)
 
     // 格式化字符串
     char tx_buf[9];
-    sprintf(tx_buf,"R%03dW%d",angle,speed);
+    sprintf(tx_buf, "R%03dW%d", angle, speed);
 
     // 输出调试信息
     cout << "[DEBUG] tx_buf content: " << tx_buf << endl;
