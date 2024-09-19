@@ -2,10 +2,10 @@
 #include <bits/stdc++.h>
 #include <ros/ros.h>
 #include <serial/serial.h>
- 
+
 using namespace std;
 serial::Serial ser;
-void USART_SEND(serial::Serial &ser, int angle, int speed);
+void USART_SEND(serial::Serial &ser_loc, int angle, int speed);
 
 int main()
 {
@@ -14,19 +14,28 @@ int main()
     serial::Timeout to = serial::Timeout::simpleTimeout(3000);
     ser.setTimeout(to);
     ser.open();
-    int index = 1000000;
-    for (int i = 0; i < index; i++)
+
+    if (ser.isOpen())
     {
-        USART_SEND(ser,100,3);
+        int index = 1000000;
+        for (int i = 0; i < index; i++)
+        {
+            USART_SEND(ser, 100, 3);
+        }
+    }
+    ros::Rate looprate(50);
+    while (ros::ok()) {
+        ros::spinOnce;
+        looprate.sleep();
     }
     return 0;
 }
 
-void USART_SEND(serial::Serial &ser, int angle, int speed)
+void USART_SEND(serial::Serial &ser_loc, int angle, int speed)
 {
     cout << "[DEBUG] USART_SEND called___ angle: " << angle << " speed: " << speed << endl;
-    const auto *tx_buf = new uint8_t[9];
-    tx_buf = "R200W2\r\n\0";
-    ser.write(tx_buf, 8);
+    auto *tx_buf = new uint8_t[9];
+    tx_buf = (uint8_t *)"R200W2\r\n\0";
+    ser_loc.write(tx_buf, 8);
     delete[] tx_buf;
 }

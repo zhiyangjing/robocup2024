@@ -155,6 +155,12 @@ add_executable(test_pkg src/main.cpp)
 #   ${catkin_LIBRARIES}
 # )
 
+target_link_libraries(
+  test_pkg 
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
+
 #############
 ## Install ##
 #############
