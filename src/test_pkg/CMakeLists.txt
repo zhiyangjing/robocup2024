@@ -7,8 +7,6 @@ project(test_pkg)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-set(cv_bridge_DIR /usr/local/share/cv_bridge/cmake)
-find_package(OpenCV 3.2.0 REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
@@ -18,28 +16,6 @@ find_package(catkin REQUIRED COMPONENTS
   serial
   std_srvs
 )
-
-
-add_executable(test_pkg src/main.cpp)
-
-target_link_libraries(
-  test_pkg 
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-)
-
-catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES test_pkg
-#  CATKIN_DEPENDS cv_bridge image_transport roscpp rospy sensor_msgs serial std_srvs
-#  DEPENDS system_lib
-)
-
-include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
-)
-
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -130,6 +106,12 @@ include_directories(
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
+catkin_package(
+#  INCLUDE_DIRS include
+#  LIBRARIES test_pkg
+#  CATKIN_DEPENDS cv_bridge image_transport roscpp rospy sensor_msgs serial std_srvs
+#  DEPENDS system_lib
+)
 
 ###########
 ## Build ##
@@ -137,6 +119,11 @@ include_directories(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+include_directories(
+# include
+  ${catkin_INCLUDE_DIRS}
+)
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/test_pkg.cpp
@@ -151,6 +138,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/test_pkg_node.cpp)
+add_executable(test_pkg src/main.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -167,6 +155,11 @@ include_directories(
 #   ${catkin_LIBRARIES}
 # )
 
+target_link_libraries(
+  test_pkg 
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
 
 #############
 ## Install ##

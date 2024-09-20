@@ -9,7 +9,7 @@ int main(int argc,char** argv) {
 
     cv::VideoCapture cap(0);
     if (!cap.isOpened()) {
-        ROS_ERROR("Failed to open the camera");
+        ROS_ERROR("Failed to open the camera_node");
         return -1;
     }
 
@@ -20,7 +20,7 @@ int main(int argc,char** argv) {
             ROS_WARN("Empty frame received");
             break;
         }
-        cv::imshow("Camera Feed" , frame);
+        cv::imshow("camera_node Feed" , frame);
         if (cv::waitKey(30) >= 0) break;
         ros::spinOnce();
     }

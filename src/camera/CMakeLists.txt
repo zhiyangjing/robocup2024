@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(camera)
+project(camera_node)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -9,7 +9,7 @@ project(camera)
 ## is used, also find other catkin packages
 set(cv_bridge_DIR /usr/local/share/cv_bridge/cmake)
 find_package(OpenCV REQUIRED)
-find_package( spdlog REQUIRED)
+find_package(spdlog REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
@@ -18,13 +18,6 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
-add_executable(camera src/main.cpp)
-
-target_link_libraries(
-  camera 
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-)
 
 catkin_package(
 #  INCLUDE_DIRS include
@@ -36,6 +29,14 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+)
+
+add_executable(camera_node src/main.cpp)
+
+target_link_libraries(
+  camera_node 
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
 )
 
 ## System dependencies are found with CMake's conventions
