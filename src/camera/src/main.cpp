@@ -19,8 +19,8 @@ int main(int argc, char** argv) {
     }
 
     // 设置摄像头的分辨率为 1080p (1920x1080) 和目标帧率
-    cap.set(cv::CAP_PROP_FRAME_WIDTH, 1920);  // 设置分辨率宽度
-    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 1080); // 设置分辨率高度
+    cap.set(cv::CAP_PROP_FRAME_WIDTH, 1080);  // 设置分辨率宽度
+    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 720); // 设置分辨率高度
     cap.set(cv::CAP_PROP_FPS, 30);            // 设置目标帧率为 30
 
     cv::Mat frame;
