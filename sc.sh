@@ -30,7 +30,7 @@ echo "Current host: $HOSTNAME"
 
 if [[ "$HOSTNAME" == *"Jing"* ]]; then
     # 如果主机名包含 'WSL'，则在 WSL 中运行的操作
-    echo $"Running in WSL. Performing Git operations...\n"
+    echo $'Running in WSL. Performing Git operations...\n'
 
     # 检查是否有更改需要提交
     if [[ -z $(git status --porcelain) ]]; then
@@ -59,7 +59,7 @@ if [[ "$HOSTNAME" == *"Jing"* ]]; then
 
 elif [[ "$HOSTNAME" == *"nano"* ]]; then
     # 如果主机名包含 'linux'，则在 Linux 主板中运行的操作
-    echo $"Running in Linux. Performing Git operations...\n"
+    echo $'Running in Linux. Performing Git operations...\n'
     
     # 强制重置当前分支到最新的 HEAD
     git reset --hard HEAD
