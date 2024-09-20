@@ -7,11 +7,9 @@ project(camera)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(OpenCV 3.2.0 REQUIRED)
-find_package(
-  spdlog
-  REQUIRED
-)
+set(cv_bridge_DIR /usr/local/share/cv_bridge/cmake)
+find_package(OpenCV REQUIRED)
+find_package( spdlog REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
