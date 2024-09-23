@@ -21,7 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 
 catkin_package(
- INCLUDE_DIRS include
+# INCLUDE_DIRS include
 #  LIBRARIES test_pkg
 #  CATKIN_DEPENDS cv_bridge image_transport roscpp rospy sensor_msgs serial std_srvs
 #  DEPENDS system_lib

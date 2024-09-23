@@ -123,8 +123,8 @@ int main(int argc, char **argv) {
 
         cv::imshow("camera_node Feed", frame);
         int key = cv::waitKey(delay);
-        if (key == 'q')
-            break;
+        // if (key == 'q')
+        //     break;
 
         ros::spinOnce();// 处理 ROS 事件
     }
