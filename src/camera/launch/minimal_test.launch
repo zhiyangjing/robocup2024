@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="camera_node" type="minimal_test" name="minimal_test" output="screen"/>
+</launch>

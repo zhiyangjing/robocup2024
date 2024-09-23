@@ -48,6 +48,17 @@ target_link_libraries(
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
 )
+
+
+
+add_executable(minimal_test src/minimal_test.cpp)
+
+target_link_libraries(
+  minimal_test 
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
