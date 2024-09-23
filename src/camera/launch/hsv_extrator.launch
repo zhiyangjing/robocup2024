@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="camera_node" type="hsv_extrator" name="hsv_extrator" output="screen"/>
+</launch>

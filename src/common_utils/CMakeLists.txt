@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(camera_node)
+project(common_utils)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -7,47 +7,25 @@ project(camera_node)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-set(cv_bridge_DIR /usr/local/share/cv_bridge/cmake)
-find_package(OpenCV REQUIRED)
-find_package(spdlog REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
-  common_utils
-  cv_bridge
-  image_transport
   roscpp
-  sensor_msgs
+  rospy
   std_msgs
 )
 
-
 catkin_package(
  INCLUDE_DIRS include
-#  LIBRARIES test_pkg
-#  CATKIN_DEPENDS cv_bridge image_transport roscpp rospy sensor_msgs serial std_srvs
+#  LIBRARIES common_utils
+#  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
-  ${COMMON_UTILS_INCLUDE_DIRS}
 )
 
-add_executable(camera_node src/main.cpp)
 
-target_link_libraries(
-  camera_node 
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-)
-
-add_executable(hsv_extrator src/hsv_extrator.cpp)
-
-target_link_libraries(
-  hsv_extrator 
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -105,7 +83,7 @@ target_link_libraries(
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   sensor_msgs#   std_msgs
+#   std_msgs
 # )
 
 ################################################
@@ -147,7 +125,7 @@ target_link_libraries(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/cam.cpp
+#   src/${PROJECT_NAME}/common_utils.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -158,7 +136,7 @@ target_link_libraries(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/cam_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/common_utils_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -222,7 +200,7 @@ target_link_libraries(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_cam.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_common_utils.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
