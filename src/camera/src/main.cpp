@@ -98,24 +98,31 @@ int main(int argc, char **argv) {
         return -1;
     }
 
+    // 会造成严重问题
     // cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
-    cap.set(cv::CAP_PROP_FRAME_WIDTH, 720);
-    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
-    cap.set(cv::CAP_PROP_FPS, 33);
+    // cap.set(cv::CAP_PROP_FRAME_WIDTH, 720);
+    // cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+    // cap.set(cv::CAP_PROP_FPS, 33);
 
     cv::Mat frame;
     int targetFps = 20;
     int delay = 1000 / targetFps;
     int frameCount = 0;
     auto lastTime = std::chrono::steady_clock::now();
+    int frame_height = 720;
+    int frame_width = 480;
+    int line_pos = frame_width * 0.5;
     while (ros::ok()) {
         cap >> frame;
+        cv::resize(frame, resized_frame, cv::Size(frame_height, frame_width));
         if (frame.empty()) {
             ROS_WARN("Empty frame received");
             break;
         }
 
         // 探测红绿灯
+        cv::line(frame, cv::Point(x, 0), cv::Point(x, height), color, thickness);
+
         detectTrafficLights(frame, nh);
 
         // 计算并显示帧率
