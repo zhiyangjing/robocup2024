@@ -109,8 +109,8 @@ int main(int argc, char **argv) {
     int delay = 1000 / targetFps;
     int frameCount = 0;
     auto lastTime = std::chrono::steady_clock::now();
-    int frame_height = 720;
-    int frame_width = 480;
+    int frame_height = 480;
+    int frame_width = 720;
     int line_pos = frame_width * 0.5;
     while (ros::ok()) {
         cap >> frame;
