@@ -83,8 +83,8 @@ void displayFps(cv::Mat &frame, int &frameCount, std::chrono::steady_clock::time
 
         // 在帧上显示帧率
     }
-    cv::putText(frame, "FPS: " + std::to_string(static_cast<int>(currentFps)),
-                cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0), 2);
+    cv::putText(frame, "FPS: " + std::to_string(static_cast<int>(currentFps)), cv::Point(10, 30),
+                cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0), 2);
 }
 
 int main(int argc, char **argv) {
@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
     auto lastTime = std::chrono::steady_clock::now();
     int frame_height = 720;
     int frame_width = 480;
-    int line_pos = frame_width * 0.45;
+    int line_pos = frame_width * 0.47;
     while (ros::ok()) {
         cap >> frame;
         cv::resize(frame, frame, cv::Size(frame_height, frame_width));
@@ -121,16 +121,17 @@ int main(int argc, char **argv) {
         }
 
         // 选择线条的颜色和粗细
-        cv::Scalar color(0, 255, 0); // 绿色
-        int thickness = 2; // 线条宽度
+        cv::Scalar color(0, 255, 0);// 绿色
+        int thickness = 2;          // 线条宽度
 
         // 探测红绿灯
         detectTrafficLights(frame, nh);
 
         // 计算并显示帧率
         displayFps(frame, frameCount, lastTime);
-
-        cv::line(frame, cv::Point(line_pos, frame_height * 0.2), cv::Point(line_pos,frame_height  * 0.8 ), color, thickness);
+        int y_start = static_cast<int>(frame_height * 0.2);
+        int y_end = static_cast<int>(frame_height * 0.8);
+        cv::line(frame, cv::Point(line_pos, y_start), cv::Point(line_pos, y_end), color, thickness);
 
         cv::imshow("camera_node Feed", frame);
         int key = cv::waitKey(delay);
