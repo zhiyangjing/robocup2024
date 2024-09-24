@@ -20,6 +20,8 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
 )
+message(STATUS "cv_bridge include dir: ${cv_bridge_INCLUDE_DIRS}")
+
 
 
 catkin_package(
