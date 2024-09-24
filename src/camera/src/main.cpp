@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
     auto lastTime = std::chrono::steady_clock::now();
     int frame_height = 720;
     int frame_width = 480;
-    int line_pos = frame_width * 0.47;
+    int line_pos = frame_width * 0.5;
     while (ros::ok()) {
         cap >> frame;
         cv::resize(frame, frame, cv::Size(frame_height, frame_width));
@@ -132,6 +132,8 @@ int main(int argc, char **argv) {
         int y_start = static_cast<int>(frame_height * 0.2);
         int y_end = static_cast<int>(frame_height * 0.8);
         cv::line(frame, cv::Point(line_pos, y_start), cv::Point(line_pos, y_end), color, thickness);
+        cout << "[DEBUG]: start point" << line_pos << " ," << y_start << endl;
+        cout << "[DEBUG]: end point" << line_pos << " ," << y_end << endl;
 
         cv::imshow("camera_node Feed", frame);
         int key = cv::waitKey(delay);
