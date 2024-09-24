@@ -1,0 +1,13 @@
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <option name="SOFT_MARGINS" value="120" />
+    <clangFormatSettings>
+      <option name="ENABLED" value="true" />
+    </clangFormatSettings>
+    <codeStyleSettings language="ObjectiveC">
+      <option name="KEEP_BLANK_LINES_IN_DECLARATIONS" value="4" />
+      <option name="INDENT_CASE_FROM_SWITCH" value="false" />
+      <option name="SPACE_WITHIN_SWITCH_PARENTHESES" value="true" />
+    </codeStyleSettings>
+  </code_scheme>
+</component>

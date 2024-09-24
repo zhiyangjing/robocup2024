@@ -111,18 +111,22 @@ int main(int argc, char **argv) {
     auto lastTime = std::chrono::steady_clock::now();
     int frame_height = 720;
     int frame_width = 480;
-    int line_pos = frame_width * 0.5;
+    int line_pos = frame_width * 0.4;
     while (ros::ok()) {
         cap >> frame;
-        cv::resize(frame, resized_frame, cv::Size(frame_height, frame_width));
+        cv::resize(frame, frame, cv::Size(frame_height, frame_width));
         if (frame.empty()) {
             ROS_WARN("Empty frame received");
             break;
         }
 
-        // 探测红绿灯
-        cv::line(frame, cv::Point(x, 0), cv::Point(x, height), color, thickness);
 
+        // 选择线条的颜色和粗细
+        cv::Scalar color(0, 255, 0); // 绿色
+        int thickness = 2; // 线条宽度
+        cv::line(frame, cv::Point(line_pos, frame_height * 0.2), cv::Point(line_pos,frame_height  * 0.8 ), color, thickness);
+
+        // 探测红绿灯
         detectTrafficLights(frame, nh);
 
         // 计算并显示帧率
