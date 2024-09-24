@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
     auto lastTime = std::chrono::steady_clock::now();
     int frame_height = 480;
     int frame_width = 720;
-    int line_pos = frame_width * 0.5;
+    int line_pos = frame_width * 0.4;
     while (ros::ok()) {
         cap >> frame;
         cv::resize(frame, frame, cv::Size(frame_width,frame_height));
