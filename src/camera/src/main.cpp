@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
     int line_pos = frame_width * 0.5;
     while (ros::ok()) {
         cap >> frame;
-        cv::resize(frame, frame, cv::Size(frame_height, frame_width));
+        cv::resize(frame, frame, cv::Size(frame_width,frame_height));
         if (frame.empty()) {
             ROS_WARN("Empty frame received");
             break;
