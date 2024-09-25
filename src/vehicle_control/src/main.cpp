@@ -34,9 +34,11 @@ int main(int argc, char **argv) {
             nh.getParam("angle", angle);
             nh.getParam("speed", speed);
             nh.getParam("direction", direction);
+            cout << string(20,'-') << endl;
             cout << direction << endl;
 
             char dir_char = direction.empty() ? 'W' : direction[0];// 默认 W
+            cout << dir_char << endl;
 
             // 发送串口信息
             USART_SEND(ser, angle, speed, dir_char);
