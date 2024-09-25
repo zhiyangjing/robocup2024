@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(camera_node)
+project(vehicle_control)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -7,11 +7,6 @@ project(camera_node)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-set(cv_bridge_DIR /usr/local/share/cv_bridge/cmake)
-find_package(OpenCV REQUIRED)
-find_package(spdlog REQUIRED)
-message(STATUS "OpenCV include dir: ${OpenCV_INCLUDE_DIRS}")
-message(STATUS "OpenCV lib dir: ${OpenCV_LIB_DIR}")
 find_package(catkin REQUIRED COMPONENTS
   common_utils
   cv_bridge
@@ -19,58 +14,39 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   std_msgs
+  serial
 )
 
-message(STATUS "cv_bridge include dir: ${cv_bridge_INCLUDE_DIRS}")
-
-
-
 catkin_package(
-# INCLUDE_DIRS include
-#  LIBRARIES test_pkg
-#  CATKIN_DEPENDS cv_bridge image_transport roscpp rospy sensor_msgs serial std_srvs
+#  INCLUDE_DIRS include
+#  LIBRARIES vehicle_control
+#  CATKIN_DEPENDS common_utils cv_bridge image_transport roscpp sensor_msgs std_msgs
 #  DEPENDS system_lib
 )
 
+###########
+## Build ##
+###########
+
+## Specify additional locations of header files
+## Your package locations should be listed before other locations
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
-  ${COMMON_UTILS_INCLUDE_DIRS}
 )
 
-
-add_executable(detect_light src/detect_light.cpp)
+add_executable(vehicle_controller src/main.cpp)
 
 target_link_libraries(
-  detect_light
+  vehicle_controller
   ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
 )
 
-add_executable(camera_node src/main.cpp)
+add_executable(keyboard_controller src/keyboard_controller.cpp)
 
 target_link_libraries(
-  camera_node 
+  keyboard_controller
   ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-)
-
-add_executable(hsv_extrator src/hsv_extrator.cpp)
-
-target_link_libraries(
-  hsv_extrator 
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-)
-
-
-
-add_executable(minimal_test src/minimal_test.cpp)
-
-target_link_libraries(
-  minimal_test 
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
 )
 
 ## System dependencies are found with CMake's conventions
@@ -163,16 +139,9 @@ target_link_libraries(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 
-###########
-## Build ##
-###########
-
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
-
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/cam.cpp
+#   src/${PROJECT_NAME}/vehicle_control.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -183,7 +152,7 @@ target_link_libraries(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/cam_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/vehicle_control_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -247,7 +216,7 @@ target_link_libraries(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_cam.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_vehicle_control.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
