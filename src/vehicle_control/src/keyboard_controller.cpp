@@ -64,7 +64,7 @@ private:
 };
 
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "keyboard_controller_node");
+    ros::init(argc, argv, "keyboard_controller");
     ros::NodeHandle nh;
 
     KeyboardController controller(nh);

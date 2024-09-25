@@ -1,7 +1,0 @@
-<launch>
-    <param name="speed" value="0"/>
-    <param name="angle" value="100"/>
-    <param name="direction" value="W"/>  <!-- 添加 direction 参数 -->
-    <node name="vehicle_controller" pkg="vehicle_controller" type="vehicle_controller" output="screen"/>
-    <node name="vehicle_controller" pkg="keyboard_controller" type="keyboard_controller" output="screen"/>
-</launch>

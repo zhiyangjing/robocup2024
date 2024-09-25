@@ -8,7 +8,7 @@ void USART_SEND(serial::Serial &ser_loc, int angle, int speed, char direction);
 
 int main(int argc, char **argv) {
     // 初始化 ROS 节点
-    ros::init(argc, argv, "vehicle_controller");
+    ros::init(argc, argv, "vehicle_control");
 
     // 创建 NodeHandle，用来与 ROS 通信
     ros::NodeHandle nh;

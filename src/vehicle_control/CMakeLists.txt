@@ -35,10 +35,10 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(vehicle_controller src/main.cpp)
+add_executable(vehicle_control src/main.cpp)
 
 target_link_libraries(
-  vehicle_controller
+  vehicle_control
   ${catkin_LIBRARIES}
 )
 
