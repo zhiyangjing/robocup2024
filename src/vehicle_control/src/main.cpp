@@ -36,7 +36,6 @@ int main(int argc, char **argv) {
             nh.getParam("direction", direction);
             cout << string(20,'-') << endl;
             cout << direction << endl;
-
             char dir_char = direction.empty() ? 'W' : direction[0];// 默认 W
             cout << dir_char << endl;
 

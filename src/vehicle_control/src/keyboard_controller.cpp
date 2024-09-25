@@ -1,5 +1,6 @@
 #include <fcntl.h>
 #include <ros/ros.h>
+#include <string>
 #include <std_msgs/Char.h>
 #include <std_msgs/Int32.h>
 #include <termios.h>
@@ -41,7 +42,7 @@ private:
     void handleKeyPress(char key) {
         if (key == 'W' || key == 'S') {
             direction_ = key;
-            nh_.setParam("direction", direction_);
+            nh_.setParam("direction", std::string(1,direction_));
             ROS_INFO("Direction set to: %c", direction_);
         } else if (key >= '0' && key <= '5') {
             speed_ = key - '0';
