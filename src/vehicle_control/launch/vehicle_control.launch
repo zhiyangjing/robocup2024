@@ -3,5 +3,4 @@
     <param name="angle" value="100"/>
     <param name="direction" value="W"/>  <!-- 添加 direction 参数 -->
     <node pkg="vehicle_control" name="vehicle_control" type="vehicle_control" output="screen"/>
-    <node pkg="vehicle_control" name="keyboard_controller" type="keyboard_controller" output="screen"/>
 </launch>

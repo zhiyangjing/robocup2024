@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="vehicle_control" name="keyboard_controller" type="keyboard_controller" output="screen"/>
+</launch>
