@@ -1,0 +1,5 @@
+<launch>
+    <param name="light" value="0"></param>
+    <node pkg="camera_node" type="camera_node" name="camera_node" output="screen"/>
+    <node pkg="camera_node" type="detect_light" name="detect_light" output="screen"/> 
+</launch>

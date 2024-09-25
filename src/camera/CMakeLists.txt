@@ -37,6 +37,15 @@ include_directories(
   ${COMMON_UTILS_INCLUDE_DIRS}
 )
 
+
+add_executable(detect_light src/detect_light.cpp)
+
+target_link_libraries(
+  detect_light
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
+
 add_executable(camera_node src/main.cpp)
 
 target_link_libraries(
