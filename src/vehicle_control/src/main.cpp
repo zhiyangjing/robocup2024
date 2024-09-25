@@ -34,6 +34,7 @@ int main(int argc, char **argv) {
             nh.getParam("angle", angle);
             nh.getParam("speed", speed);
             nh.getParam("direction", direction);
+            cout << direction << endl;
 
             char dir_char = direction.empty() ? 'W' : direction[0];// 默认 W
 
