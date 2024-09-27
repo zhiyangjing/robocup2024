@@ -6,15 +6,13 @@ int STATE = BIG_LEFT_TURN;
 
 class Ability {
 public:
-    static ros::NodeHandle nh_;
     virtual void run() = 0;
-    Ability(int remain_time) : remain_time_(remain_time) {};
+    Ability(int remain_time, ros::NodeHandle nh) : remain_time_(remain_time), nh_(nh) {};
 
 protected:
+    ros::NodeHandle nh_;
     int remain_time_;
 };
-
-ros::NodeHandle Ability::nh_;
 
 class BigLeftTurn : public Ability {
 private:
@@ -22,11 +20,12 @@ private:
     int time_delta = 1000 / loop_rate;
 
 public:
-    BigLeftTurn(int remain_time) : Ability(remain_time) {}
+    BigLeftTurn(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {}
 
     void setMotion() {
         nh_.setParam("angle", 97);
         nh_.setParam("speed", 4);
+        ROS_INFO("angle: %d speed: %d", 97, 4);
     }
 
     void run() {
@@ -40,12 +39,15 @@ public:
 };
 
 class PathController {
+private:
+    ros::NodeHandle &nh_;
+
 public:
-    PathController() {};
+    PathController(ros::NodeHandle nh) : nh_(nh) {};
     void start() {
         while (true) {
             if (STATE == BIG_LEFT_TURN) {
-                auto motion_controller = BigLeftTurn(10);
+                auto motion_controller = BigLeftTurn(10, nh_);
                 motion_controller.run();
             }
         }
@@ -54,8 +56,8 @@ public:
 
 int main(int argc, char *argv[]) {
     ros::init(argc, argv, "path_controller");
-
-    PathController path_controller;
+    ros::NodeHandle nh;
+    PathController path_controller(nh);
     path_controller.start();
     ros::spin();
     return 0;
