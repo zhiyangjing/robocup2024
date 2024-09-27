@@ -57,5 +57,6 @@ int main(int argc, char *argv[]) {
 
     PathController path_controller;
     path_controller.start();
+    ros::spin();
     return 0;
 }
