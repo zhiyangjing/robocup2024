@@ -4,6 +4,7 @@
 
 using namespace std;
 serial::Serial ser;
+
 void USART_SEND(serial::Serial &ser_loc, int angle, int speed, char direction);
 
 int main(int argc, char **argv) {
