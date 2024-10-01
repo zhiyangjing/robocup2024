@@ -1,6 +1,6 @@
 #include <iostream>
 #include <ros/ros.h>
-#define TAG " [PATH] "
+#define TAG " [PATH]"
 
 enum States { BIG_LEFT_TURN = 0, SMALL_LEFT_TURN };
 int STATE = BIG_LEFT_TURN;
@@ -26,17 +26,22 @@ public:
     void setMotion() {
         nh_.setParam("angle", 97);
         nh_.setParam("speed", 4);
-        ROS_INFO("angle: %d speed: %d", 97, 4);
+    }
+
+    void endMotion() {
+        nh_.setParam("angle", 0);
+        nh_.setParam("speed", 2);
     }
 
     void run() {
         ros::Rate looprate(50);
         while (ros::ok() and remain_time_ > 0) {
-            ROS_INFO(TAG, "TIME REMAIN: %d", remain_time_);
+            ROS_INFO("%s TIME REMAIN: %d", TAG, remain_time_);
             setMotion();
             looprate.sleep();
             remain_time_ -= time_delta;
         }
+        endMotion();
     }
 };
 
