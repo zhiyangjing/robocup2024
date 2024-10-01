@@ -2,7 +2,7 @@
 #include <ros/ros.h>
 #define TAG " [PATH]"
 
-enum States { BIG_LEFT_TURN = 0, SMALL_LEFT_TURN };
+enum States { BIG_LEFT_TURN = 0, SMALL_LEFT_TURN , TERMINAL };
 int STATE = BIG_LEFT_TURN;
 
 class Ability {
@@ -36,7 +36,7 @@ public:
     void run() {
         ros::Rate looprate(50);
         while (ros::ok() and remain_time_ > 0) {
-            ROS_INFO("%s TIME REMAIN: %d ,TIME DELTA", TAG, remain_time_, time_delta);
+            ROS_INFO("%s TIME REMAIN: %d ,TIME DELTA: %d", TAG, remain_time_, time_delta);
             setMotion();
             looprate.sleep();
             remain_time_ -= time_delta;
@@ -56,6 +56,11 @@ public:
             if (STATE == BIG_LEFT_TURN) {
                 auto motion_controller = BigLeftTurn(10000, nh_);
                 motion_controller.run();
+                STATE = TERMINAL;
+            } 
+            if (STATE == TERMINAL) {
+                ROS_INFO("%s states equals TERMIANL node exit",TAG);
+                exit(0);
             }
         }
     }
