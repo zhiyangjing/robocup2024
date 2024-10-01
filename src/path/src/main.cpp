@@ -1,5 +1,6 @@
 #include <iostream>
 #include <ros/ros.h>
+#define TAG " [PATH] "
 
 enum States { BIG_LEFT_TURN = 0, SMALL_LEFT_TURN };
 int STATE = BIG_LEFT_TURN;
@@ -31,6 +32,7 @@ public:
     void run() {
         ros::Rate looprate(50);
         while (ros::ok() and remain_time_ > 0) {
+            ROS_INFO(TAG, "TIME REMAIN: %d", remain_time_);
             setMotion();
             looprate.sleep();
             remain_time_ -= time_delta;

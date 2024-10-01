@@ -1,6 +1,7 @@
 #include <iostream>
 #include <ros/ros.h>
 #include <serial/serial.h>
+#define TAG " [vehicle_control] "
 
 using namespace std;
 serial::Serial ser;
@@ -35,10 +36,7 @@ int main(int argc, char **argv) {
             nh.getParam("angle", angle);
             nh.getParam("speed", speed);
             nh.getParam("direction", direction);
-            cout << string(20,'-') << endl;
-            cout << direction << endl;
             char dir_char = direction.empty() ? 'W' : direction[0];// 默认 W
-            cout << dir_char << endl;
 
             // 发送串口信息
             USART_SEND(ser, angle, speed, dir_char);
@@ -65,7 +63,7 @@ void USART_SEND(serial::Serial &ser_loc, int angle, int speed, char direction) {
     sprintf(tx_buf, "%c%03d%c%d\r\n", side, abs_angle, direction, speed);
 
     // 输出调试信息
-    cout << "[DEBUG] tx_buf content: " << tx_buf << endl;
+    ROS_INFO(TAG, "x_buf content: %s", tx_buf);
 
     // 发送串口数据
     ser_loc.write(reinterpret_cast<const uint8_t *>(tx_buf), sizeof(tx_buf) - 1);// 不发送结束符
