@@ -36,7 +36,7 @@ public:
     void run() {
         ros::Rate looprate(50);
         while (ros::ok() and remain_time_ > 0) {
-            ROS_INFO("%s TIME REMAIN: %d", TAG, remain_time_);
+            ROS_INFO("%s TIME REMAIN: %d ,TIME DELTA", TAG, remain_time_, time_delta);
             setMotion();
             looprate.sleep();
             remain_time_ -= time_delta;
@@ -54,7 +54,7 @@ public:
     void start() {
         while (true) {
             if (STATE == BIG_LEFT_TURN) {
-                auto motion_controller = BigLeftTurn(10, nh_);
+                auto motion_controller = BigLeftTurn(10000, nh_);
                 motion_controller.run();
             }
         }
