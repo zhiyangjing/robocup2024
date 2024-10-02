@@ -2,12 +2,28 @@
 #include <opencv2/opencv.hpp>
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
+#include <string>
+
+#define TAG "[camera node]"
+
+using namespace std;
 
 class ImagePublisher {
+private:
+    ros::Publisher pub_;
+    cv::VideoCapture cap_;
+    string video_file_path_;
+
 public:
     ImagePublisher(ros::NodeHandle &nh) {
         pub_ = nh.advertise<sensor_msgs::Image>("image_topic", 1);
+#ifdef USE_SIMULATION
+        nh.param<string>("video_path", video_file_path_, "");
+        ROS_INFO("%s video path: %s", TAG, video_file_path_.c_str());
+        cap_.open(video_file_path_);
+#else
         cap_.open(0);// 打开摄像头
+#endif
         if (!cap_.isOpened()) {
             ROS_ERROR("Failed to open the camera");
             ros::shutdown();
@@ -31,10 +47,6 @@ public:
         pub_.publish(msg);
     }
     ~ImagePublisher() { cap_.release(); }
-
-private:
-    ros::Publisher pub_;
-    cv::VideoCapture cap_;
 };
 
 int main(int argc, char **argv) {

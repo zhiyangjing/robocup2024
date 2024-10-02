@@ -1,7 +1,7 @@
 #include <iostream>
 #include <ros/ros.h>
 #include <serial/serial.h>
-#define TAG " [vehicle_control] "
+#define TAG "[vehicle_control]"
 
 using namespace std;
 serial::Serial ser;
@@ -63,7 +63,7 @@ void USART_SEND(serial::Serial &ser_loc, int angle, int speed, char direction) {
     sprintf(tx_buf, "%c%03d%c%d\r\n", side, abs_angle, direction, speed);
 
     // 输出调试信息
-    ROS_INFO(TAG, "x_buf content: %s", tx_buf);
+    ROS_INFO("%s x_buf content: %s", TAG, tx_buf);
 
     // 发送串口数据
     ser_loc.write(reinterpret_cast<const uint8_t *>(tx_buf), sizeof(tx_buf) - 1);// 不发送结束符

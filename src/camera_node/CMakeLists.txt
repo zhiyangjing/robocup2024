@@ -47,6 +47,10 @@ target_link_libraries(
   ${OpenCV_LIBRARIES}
 )
 
+option(USE_SIMULATION "Use simulation mode" ON)
+if (USE_SIMULATION) 
+  add_definitions(-DUSE_SIMULATION)
+endif()
 add_executable(camera_node src/main.cpp)
 
 target_link_libraries(

@@ -7,6 +7,7 @@ project(path)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
+find_package(OpenCV REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
   common_utils
   cv_bridge
@@ -17,7 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES path
 #  CATKIN_DEPENDS common_utils cv_bridge image_transport roscpp sensor_msgs std_msgs
 #  DEPENDS system_lib
@@ -25,8 +26,16 @@ catkin_package(
 
 
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
+)
+
+add_executable(trace_line src/trace_line.cpp)
+
+target_link_libraries(
+  trace_line
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
 )
 
 add_executable(path_node src/main.cpp)

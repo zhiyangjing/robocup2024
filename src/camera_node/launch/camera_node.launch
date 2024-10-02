@@ -1,0 +1,6 @@
+<launch>
+    <param name="light" value="0"></param>
+    <param name="video_path" value="$(find camera)/../data/video/trace_line.mp4"/>
+    <param name="output_path" value="$(find camera)/../data/runtime_images/"/>
+    <node pkg="camera_node" type="camera_node" name="camera_node" output="screen"/>
+</launch>

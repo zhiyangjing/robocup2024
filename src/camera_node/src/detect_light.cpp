@@ -8,7 +8,7 @@
 
 using namespace std;
 
-class LightDetector {
+class TraceLine {
 private:
     ros::NodeHandle nh_;
     ros::Subscriber sub_;
@@ -31,8 +31,8 @@ private:
     cv::Mat mask1, mask2, red_mask;
 
 public:
-    LightDetector(ros::NodeHandle &nh) : nh_(nh) {
-        sub_ = nh_.subscribe("image_topic", 1, &LightDetector::imageCallback, this);
+    TraceLine(ros::NodeHandle &nh) : nh_(nh) {
+        sub_ = nh_.subscribe("image_topic", 1, &TraceLine::imageCallback, this);
     }
 
     // 计算并显示帧率的函数
@@ -151,7 +151,7 @@ int main(int argc, char **argv) {
     ros::NodeHandle nh;
     cv::namedWindow("camera_node Feed", cv::WINDOW_AUTOSIZE);    
 
-    LightDetector lightProcessor(nh);
+    TraceLine lightProcessor(nh);
 
     ros::spin();
     cv::destroyAllWindows();
