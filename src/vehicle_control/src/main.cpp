@@ -1,6 +1,8 @@
 #include <iostream>
 #include <ros/ros.h>
 #include <serial/serial.h>
+#include <std_msgs/String.h>
+
 #define TAG "[vehicle_control]"
 
 using namespace std;
@@ -67,4 +69,11 @@ void USART_SEND(serial::Serial &ser_loc, int angle, int speed, char direction) {
 
     // 发送串口数据
     ser_loc.write(reinterpret_cast<const uint8_t *>(tx_buf), sizeof(tx_buf) - 1);// 不发送结束符
+    if (ser_loc.available()) {                                                   // 检查是否有数据可读
+        std::string data = ser_loc.readline();                                   // 读取一行数据
+        // std_msgs::String msg;
+        // msg.data = data;// 将数据存入消息
+
+        ROS_INFO("%s Received: %s",TAG, data.c_str());// 打印接收到的数据
+    }
 }
