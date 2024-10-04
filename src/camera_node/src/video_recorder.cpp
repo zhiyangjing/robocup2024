@@ -88,8 +88,13 @@ public:
             ROS_INFO("%s Current frame: %d", TAG, total_frame);
             auto key = cv::waitKey(1);
             if (key == 'q') {
+                {
+                    lock_guard<std::mutex> lock(queue_mutex);
+                    is_running = false; // 停止主线程的帧捕获
+                }
                 ROS_INFO("%s Exting video recorder! ", TAG);
                 is_running = false;
+                frame_cv.notify_one();
                 break;
             }
         }
