@@ -88,7 +88,7 @@ public:
             auto key = cv::waitKey(1);
             if (key == 'q') {
                 ROS_INFO("%s Exting video recorder! ", TAG);
-                ros::shutdown();
+                is_running = false;
                 break;
             }
         }
