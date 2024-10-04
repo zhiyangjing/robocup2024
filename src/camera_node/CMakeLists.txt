@@ -77,6 +77,14 @@ target_link_libraries(
   ${OpenCV_LIBRARIES}
 )
 
+add_executable(video_recorder src/video_recorder.cpp)
+
+target_link_libraries(
+  video_recorder 
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 

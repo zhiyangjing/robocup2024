@@ -1,3 +1,4 @@
+
 #include <chrono>
 #include <common_utils/common.h>
 #include <cv_bridge/cv_bridge.h>
@@ -10,6 +11,19 @@
 #define TAG "[Trace Line]"
 
 using namespace std;
+
+void updateParameters(int, void*) {
+    // 这个函数可以为空
+}
+
+int minLineLength = 20;  // 最小线段长度
+int maxLineGap = 10;     // 最大间隙
+double rho = 1;          // 距离分辨率
+double theta = CV_PI / 180; // 角度分辨率
+int threshold = 100;     // 阈值
+bool isPaused = false;   // 播放状态
+int currentFrame = 0;    // 当前帧
+int totalFrames = 10000;     // 视频总帧数
 
 void detectWhite(const cv::Mat &frame) {
     // 将输入的 BGR 图像转为 HSV（色相、饱和度、亮度）颜色空间
@@ -78,7 +92,7 @@ void detectLine(cv::Mat &image) {
     // 存储检测到的线段
     std::vector<cv::Vec4i> lines;
     // 使用 HoughLinesP 检测线段
-    cv::HoughLinesP(edges, lines, 2, CV_PI / 90, 100, 20, 10); // threshold = 100, minLineLength = 50, maxLineGap = 10
+    cv::HoughLinesP(edges, lines, rho, theta, threshold, minLineLength, maxLineGap);
 
     // 在下半部分的原始图像上绘制绿色轮廓
     std::vector<std::vector<cv::Point>> contours;
@@ -141,13 +155,26 @@ public:
         }
     }
 
-    void run() {}
+    void run() {
+
+    }
 };
+
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "trace_line");
     ros::NodeHandle nh;
+    
     cv::namedWindow("camera_node Feed", cv::WINDOW_AUTOSIZE);
+
+
+    cv::createTrackbar("Min Line Length", "camera_node Feed", &minLineLength, 200, updateParameters);
+    cv::createTrackbar("Max Line Gap", "camera_node Feed", &maxLineGap, 50, updateParameters);
+    cv::createTrackbar("Rho", "camera_node Feed", reinterpret_cast<int*>(&rho), 10, updateParameters);
+    cv::createTrackbar("Theta", "camera_node Feed", reinterpret_cast<int*>(&theta), 180, updateParameters);
+    cv::createTrackbar("Threshold", "camera_node Feed", &threshold, 200, updateParameters);
+    cv::createTrackbar("Frame", "camera_node Feed", &currentFrame, totalFrames - 1, updateParameters); // 视频进度
+
 
     TraceLine lightProcessor(10, nh);
 

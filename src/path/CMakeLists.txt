@@ -38,6 +38,14 @@ target_link_libraries(
   ${OpenCV_LIBRARIES}
 )
 
+add_executable(visualize_line src/visualize_line.cpp)
+
+target_link_libraries(
+  visualize_line
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
+
 add_executable(path_node src/main.cpp)
 
 target_link_libraries(

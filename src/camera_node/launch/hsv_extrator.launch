@@ -1,3 +1,4 @@
 <launch>
+    <param name="picture_path" value="$(find camera_node)/../../data/src_images/test1.png"/>
     <node pkg="camera_node" type="hsv_extrator" name="hsv_extrator" output="screen"/>
 </launch>

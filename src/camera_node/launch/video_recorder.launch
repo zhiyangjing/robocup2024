@@ -1,0 +1,4 @@
+<launch>
+    <param name="output_video_path" value="$(find camera_node)/../../data/src_videos/straight1.mp4"/>
+    <node pkg="camera_node" type="video_recorder" name="video_recorder" output="screen"/>
+</launch>

@@ -8,14 +8,14 @@
 
 using namespace std;
 
-class ImagePublisher {
+class VideoRecorder {
 private:
     ros::Publisher pub_;
     cv::VideoCapture cap_;
     string video_file_path_;
 
 public:
-    ImagePublisher(ros::NodeHandle &nh) {
+    VideoRecorder(ros::NodeHandle &nh) {
         pub_ = nh.advertise<sensor_msgs::Image>("image_topic", 1);
 #ifdef USE_SIMULATION
         nh.param<string>("video_path", video_file_path_, "");
@@ -33,6 +33,10 @@ public:
     void publishImage() {
         cv::Mat frame;
         cap_ >> frame;// 捕获图像
+#ifdef USE_SIMULATION 
+        // 如果从视频中读取，需要翻转一下
+        cv::flip(frame, frame, -1);
+#endif
         if (frame.empty()) {
             ROS_WARN("Empty frame received");
             return;
@@ -46,14 +50,14 @@ public:
         sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
         pub_.publish(msg);
     }
-    ~ImagePublisher() { cap_.release(); }
+    ~VideoRecorder() { cap_.release(); }
 };
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "camera_node");
     ros::NodeHandle nh;
-    ImagePublisher imagePublisher(nh);
-
+    VideoRecorder imagePublisher(nh);
+    ROS_INFO("%s Camera node init...", TAG);
     ros::Rate rate(20);
     while (ros::ok()) {
         imagePublisher.publishImage();
