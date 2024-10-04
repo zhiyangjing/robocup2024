@@ -50,7 +50,7 @@ public:
     }
 
     void writeVideo() {
-        while (is_running) {
+        while (is_running || !frame_queue.empty()) {
             unique_lock<std::mutex> lock(queue_mutex);
             frame_cv.wait(lock, [this] { return !frame_queue.empty() || !is_running; });
 
