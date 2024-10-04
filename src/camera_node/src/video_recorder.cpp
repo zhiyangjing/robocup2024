@@ -58,7 +58,7 @@ public:
             //     ros::shutdown();
             //     break;
             // }
-            ros::spinOnce();
+            // ros::spinOnce();
         }
     }
     ~VideoRecorder() {
