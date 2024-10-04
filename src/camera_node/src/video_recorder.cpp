@@ -58,6 +58,7 @@ public:
                 frame_queue.pop();
                 lock.unlock();
 
+                cv::imshow("video writer", frame);
                 video.write(frame);
                 total_frame++;
                 ROS_INFO("%s Current Queue Length: %d ",TAG, static_cast<int>(frame_queue.size()));
@@ -84,7 +85,6 @@ public:
             frame_cv.notify_one();
             total_frame += 1;
             ROS_INFO("%s Current frame: %d", TAG, total_frame);
-            cv::imshow("video writer", frame);
             auto key = cv::waitKey(1);
             if (key == 'q') {
                 ROS_INFO("%s Exting video recorder! ", TAG);
