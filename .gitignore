@@ -3,4 +3,6 @@ devel
 .vscode
 .cache
 data/video
+data/src_videos
+data/src_images
 
