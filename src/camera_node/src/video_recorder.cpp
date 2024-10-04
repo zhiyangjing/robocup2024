@@ -1,8 +1,11 @@
+#include <condition_variable>
 #include <cv_bridge/cv_bridge.h>
+#include <mutex>
 #include <opencv2/opencv.hpp>
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 #include <string>
+#include <thread>
 
 #define TAG "[video recorder]"
 
@@ -16,6 +19,10 @@ private:
     int fps = 30;
     string output_path_;
     int total_frame{};
+    mutex queue_mutex;
+    queue<cv::Mat> frame_queue;
+    condition_variable frame_cv;
+    bool is_running = true;
 
 public:
     VideoRecorder(ros::NodeHandle &nh) : nh_(nh) {
@@ -37,6 +44,27 @@ public:
             ROS_ERROR("Failed to create video");
             ros::shutdown();
         }
+        std::thread write_thread(&VideoRecorder::writeVideo, this);
+        write_thread.detach();
+    }
+
+    void writeVideo() {
+        while (is_running) {
+            unique_lock<std::mutex> lock(queue_mutex);
+            frame_cv.wait(lock, [this] { return !frame_queue.empty() || !is_running; });
+
+            while (!frame_queue.empty()) {
+                cv::Mat frame = frame_queue.front();
+                frame_queue.pop();
+                lock.unlock();
+
+                video.write(frame);
+                total_frame++;
+                ROS_INFO("%s Current Queue Length: %d ",TAG, static_cast<int>(frame_queue.size()));
+                lock.lock();
+            }
+        }
+        cout << "Writing thread exiting." << endl;
     }
 
     void run() {
@@ -48,17 +76,21 @@ public:
                 ROS_WARN("Empty frame received");
                 return;
             }
-            // video.write(frame);
+            {
+                lock_guard<std::mutex> lock(queue_mutex);
+                frame_queue.push(frame.clone());
+            }
+
+            frame_cv.notify_one();
             total_frame += 1;
-            ROS_INFO("%s current frame: %d", TAG, total_frame);
-            // cv::imshow("video writer", frame);
-            // auto key = cv::waitKey(1);
-            // if (key == 'q') {
-            //     ROS_INFO("%s Exting video recorder! ", TAG);
-            //     ros::shutdown();
-            //     break;
-            // }
-            // ros::spinOnce();
+            ROS_INFO("%s Current frame: %d", TAG, total_frame);
+            cv::imshow("video writer", frame);
+            auto key = cv::waitKey(1);
+            if (key == 'q') {
+                ROS_INFO("%s Exting video recorder! ", TAG);
+                ros::shutdown();
+                break;
+            }
         }
     }
     ~VideoRecorder() {
