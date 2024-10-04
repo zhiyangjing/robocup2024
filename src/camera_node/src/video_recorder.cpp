@@ -23,6 +23,7 @@ private:
     queue<cv::Mat> frame_queue;
     condition_variable frame_cv;
     bool is_running = true;
+    thread write_thread;
 
 public:
     VideoRecorder(ros::NodeHandle &nh) : nh_(nh) {
@@ -44,7 +45,7 @@ public:
             ROS_ERROR("Failed to create video");
             ros::shutdown();
         }
-        std::thread write_thread(&VideoRecorder::writeVideo, this);
+        write_thread = thread(&VideoRecorder::writeVideo, this);
         write_thread.detach();
     }
 
@@ -94,6 +95,9 @@ public:
         }
     }
     ~VideoRecorder() {
+        if (write_thread.joinable()) {
+            write_thread.join();
+        }
         cap_.release();
         video.release();
     }
