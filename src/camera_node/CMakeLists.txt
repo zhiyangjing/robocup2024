@@ -8,7 +8,9 @@ project(camera_node)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 set(cv_bridge_DIR /usr/local/share/cv_bridge/cmake)
-find_package(OpenCV REQUIRED)
+# set(OpenCV_INCLUDE_DIRS /usr/include)
+# set(OpenCV_LIB_DIR /usr/lib/x86_64-linux-gnu)
+find_package(OpenCV 4.0 REQUIRED)
 message(STATUS "OpenCV include dir: ${OpenCV_INCLUDE_DIRS}")
 message(STATUS "OpenCV lib dir: ${OpenCV_LIB_DIR}")
 find_package(catkin REQUIRED COMPONENTS
