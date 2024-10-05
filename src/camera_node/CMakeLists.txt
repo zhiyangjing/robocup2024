@@ -9,7 +9,6 @@ project(camera_node)
 ## is used, also find other catkin packages
 set(cv_bridge_DIR /usr/local/share/cv_bridge/cmake)
 find_package(OpenCV REQUIRED)
-find_package(spdlog REQUIRED)
 message(STATUS "OpenCV include dir: ${OpenCV_INCLUDE_DIRS}")
 message(STATUS "OpenCV lib dir: ${OpenCV_LIB_DIR}")
 find_package(catkin REQUIRED COMPONENTS
