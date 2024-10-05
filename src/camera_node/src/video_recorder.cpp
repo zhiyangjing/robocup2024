@@ -46,7 +46,7 @@ public:
             ros::shutdown();
         }
         write_thread = thread(&VideoRecorder::writeVideo, this);
-        write_thread.detach();
+        // write_thread.detach();
     }
 
     void writeVideo() {
