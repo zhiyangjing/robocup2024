@@ -61,7 +61,9 @@ public:
                 lock.unlock();
 
                 // 也许会有更好的办法显示，现在就干正事吧
-                cv::imshow("video writer", frame);
+                cv::Mat resized_frame;
+                cv::resize(frame, resized_frame, cv::Size(frame.cols / 2, frame.rows / 2)); // 将图像大小缩小为原来的一半
+                cv::imshow("video writer", resized_frame);
                 video.write(frame);
                 total_frame++;
                 ROS_INFO("%s Current Queue Length: %d ", TAG, static_cast<int>(frame_queue.size()));
