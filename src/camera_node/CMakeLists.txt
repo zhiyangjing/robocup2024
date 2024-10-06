@@ -10,7 +10,7 @@ project(camera_node)
 set(cv_bridge_DIR /usr/local/share/cv_bridge/cmake)
 # set(OpenCV_INCLUDE_DIRS /usr/include)
 # set(OpenCV_LIB_DIR /usr/lib/x86_64-linux-gnu)
-find_package(OpenCV 4.0 REQUIRED)
+find_package(OpenCV REQUIRED)
 message(STATUS "OpenCV include dir: ${OpenCV_INCLUDE_DIRS}")
 message(STATUS "OpenCV lib dir: ${OpenCV_LIB_DIR}")
 find_package(catkin REQUIRED COMPONENTS

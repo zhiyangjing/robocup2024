@@ -45,6 +45,7 @@ public:
             ROS_ERROR("Failed to create video");
             ros::shutdown();
         }
+        ROS_INFO("%s Creating write thread ", TAG);
         write_thread = thread(&VideoRecorder::writeVideo, this);
         // write_thread.detach();
     }
@@ -109,8 +110,11 @@ public:
 };
 
 int main(int argc, char **argv) {
+    ROS_INFO("%s Used for record video in runtime! ", TAG);
     ros::init(argc, argv, "video recorder");
+    ROS_INFO("%s Used for record video in runtime! ", TAG);
     cv::namedWindow("video writer", cv::WINDOW_AUTOSIZE);
+    ROS_INFO("%s Used for record video in runtime! ", TAG);
     ros::NodeHandle nh;
     VideoRecorder video_recorder(nh);
     ROS_INFO("%s Video Recorder node init...", TAG);
