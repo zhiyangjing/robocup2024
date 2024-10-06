@@ -23,11 +23,9 @@ private:
     mutex show_mutex;
     queue<cv::Mat> frame_queue;
     condition_variable frame_cv;
-    condition_variable show_cv;
     bool is_running = true;
     thread write_thread;
-    thread show_thread;
-    cv::Mat currentFrame;
+    cv::Mat frame;
     int tempCnt = 0;
 
 public:
@@ -54,23 +52,6 @@ public:
         }
         ROS_INFO("%s Creating write thread ", TAG);
         write_thread = thread(&VideoRecorder::writeVideo, this);
-        show_thread = thread(&VideoRecorder::showVideo, this);
-        // write_thread.detach();
-    }
-
-    void showVideo() {
-        while (is_running) {
-            ROS_INFO("%s show tims: %d", TAG, tempCnt++);
-            unique_lock<std::mutex> lock(show_mutex);
-            show_cv.wait(lock, [this] { return !currentFrame.empty(); });
-
-            if (not currentFrame.empty()) {
-                ROS_INFO("%s size: %d %d", TAG, currentFrame.cols, currentFrame.rows);
-                cv::imshow("video writer", currentFrame);
-                cv::waitKey(1);
-                currentFrame.release();
-            }
-        }
     }
 
     void writeVideo() {
@@ -83,6 +64,7 @@ public:
                 frame_queue.pop();
                 lock.unlock();
 
+                cv::imshow("Camera image",frame);
                 video.write(frame);
                 total_frame++;
                 ROS_INFO("%s Current Queue Length: %d ", TAG, static_cast<int>(frame_queue.size()));
@@ -94,10 +76,8 @@ public:
 
     void run() {
         ROS_INFO("%s started runing ! ", TAG);
-        cv::Mat frame;
         while (ros::ok()) {
             cap_ >> frame;// 捕获图像
-            currentFrame = frame.clone();
             if (frame.empty()) {
                 ROS_WARN("Empty frame received");
                 return;
@@ -108,7 +88,6 @@ public:
             }
 
             frame_cv.notify_one();
-            show_cv.notify_one();
             total_frame += 1;
             ROS_INFO("%s Current frame: %d", TAG, total_frame);
             auto key = cv::waitKey(1);
@@ -127,9 +106,6 @@ public:
     ~VideoRecorder() {
         if (write_thread.joinable()) {
             write_thread.join();
-        }
-        if (show_thread.joinable()) {
-            show_thread.join();
         }
         cap_.release();
         video.release();
