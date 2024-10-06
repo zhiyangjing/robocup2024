@@ -20,10 +20,15 @@ private:
     string output_path_;
     int total_frame{};
     mutex queue_mutex;
+    mutex show_mutex;
     queue<cv::Mat> frame_queue;
     condition_variable frame_cv;
+    condition_variable show_cv;
     bool is_running = true;
     thread write_thread;
+    thread show_thread;
+    cv::Mat currentFrame;
+    int tempCnt = 0;
 
 public:
     VideoRecorder(ros::NodeHandle &nh) : nh_(nh) {
@@ -36,9 +41,9 @@ public:
         int fps = cap_.get(cv::CAP_PROP_FPS);
         ROS_INFO("%s capture frame rate: %d ", TAG, fps);
         cv::Size frame_size(frame_width, frame_height);
-        ROS_INFO("%s debug 1",TAG);
+        ROS_INFO("%s debug 1", TAG);
         video = cv::VideoWriter(output_path_, codec, fps, frame_size, true);
-        ROS_INFO("%s debug 2",TAG);
+        ROS_INFO("%s debug 2", TAG);
         if (!cap_.isOpened()) {
             ROS_ERROR("Failed to open the camera");
             ros::shutdown();
@@ -49,7 +54,23 @@ public:
         }
         ROS_INFO("%s Creating write thread ", TAG);
         write_thread = thread(&VideoRecorder::writeVideo, this);
+        show_thread = thread(&VideoRecorder::showVideo, this);
         // write_thread.detach();
+    }
+
+    void showVideo() {
+        while (is_running) {
+            ROS_INFO("%s show tims: %d", TAG, tempCnt++);
+            unique_lock<std::mutex> lock(show_mutex);
+            show_cv.wait(lock, [this] { return !currentFrame.empty(); });
+
+            if (not currentFrame.empty()) {
+                ROS_INFO("%s size: %d %d", TAG, currentFrame.cols, currentFrame.rows);
+                cv::imshow("video writer", currentFrame);
+                cv::waitKey(1);
+                currentFrame.release();
+            }
+        }
     }
 
     void writeVideo() {
@@ -62,10 +83,9 @@ public:
                 frame_queue.pop();
                 lock.unlock();
 
-                cv::imshow("video writer", frame);
                 video.write(frame);
                 total_frame++;
-                ROS_INFO("%s Current Queue Length: %d ",TAG, static_cast<int>(frame_queue.size()));
+                ROS_INFO("%s Current Queue Length: %d ", TAG, static_cast<int>(frame_queue.size()));
                 lock.lock();
             }
         }
@@ -77,6 +97,7 @@ public:
         cv::Mat frame;
         while (ros::ok()) {
             cap_ >> frame;// 捕获图像
+            currentFrame = frame.clone();
             if (frame.empty()) {
                 ROS_WARN("Empty frame received");
                 return;
@@ -87,13 +108,14 @@ public:
             }
 
             frame_cv.notify_one();
+            show_cv.notify_one();
             total_frame += 1;
             ROS_INFO("%s Current frame: %d", TAG, total_frame);
             auto key = cv::waitKey(1);
             if (key == 'q') {
                 {
                     lock_guard<std::mutex> lock(queue_mutex);
-                    is_running = false; // 停止主线程的帧捕获
+                    is_running = false;// 停止主线程的帧捕获
                 }
                 ROS_INFO("%s Exting video recorder! ", TAG);
                 is_running = false;
@@ -105,6 +127,9 @@ public:
     ~VideoRecorder() {
         if (write_thread.joinable()) {
             write_thread.join();
+        }
+        if (show_thread.joinable()) {
+            show_thread.join();
         }
         cap_.release();
         video.release();
