@@ -64,6 +64,7 @@ public:
                 frame_queue.pop();
                 lock.unlock();
 
+                // 也许会有更好的办法显示，现在就干正事吧
                 cv::imshow("Camera image",frame);
                 video.write(frame);
                 total_frame++;
