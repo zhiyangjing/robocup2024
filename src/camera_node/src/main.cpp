@@ -34,8 +34,8 @@ public:
         cv::Mat frame;
         cap_ >> frame;// 捕获图像
 #ifdef USE_SIMULATION 
-        // 如果从视频中读取，需要翻转一下
-        cv::flip(frame, frame, -1);
+        // 如果从mp4视频中读取，需要翻转一下
+        // cv::flip(frame, frame, -1);
 #endif
         if (frame.empty()) {
             ROS_WARN("Empty frame received");
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
     ros::NodeHandle nh;
     VideoRecorder imagePublisher(nh);
     ROS_INFO("%s Camera node init...", TAG);
-    ros::Rate rate(20);
+    ros::Rate rate(10);
     while (ros::ok()) {
         imagePublisher.publishImage();
         ros::spinOnce();
