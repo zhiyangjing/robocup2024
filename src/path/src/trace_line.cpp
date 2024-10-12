@@ -33,6 +33,10 @@ void detectWhite(const cv::Mat &frame) {
     cv::drawContours(frame, contours, -1, cv::Scalar(0, 0, 255), 2);// 红色，线宽2
 }
 
+void preprocess(cv::Mat frame) {
+
+}
+
 float calculateSlope(const cv::Vec4i &line) {
     float dx = line[2] - line[0];
     float dy = line[3] - line[1];
@@ -49,7 +53,7 @@ float calculateSlope(const cv::Vec4i &line) {
  * 
  * @param image 
  */
-void detectLine(cv::Mat &image) {
+void detectLine(cv::Mat image) {
     // 检查输入图像是否为空
     if (image.empty()) {
         std::cerr << "Error: Input image is empty!" << std::endl;
