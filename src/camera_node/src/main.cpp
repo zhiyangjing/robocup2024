@@ -18,10 +18,12 @@ public:
     VideoRecorder(ros::NodeHandle &nh) {
         pub_ = nh.advertise<sensor_msgs::Image>("image_topic", 1);
 #ifdef USE_SIMULATION
+        ROS_INFO(TAG " Now using simulation");
         nh.param<string>("video_path", video_file_path_, "");
         ROS_INFO("%s video path: %s", TAG, video_file_path_.c_str());
         cap_.open(video_file_path_);
 #else
+        ROS_INFO(TAG " Now using real camera");
         cap_.open(0);// 打开摄像头
 #endif
         if (!cap_.isOpened()) {

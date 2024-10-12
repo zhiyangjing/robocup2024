@@ -53,6 +53,16 @@ target_link_libraries(
   path_node
   ${catkin_LIBRARIES}
 )
+
+
+# add_executable(avoid src/avoid.cpp)
+
+# target_link_libraries(
+#   avoid
+#   ${catkin_LIBRARIES}
+# )
+
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 

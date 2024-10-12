@@ -48,10 +48,18 @@ target_link_libraries(
   ${OpenCV_LIBRARIES}
 )
 
-option(USE_SIMULATION "Use simulation mode" ON)
-if (USE_SIMULATION) 
-  add_definitions(-DUSE_SIMULATION)
+
+# 默认设置为 OFF
+option(USE_SIMULATION "Use simulation mode" OFF)
+
+# 输出当前 USE_SIMULATION 的状态
+if (USE_SIMULATION)
+    message(STATUS "Simulation mode is enabled.")
+    add_definitions(-DUSE_SIMULATION)  # 添加宏定义以便于条件编译
+else()
+    message(STATUS "Simulation mode is disabled.")
 endif()
+
 add_executable(camera_node src/main.cpp)
 
 target_link_libraries(
