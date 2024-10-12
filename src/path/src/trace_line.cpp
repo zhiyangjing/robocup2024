@@ -70,7 +70,7 @@ void detectLine(cv::Mat image) {
 
     // 转换为HSV颜色空间
     cv::Mat hsv;
-    ROS_INFO(TAG "detect Line lowerPart channels: ",lowerPart.channels());
+    ROS_INFO(TAG "detect Line lowerPart channels: %d",lowerPart.channels());
     cv::cvtColor(lowerPart, hsv, cv::COLOR_BGR2HSV);
 
     // 定义白色的HSV范围
@@ -153,7 +153,7 @@ pair<float, float> getLineSlope(cv::Mat &image) {
 
     // 转换为HSV颜色空间
     cv::Mat hsv;
-    ROS_INFO(TAG "getLineSlope lowerPart channels: ",lowerPart.channels());
+    ROS_INFO(TAG "getLineSlope lowerPart channels: %d ",lowerPart.channels());
     cv::cvtColor(lowerPart, hsv, cv::COLOR_BGR2HSV);
 
     // 定义白色的HSV范围
