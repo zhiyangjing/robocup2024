@@ -253,6 +253,9 @@ public:
         try {
             cv::Mat frame = cv_bridge::toCvShare(msg, "bgr8")->image;
 
+            cv::Mat testframe;
+            ROS_INFO(TAG "channels count: %d",frame.channels());
+            cv::cvtColor(frame,testframe,cv::COLOR_BGR2RGB);
             cv::resize(frame, frame, cv::Size(frame_width, frame_height));
             if (frame.empty()) {
                 ROS_WARN("Empty frame received");
@@ -260,7 +263,6 @@ public:
             }
 
             // detectWhite(frame);
-            ROS_INFO(TAG "channels count: %d",frame.channels());
             detectLine(frame);
             ROS_INFO(TAG "channels count: %d",frame.channels());
 
