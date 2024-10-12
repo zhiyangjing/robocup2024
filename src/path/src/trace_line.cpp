@@ -228,7 +228,7 @@ public:
 
     void lineSlopeStrategy(float left_slope, float right_slope) {
         if (left_slope == 0 and right_slope == 0) {
-            ROS_WARN(TAG "No line detected");
+            ROS_WARN(TAG " No line detected");
         } else if (left_slope != 0 and right_slope != 0) {
             float sum_slope = (left_slope + right_slope) / 2;
             int angle_value = (sum_slope - 0.05) * 2500;
@@ -256,6 +256,7 @@ public:
             }
 
             // detectWhite(frame);
+            ROS_INFO(TAG "channels count: %d",frame.channels());
             detectLine(frame);
 
             auto [neg_slope, pos_slope] = getLineSlope(frame);
