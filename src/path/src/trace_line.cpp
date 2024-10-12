@@ -262,6 +262,7 @@ public:
             // detectWhite(frame);
             ROS_INFO(TAG "channels count: %d",frame.channels());
             detectLine(frame);
+            ROS_INFO(TAG "channels count: %d",frame.channels());
 
             auto [neg_slope, pos_slope] = getLineSlope(frame);
             lineSlopeStrategy(neg_slope, pos_slope);
