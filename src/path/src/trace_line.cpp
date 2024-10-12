@@ -266,8 +266,6 @@ public:
             lineSlopeStrategy(neg_slope, pos_slope);
             ROS_INFO(TAG "left slope: %lf right slope %lf ", neg_slope, pos_slope);
 
-            ROS_INFO("%s image processed", TAG);
-
             cv::imshow("camera_node Feed", frame);
             cv::waitKey(30);
 
