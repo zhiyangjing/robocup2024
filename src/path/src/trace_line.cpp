@@ -33,9 +33,7 @@ void detectWhite(const cv::Mat &frame) {
     cv::drawContours(frame, contours, -1, cv::Scalar(0, 0, 255), 2);// 红色，线宽2
 }
 
-void preprocess(cv::Mat frame) {
-
-}
+void preprocess(cv::Mat frame) {}
 
 float calculateSlope(const cv::Vec4i &line) {
     float dx = line[2] - line[0];
@@ -188,6 +186,7 @@ pair<float, float> getLineSlope(cv::Mat &image) {
     int max_pos_length = 0;
     float neg_slope = 0;
     float pos_slope = 0;
+    cv::Vec4i max_neg_line;
     for (size_t i = 0; i < lines.size(); i++) {
         cv::Vec4i l = lines[i];
         cv::Point start(l[0], l[1] + height / 2);
@@ -211,8 +210,14 @@ pair<float, float> getLineSlope(cv::Mat &image) {
             if (line_length > max_neg_length) {
                 max_neg_length = line_length;
                 neg_slope = slope;
+                max_neg_line = l;
             }
         }
+    }
+    if (max_neg_length > 0) {
+        cv::Point max_neg_start(max_neg_line[0], max_neg_line[1] + height / 2);
+        cv::Point max_neg_end(max_neg_line[2], max_neg_line[3] + height / 2);
+        cv::line(image, max_neg_start, max_neg_end, cv::Scalar(255, 0, 255), 2);// 紫色
     }
     return {neg_slope, pos_slope};
 }
