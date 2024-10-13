@@ -57,14 +57,15 @@ void detectLine(cv::Mat image) {
         std::cerr << "Error: Input image is empty!" << std::endl;
         return;
     }
-
+    float lowerFraction = 0.4;
     // 获取图像的高度和宽度
     int height = image.rows;
     int width = image.cols;
 
-    // 只处理图像的下半部分
-    cv::Rect lowerHalf(0, height / 2, width, height / 2);
-    cv::Mat lowerPart = image(lowerHalf);// 提取下半部分图像
+    // 计算下部分的高度，根据给定的比例
+    int lowerHeight = static_cast<int>(height * lowerFraction);
+    cv::Rect lowerPartRect(0, height - lowerHeight, width, lowerHeight);
+    cv::Mat lowerPart = image(lowerPartRect);// 提取下部分图像
 
     // 转换为HSV颜色空间
     cv::Mat hsv;
@@ -96,7 +97,7 @@ void detectLine(cv::Mat image) {
     // 存储检测到的线段
     std::vector<cv::Vec4i> lines;
     // 使用 HoughLinesP 检测线段
-    cv::HoughLinesP(edges, lines, 2, CV_PI / 90, 100, 20, 10);// threshold = 100, minLineLength = 50, maxLineGap = 10
+    cv::HoughLinesP(edges, lines, 2, CV_PI / 180, 50, 30, 10);
 
     // 在下半部分的原始图像上绘制绿色轮廓
     std::vector<std::vector<cv::Point>> contours;
@@ -104,19 +105,17 @@ void detectLine(cv::Mat image) {
 
     for (size_t i = 0; i < contours.size(); i++) {
         cv::Scalar greenColor(0, 255, 0);// 绿色
-        // 添加 Y 轴偏移
         for (size_t j = 0; j < contours[i].size(); j++) {
-            contours[i][j].y += height / 2;// Y 轴偏移
+            contours[i][j].y += height - lowerHeight;// Y 轴偏移
         }
         cv::drawContours(image, contours, static_cast<int>(i), greenColor, 2, cv::LINE_8);
     }
 
-    ROS_INFO(TAG "VISUALIZED LINE CNTS --------------------- : %ld",lines.size());
     // 在原始图像上绘制检测到的线段并显示斜率
     for (size_t i = 0; i < lines.size(); i++) {
         cv::Vec4i l = lines[i];
-        cv::Point start(l[0], l[1] + height / 2);
-        cv::Point end(l[2], l[3] + height / 2);
+        cv::Point start(l[0], l[1] + (height - lowerHeight));
+        cv::Point end(l[2], l[3] + (height - lowerHeight));
         cv::line(image, start, end, cv::Scalar(0, 0, 255), 2);
 
         float slope = calculateSlope(l);
@@ -125,12 +124,7 @@ void detectLine(cv::Mat image) {
         cv::putText(image, slopeText, midPoint, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 1);
     }
 
-    // // 在原始图像上绘制检测到的线段
-    // for (size_t i = 0; i < lines.size(); i++) {
-    //     cv::Vec4i l = lines[i];
-    //     // 由于我们只处理下半部分，所以线段的起始点和终止点需要加上下半部分的y坐标偏移
-    //     cv::line(image, cv::Point(l[0], l[1] + height / 2), cv::Point(l[2], l[3] + height / 2), cv::Scalar(0, 0, 255), 2); // 绘制线段
-    // }
+    cv::imshow("detect line result", image);
 }
 
 pair<float, float> getLineSlope(cv::Mat &image) {
@@ -139,15 +133,15 @@ pair<float, float> getLineSlope(cv::Mat &image) {
         std::cerr << "Error: Input image is empty!" << std::endl;
         return {0.f, 0.f};
     }
-
-    // 获取图像的高度和宽度
+    float lowerFraction = 0.4;
     // 获取图像的高度和宽度
     int height = image.rows;
     int width = image.cols;
 
-    // 只处理图像的下半部分
-    cv::Rect lowerHalf(0, height / 2, width, height / 2);
-    cv::Mat lowerPart = image(lowerHalf);// 提取下半部分图像
+    // 计算下部分的高度，根据给定的比例
+    int lowerHeight = static_cast<int>(height * lowerFraction);
+    cv::Rect lowerPartRect(0, height - lowerHeight, width, lowerHeight);
+    cv::Mat lowerPart = image(lowerPartRect);// 提取下部分图像
 
     // 转换为HSV颜色空间
     cv::Mat hsv;
@@ -178,29 +172,24 @@ pair<float, float> getLineSlope(cv::Mat &image) {
     // 存储检测到的线段
     std::vector<cv::Vec4i> lines;
     // 使用 HoughLinesP 检测线段
-    cv::HoughLinesP(edges, lines, 2, CV_PI / 90, 100, 20, 10);// threshold = 100, minLineLength = 50, maxLineGap = 10
+    cv::HoughLinesP(edges, lines, 2, CV_PI / 180, 50, 20, 10);
 
     // 在原始图像上绘制检测到的线段并显示斜率
-    // neg 是左侧， pos 是右侧
-    // 因为在opencv中图片的原点是左上角
     int max_neg_length = 0;
     int max_pos_length = 0;
     float neg_slope = 0;
     float pos_slope = 0;
     cv::Vec4i max_neg_line;
-    ROS_INFO(TAG "cnts %ld" ,lines.size());
     for (size_t i = 0; i < lines.size(); i++) {
         cv::Vec4i l = lines[i];
-        cv::Point start(l[0], l[1] + height / 2);
-        cv::Point end(l[2], l[3] + height / 2);
+        cv::Point start(l[0], l[1] + (height - lowerHeight));
+        cv::Point end(l[2], l[3] + (height - lowerHeight));
         cv::line(image, start, end, cv::Scalar(0, 0, 255), 2);
 
         float slope = calculateSlope(l);
         double line_length = cv::norm(end - start);
 
         // 去除横向线段
-
-        ROS_INFO(TAG "slope %lf", slope);
         if (fabs(slope) < 0.35) {
             continue;
         }
@@ -211,9 +200,7 @@ pair<float, float> getLineSlope(cv::Mat &image) {
                 pos_slope = slope;
             }
         } else {
-            ROS_INFO(TAG "neg line length %lf", line_length);
             if (line_length > max_neg_length) {
-                ROS_INFO(TAG "Neg Line Length MAX %lf", line_length);
                 max_neg_length = line_length;
                 neg_slope = slope;
                 max_neg_line = l;
@@ -221,8 +208,8 @@ pair<float, float> getLineSlope(cv::Mat &image) {
         }
     }
     if (max_neg_length > 0) {
-        cv::Point max_neg_start(max_neg_line[0], max_neg_line[1] + height / 2);
-        cv::Point max_neg_end(max_neg_line[2], max_neg_line[3] + height / 2);
+        cv::Point max_neg_start(max_neg_line[0], max_neg_line[1] + (height - lowerHeight));
+        cv::Point max_neg_end(max_neg_line[2], max_neg_line[3] + (height - lowerHeight));
         cv::line(image, max_neg_start, max_neg_end, cv::Scalar(255, 0, 0), 2);// 紫色
     }
     return {neg_slope, pos_slope};
@@ -271,7 +258,7 @@ public:
             }
 
             // detectWhite(frame);
-            // detectLine(frame);
+            detectLine(frame.clone());
 
             auto [neg_slope, pos_slope] = getLineSlope(frame);
             lineSlopeStrategy(neg_slope, pos_slope);
