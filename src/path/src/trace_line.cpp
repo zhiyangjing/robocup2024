@@ -111,6 +111,7 @@ void detectLine(cv::Mat image) {
         cv::drawContours(image, contours, static_cast<int>(i), greenColor, 2, cv::LINE_8);
     }
 
+    ROS_INFO(TAG "VISUALIZED LINE CNTS --------------------- : %ld",lines.size());
     // 在原始图像上绘制检测到的线段并显示斜率
     for (size_t i = 0; i < lines.size(); i++) {
         cv::Vec4i l = lines[i];
@@ -187,6 +188,7 @@ pair<float, float> getLineSlope(cv::Mat &image) {
     float neg_slope = 0;
     float pos_slope = 0;
     cv::Vec4i max_neg_line;
+    ROS_INFO(TAG "cnts %ld" ,lines.size());
     for (size_t i = 0; i < lines.size(); i++) {
         cv::Vec4i l = lines[i];
         cv::Point start(l[0], l[1] + height / 2);
@@ -197,6 +199,8 @@ pair<float, float> getLineSlope(cv::Mat &image) {
         double line_length = cv::norm(end - start);
 
         // 去除横向线段
+
+        ROS_INFO(TAG "slope %lf", slope);
         if (fabs(slope) < 0.35) {
             continue;
         }
@@ -207,7 +211,9 @@ pair<float, float> getLineSlope(cv::Mat &image) {
                 pos_slope = slope;
             }
         } else {
+            ROS_INFO(TAG "neg line length %lf", line_length);
             if (line_length > max_neg_length) {
+                ROS_INFO(TAG "Neg Line Length MAX %lf", line_length);
                 max_neg_length = line_length;
                 neg_slope = slope;
                 max_neg_line = l;
@@ -265,7 +271,7 @@ public:
             }
 
             // detectWhite(frame);
-            detectLine(frame);
+            // detectLine(frame);
 
             auto [neg_slope, pos_slope] = getLineSlope(frame);
             lineSlopeStrategy(neg_slope, pos_slope);
