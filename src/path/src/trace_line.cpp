@@ -197,7 +197,7 @@ pair<float, float> getLineSlope(cv::Mat &image) {
         double line_length = cv::norm(end - start);
 
         // 去除横向线段
-        if (abs(slope) < 0.35) {
+        if (fabs(slope) < 0.35) {
             continue;
         }
 
@@ -217,7 +217,7 @@ pair<float, float> getLineSlope(cv::Mat &image) {
     if (max_neg_length > 0) {
         cv::Point max_neg_start(max_neg_line[0], max_neg_line[1] + height / 2);
         cv::Point max_neg_end(max_neg_line[2], max_neg_line[3] + height / 2);
-        cv::line(image, max_neg_start, max_neg_end, cv::Scalar(255, 0, 255), 2);// 紫色
+        cv::line(image, max_neg_start, max_neg_end, cv::Scalar(255, 0, 0), 2);// 紫色
     }
     return {neg_slope, pos_slope};
 }
