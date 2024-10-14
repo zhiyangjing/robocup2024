@@ -9,6 +9,7 @@ add_compile_options(-std=c++17)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(OpenCV REQUIRED)
+find_package(Eigen3 REQUIRED NO_MODULE)
 find_package(catkin REQUIRED COMPONENTS
   common_utils
   cv_bridge
@@ -35,9 +36,12 @@ add_executable(trace_line src/trace_line.cpp)
 
 target_link_libraries(
   trace_line
+  common_utils
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
 )
+
+target_include_directories(trace_line PRIVATE ${EIGEN3_INCLUDE_DIR})
 
 add_executable(visualize_line src/visualize_line.cpp)
 

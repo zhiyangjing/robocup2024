@@ -12,6 +12,7 @@
 using namespace std;
 
 void detectWhite(const cv::Mat &frame) {
+    ROS_INFO(COLOR_RED TAG COLOR_RESET " detect white ");
     // 将输入的 BGR 图像转为 HSV（色相、饱和度、亮度）颜色空间
     cv::Mat hsvFrame;
     cv::cvtColor(frame, hsvFrame, cv::COLOR_BGR2HSV);
@@ -127,6 +128,54 @@ void detectLine(cv::Mat image) {
     cv::imshow("detect line result", image);
 }
 
+// 计算平均斜率的函数
+std::pair<float, float> calculateAverageSlopes(const std::vector<cv::Vec4i> &lines, int topN) {
+    std::vector<float> posSlopes;
+    std::vector<float> negSlopes;
+
+    // 根据斜率将线段分组
+    for (const auto &line : lines) {
+        float slope = calculateSlope(line);
+        double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
+
+        if (fabs(slope) < 0.35) {
+            continue;// 去除横向线段
+        }
+
+        if (slope > 0) {
+            posSlopes.push_back(slope);
+        } else {
+            negSlopes.push_back(slope);
+        }
+    }
+
+    // 对斜率按绝对值排序，并取最长的 topN 根
+    std::sort(posSlopes.begin(), posSlopes.end(), std::greater<float>());
+    std::sort(negSlopes.begin(), negSlopes.end());
+
+    // 计算正斜率的平均值
+    float posAverage = 0;
+    if (!posSlopes.empty()) {
+        int count = std::min(topN, static_cast<int>(posSlopes.size()));
+        for (int i = 0; i < count; i++) {
+            posAverage += posSlopes[i];
+        }
+        posAverage /= count;// 平均值
+    }
+
+    // 计算负斜率的平均值
+    float negAverage = 0;
+    if (!negSlopes.empty()) {
+        int count = std::min(topN, static_cast<int>(negSlopes.size()));
+        for (int i = 0; i < count; i++) {
+            negAverage += negSlopes[i];
+        }
+        negAverage /= count;// 平均值
+    }
+
+    return {negAverage, posAverage};
+}
+
 pair<float, float> getLineSlope(cv::Mat &image) {
     // 检查输入图像是否为空
     if (image.empty()) {
@@ -174,44 +223,14 @@ pair<float, float> getLineSlope(cv::Mat &image) {
     // 使用 HoughLinesP 检测线段
     cv::HoughLinesP(edges, lines, 2, CV_PI / 180, 50, 20, 10);
 
-    // 在原始图像上绘制检测到的线段并显示斜率
-    int max_neg_length = 0;
-    int max_pos_length = 0;
-    float neg_slope = 0;
-    float pos_slope = 0;
-    cv::Vec4i max_neg_line;
     for (size_t i = 0; i < lines.size(); i++) {
         cv::Vec4i l = lines[i];
         cv::Point start(l[0], l[1] + (height - lowerHeight));
         cv::Point end(l[2], l[3] + (height - lowerHeight));
         cv::line(image, start, end, cv::Scalar(0, 0, 255), 2);
-
-        float slope = calculateSlope(l);
-        double line_length = cv::norm(end - start);
-
-        // 去除横向线段
-        if (fabs(slope) < 0.35) {
-            continue;
-        }
-
-        if (slope > 0) {
-            if (line_length > max_pos_length) {
-                max_pos_length = line_length;
-                pos_slope = slope;
-            }
-        } else {
-            if (line_length > max_neg_length) {
-                max_neg_length = line_length;
-                neg_slope = slope;
-                max_neg_line = l;
-            }
-        }
     }
-    if (max_neg_length > 0) {
-        cv::Point max_neg_start(max_neg_line[0], max_neg_line[1] + (height - lowerHeight));
-        cv::Point max_neg_end(max_neg_line[2], max_neg_line[3] + (height - lowerHeight));
-        cv::line(image, max_neg_start, max_neg_end, cv::Scalar(255, 0, 0), 2);// 紫色
-    }
+    // 在原始图像上绘制检测到的线段并显示斜率
+    auto [neg_slope, pos_slope] = calculateAverageSlopes(lines, 3);
     return {neg_slope, pos_slope};
 }
 
@@ -224,16 +243,42 @@ private:
     int frame_width = 720;
     int line_pos = frame_width * 0.422;
     double currentFps = 0;
+    Buffer<float> prev_neg_slope;
+    Buffer<float> prev_pos_slope;
+    Buffer<int> prev_angle;
+    Interpolator interpolator;
 
 public:
-    TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, nh) {}
+    TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, nh) {
+        prev_neg_slope = Buffer<float>(5);
+        prev_pos_slope = Buffer<float>(5);
+        prev_angle = Buffer<int>(10);
 
-    void lineSlopeStrategy(float left_slope, float right_slope) {
+        VectorXf x(10);
+        VectorXf y(10);
+        VectorXf z(10);
+
+        x << -0.676, -0.75, -0.53, -0.636, -0.45, -1.655, -1.16, -0.46, -0.51, -0.73;
+        y << 0.687, 0.75, 0.59, 0.716, 1.395, 0.42, 0.34, 1.631, 0.51, 0.76;
+        z << -2, 150, -150, 0, -100, 100, -25, 25, -200, 200;
+
+        // 创建点矩阵
+        MatrixXf points(10, 2);
+        for (int i = 0; i < 10; ++i) {
+            points(i, 0) = x(i);// 第一列为 x
+            points(i, 1) = y(i);// 第二列为 y
+        }
+
+        interpolator = Interpolator(points, z);
+    }
+
+    void lineSlopeStrategy_old(float left_slope, float right_slope) {
         if (left_slope == 0 and right_slope == 0) {
             ROS_WARN(TAG " No line detected");
         } else if (left_slope != 0 and right_slope != 0) {
             float sum_slope = (left_slope + right_slope) / 2;
             int angle_value = (sum_slope - 0.05) * 2500;
+            // ROS_INFO(TAG "mid part %d", angle_value);
             angle_value = max(-200, angle_value);
             angle_value = min(angle_value, 200);
             nh_.setParam("angle", angle_value);
@@ -244,6 +289,19 @@ public:
             int angle_value = 200;
             nh_.setParam("angle", angle_value);
         }
+    }
+
+    void lineSlopeStrategy(float left_slope, float right_slope) {
+        if (left_slope == 0 and right_slope == 0) {
+            return;
+        }
+        VectorXf slopes(2);
+        slopes << left_slope, right_slope;
+        float res = max(min(interpolator.interpolate(slopes), 200.f), -200.f);
+        prev_angle.push(static_cast<int>(res));
+        int angle_value = prev_angle.avg();
+        nh_.setParam("angle", angle_value);
+        ROS_INFO(TAG "ANGLE: %d", angle_value);
     }
 
     // 图像处理函数
@@ -258,11 +316,24 @@ public:
             }
 
             // detectWhite(frame);
-            detectLine(frame.clone());
+            // detectLine(frame.clone());
 
             auto [neg_slope, pos_slope] = getLineSlope(frame);
+            /*
+             * // 差错控制代码，将这一部分移入了lineSlopeStragety
+             * if (fabs(neg_slope) < 0.001) {
+             *     neg_slope = prev_neg_slope[0];
+             * }
+             * prev_neg_slope.push(neg_slope);
+             * 
+             * if (fabs(pos_slope) < 0.001) {
+             *     pos_slope = prev_pos_slope[0];
+             * }
+             * prev_pos_slope.push(pos_slope);
+             */
+
             lineSlopeStrategy(neg_slope, pos_slope);
-            ROS_INFO(TAG "left slope: %lf right slope %lf ", neg_slope, pos_slope);
+            // ROS_INFO(TAG "left slope: %lf right slope %lf ", neg_slope, pos_slope);
 
             cv::imshow("camera_node Feed", frame);
             cv::waitKey(30);

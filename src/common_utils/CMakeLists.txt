@@ -7,23 +7,45 @@ project(common_utils)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
+
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
 )
 
+find_package(Eigen3 REQUIRED NO_MODULE)
+# set(Eigen3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
+message(STATUS "EIGEN3_INCLUDE_DIR: ${EIGEN3_INCLUDE_DIR}")
+message(STATUS "Eigen3_INCLUDE_DIR: ${Eigen3_INCLUDE_DIR}")
+message(STATUS "EIGEN3_INCLUDE_DIRS: ${EIGEN3_INCLUDE_DIRS}")
+message(STATUS "Eigen3_INCLUDE_DIRS: ${Eigen3_INCLUDE_DIRS}")
+
 catkin_package(
  INCLUDE_DIRS include
-#  LIBRARIES common_utils
+ LIBRARIES common_utils
+ DEPENDS EIGEN3
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIR}  # 确保使用了EIGEN3_INCLUDE_DIR
 )
+
+add_library(common_utils
+  src/common.cpp  # 假设你的 Buffer 实现是在这个文件中
+)
+
+# 确保链接catkin库
+target_link_libraries(common_utils
+  ${catkin_LIBRARIES}
+)
+
+target_include_directories(${PROJECT_NAME} PUBLIC include)
+
 
 
 ## System dependencies are found with CMake's conventions
