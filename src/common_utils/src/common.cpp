@@ -12,7 +12,7 @@ float Interpolator::interpolate(const VectorXf point) {
     VectorXf weight(n);
     for (int i = 0; i < n; ++i) {
         auto distance = (points.row(i) - point.transpose()).norm();
-        weight(i) = 1 / (eps + pow(static_cast<float>(distance), 3));
+        weight(i) = 1 / (eps + pow(static_cast<float>(distance), 4));
     }
     weight = weight.normalized();
     float res = weight.dot(values);
