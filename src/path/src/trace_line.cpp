@@ -307,7 +307,7 @@ public:
         prev_angle.push(static_cast<int>(res));
         int angle_value = prev_angle.avg();
         nh_.setParam("angle", angle_value);
-        ROS_INFO(TAG "ANGLE: %d", angle_value);
+        // ROS_INFO(TAG "ANGLE: %d", angle_value);
     }
 
     // 图像处理函数
@@ -339,7 +339,7 @@ public:
              */
 
             lineSlopeStrategy(neg_slope, pos_slope);
-            // ROS_INFO(TAG "left slope: %lf right slope %lf ", neg_slope, pos_slope);
+            ROS_INFO(TAG "left slope: %lf right slope %lf ", neg_slope, pos_slope);
 
             cv::imshow("camera_node Feed", frame);
             cv::waitKey(30);
