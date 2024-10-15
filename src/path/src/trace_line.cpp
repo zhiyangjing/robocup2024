@@ -254,15 +254,16 @@ public:
         prev_pos_slope = Buffer<float>(5);
         prev_angle = Buffer<int>(10);
 
-        int point_nums = 9;
+        int point_nums = 14;
 
         VectorXf x(point_nums);
         VectorXf y(point_nums);
         VectorXf z(point_nums);
 
-        x << 0.653,0.487,0.910,0.668,0.42,0.692,0.43,0,0.883;
-        y << -0.693,-1,-0.539,-0.4,-0.48,-0.5,-1.5,-1.5,-0.6;
-        z << 0,0,0,-200,-100,-200,200,200,100;
+        x << -0.664,-0.626,-0.604,-0.79,-0.943,-1.1,-1.1,0,0,0.5,-1.146,0,-1.629,-1.478;
+        y << 0.625,0.580,0.618,0.603,0.512,0.5,0,0.633,0.814,0.814,1.327,1.327,0,0;
+        z << 0,0,0,0,100,100,100,-100,-100,-100,-200,-200,200,200;
+
 
         // x << -0.676, -0.75, -0.53, -0.636, -0.45, -1.655, -1.16, -0.46, -0.51, -0.73;
         // y << 0.687, 0.75, 0.59, 0.716, 1.395, 0.42, 0.34, 1.631, 0.51, 0.76;
@@ -284,7 +285,6 @@ public:
         } else if (left_slope != 0 and right_slope != 0) {
             float sum_slope = (left_slope + right_slope) / 2;
             int angle_value = (sum_slope - 0.05) * 2500;
-            // ROS_INFO(TAG "mid part %d", angle_value);
             angle_value = max(-200, angle_value);
             angle_value = min(angle_value, 200);
             nh_.setParam("angle", angle_value);
@@ -307,7 +307,7 @@ public:
         prev_angle.push(static_cast<int>(res));
         int angle_value = prev_angle.avg();
         nh_.setParam("angle", angle_value);
-        // ROS_INFO(TAG "ANGLE: %d", angle_value);
+        ROS_INFO(TAG "ANGLE: %d", angle_value);
     }
 
     // 图像处理函数
