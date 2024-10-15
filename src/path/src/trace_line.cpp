@@ -27,7 +27,7 @@ void detectWhite(const cv::Mat &frame) {
     cv::inRange(hsvFrame, lowerWhite, upperWhite, mask);
 
     // 查找遮罩中的轮廓
-    std::vector<std::vector<cv::Point>> contours;
+    vector<vector<cv::Point>> contours;
     cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
     // 在原始帧上用红色绘制轮廓
@@ -40,7 +40,7 @@ float calculateSlope(const cv::Vec4i &line) {
     float dx = line[2] - line[0];
     float dy = line[3] - line[1];
     if (dx == 0) {
-        return std::numeric_limits<float>::infinity();// 处理垂直线
+        return numeric_limits<float>::infinity();// 处理垂直线
     }
     return dy / dx;// 计算斜率
 }
@@ -52,10 +52,10 @@ float calculateSlope(const cv::Vec4i &line) {
  * 
  * @param image 
  */
-void detectLine(cv::Mat image) {
+void visualizeLineInfo(cv::Mat image) {
     // 检查输入图像是否为空
     if (image.empty()) {
-        std::cerr << "Error: Input image is empty!" << std::endl;
+        cerr << "Error: Input image is empty!" << endl;
         return;
     }
     float lowerFraction = 0.4;
@@ -96,12 +96,12 @@ void detectLine(cv::Mat image) {
     cv::imshow("canny", edges);
 
     // 存储检测到的线段
-    std::vector<cv::Vec4i> lines;
+    vector<cv::Vec4i> lines;
     // 使用 HoughLinesP 检测线段
     cv::HoughLinesP(edges, lines, 2, CV_PI / 180, 50, 30, 10);
 
     // 在下半部分的原始图像上绘制绿色轮廓
-    std::vector<std::vector<cv::Point>> contours;
+    vector<vector<cv::Point>> contours;
     cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
     for (size_t i = 0; i < contours.size(); i++) {
@@ -120,7 +120,7 @@ void detectLine(cv::Mat image) {
         cv::line(image, start, end, cv::Scalar(0, 0, 255), 2);
 
         float slope = calculateSlope(l);
-        std::string slopeText = "Slope: " + std::to_string(slope);
+        string slopeText = "Slope: " + to_string(slope);
         cv::Point midPoint((start.x + end.x) / 2, (start.y + end.y) / 2);
         cv::putText(image, slopeText, midPoint, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 1);
     }
@@ -128,131 +128,31 @@ void detectLine(cv::Mat image) {
     cv::imshow("detect line result", image);
 }
 
-// 计算平均斜率的函数
-std::pair<float, float> calculateAverageSlopes(const std::vector<cv::Vec4i> &lines, int topN) {
-    std::vector<float> posSlopes;
-    std::vector<float> negSlopes;
-
-    // 根据斜率将线段分组
-    for (const auto &line : lines) {
-        float slope = calculateSlope(line);
-        double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
-
-        if (fabs(slope) < 0.5) {
-            continue;// 去除横向线段
-        }
-
-        if (slope > 0) {
-            posSlopes.push_back(slope);
-        } else {
-            negSlopes.push_back(slope);
-        }
-    }
-
-    // 对斜率按绝对值排序，并取最长的 topN 根
-    std::sort(posSlopes.begin(), posSlopes.end(), std::greater<float>());
-    std::sort(negSlopes.begin(), negSlopes.end());
-
-    // 计算正斜率的平均值
-    float posAverage = 0;
-    if (!posSlopes.empty()) {
-        int count = std::min(topN, static_cast<int>(posSlopes.size()));
-        for (int i = 0; i < count; i++) {
-            posAverage += posSlopes[i];
-        }
-        posAverage /= count;// 平均值
-    }
-
-    // 计算负斜率的平均值
-    float negAverage = 0;
-    if (!negSlopes.empty()) {
-        int count = std::min(topN, static_cast<int>(negSlopes.size()));
-        for (int i = 0; i < count; i++) {
-            negAverage += negSlopes[i];
-        }
-        negAverage /= count;// 平均值
-    }
-
-    return {negAverage, posAverage};
-}
-
-pair<float, float> getLineSlope(cv::Mat &image) {
-    // 检查输入图像是否为空
-    if (image.empty()) {
-        std::cerr << "Error: Input image is empty!" << std::endl;
-        return {0.f, 0.f};
-    }
-    float lowerFraction = 0.4;
-    // 获取图像的高度和宽度
-    int height = image.rows;
-    int width = image.cols;
-
-    // 计算下部分的高度，根据给定的比例
-    int lowerHeight = static_cast<int>(height * lowerFraction);
-    cv::Rect lowerPartRect(0, height - lowerHeight, width, lowerHeight);
-    cv::Mat lowerPart = image(lowerPartRect);// 提取下部分图像
-
-    // 转换为HSV颜色空间
-    cv::Mat hsv;
-    cv::cvtColor(lowerPart, hsv, cv::COLOR_BGR2HSV);
-
-    // 定义白色的HSV范围
-    cv::Scalar lowerWhite(0, 0, 185);   // 白色下限
-    cv::Scalar upperWhite(180, 30, 255);// 白色上限
-
-    // 创建白色区域的掩码
-    cv::Mat mask;
-    cv::inRange(hsv, lowerWhite, upperWhite, mask);
-
-    // 形态学操作 - 腐蚀和膨胀
-    int erosion_size = 1; // 腐蚀结构元素的大小
-    int dilation_size = 1;// 膨胀结构元素的大小
-
-    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
-                                                cv::Point(erosion_size, erosion_size));
-
-    cv::erode(mask, mask, element); // 腐蚀
-    cv::dilate(mask, mask, element);// 膨胀
-
-    // 使用 Canny 边缘检测
-    cv::Mat edges;
-    cv::Canny(mask, edges, 50, 150, 3);
-
-    // 存储检测到的线段
-    std::vector<cv::Vec4i> lines;
-    // 使用 HoughLinesP 检测线段
-    cv::HoughLinesP(edges, lines, 2, CV_PI / 180, 50, 20, 10);
-
-    for (size_t i = 0; i < lines.size(); i++) {
-        cv::Vec4i l = lines[i];
-        cv::Point start(l[0], l[1] + (height - lowerHeight));
-        cv::Point end(l[2], l[3] + (height - lowerHeight));
-        cv::line(image, start, end, cv::Scalar(0, 0, 255), 2);
-    }
-    // 在原始图像上绘制检测到的线段并显示斜率
-    auto [neg_slope, pos_slope] = calculateAverageSlopes(lines, 3);
-    return {neg_slope, pos_slope};
-}
-
 class TraceLine : public Ability {
 private:
     ros::Subscriber sub_;
-    int frameCount = 0;
-    std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
     int frame_height = 480;
     int frame_width = 720;
+    float lowerFraction = 0.4;
+    int lowerHeight = static_cast<int>(frame_height * lowerFraction);
     int line_pos = frame_width * 0.422;
     double currentFps = 0;
     Buffer<float> prev_neg_slope;
     Buffer<float> prev_pos_slope;
     Buffer<int> prev_angle;
+    Buffer<int> prev_center;
     Interpolator interpolator;
+    cv::Mat frame;
+    vector<cv::Vec4i> lines;                                   // 存储检测到的线段
+    vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> posLines;// 线段，长度，斜率 , 中点
+    vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> negLines;
 
 public:
     TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, nh) {
         prev_neg_slope = Buffer<float>(5);
         prev_pos_slope = Buffer<float>(5);
         prev_angle = Buffer<int>(10);
+        prev_center = Buffer<int>(10);
 
         int point_nums = 14;
 
@@ -260,10 +160,9 @@ public:
         VectorXf y(point_nums);
         VectorXf z(point_nums);
 
-        x << -0.664,-0.626,-0.604,-0.79,-0.943,-1.1,-1.1,0,0,0.5,-1.146,0,-1.629,-1.478;
-        y << 0.625,0.580,0.618,0.603,0.512,0.5,0,0.633,0.814,0.814,1.327,1.327,0,0;
-        z << 0,0,0,0,100,100,100,-100,-100,-100,-200,-200,200,200;
-
+        x << -0.664, -0.626, -0.604, -0.79, -0.943, -1.1, -1.1, 0, 0, 0.5, -1.146, 0, -1.629, -1.478;
+        y << 0.625, 0.580, 0.618, 0.603, 0.512, 0.5, 0, 0.633, 0.814, 0.814, 1.327, 1.327, 0, 0;
+        z << 0, 0, 0, 0, 100, 100, 100, -100, -100, -100, -200, -200, 200, 200;
 
         // x << -0.676, -0.75, -0.53, -0.636, -0.45, -1.655, -1.16, -0.46, -0.51, -0.73;
         // y << 0.687, 0.75, 0.59, 0.716, 1.395, 0.42, 0.34, 1.631, 0.51, 0.76;
@@ -277,6 +176,142 @@ public:
         }
 
         interpolator = Interpolator(points, z);
+        ROS_INFO(TAG "TraceLine constructed succeeded! ");
+    }
+
+    void linePreprocess() {
+        if (lines.empty()) {
+            ROS_WARN(TAG "No line to preprocess");
+            return;
+        }
+
+        posLines.clear();
+        negLines.clear();
+        for (const auto &line : lines) {
+            float slope = calculateSlope(line);
+
+            if (fabs(slope) < 0.4 or fabs(slope) > 2.5) {
+                continue;// 去除横向线段
+            }
+
+            double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
+            if (slope > 0) {
+                posLines.emplace_back(line, lineLength, slope,
+                                      cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2));
+            } else {
+                negLines.emplace_back(line, lineLength, slope,
+                                      cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2));
+            }
+        }
+    }
+
+    // 计算平均斜率的函数
+    pair<float, float> calculateAverageSlopes(int topN) {
+
+        // 取最长的 topN 根
+        sort(posLines.begin(), posLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
+        sort(negLines.begin(), negLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
+
+        // 计算正斜率的平均值
+        float posAverage = 0;
+        if (!posLines.empty()) {
+            int count = min(topN, static_cast<int>(posLines.size()));
+            for (int i = 0; i < count; i++) {
+                posAverage += get<2>(posLines[i]);
+            }
+            posAverage /= count;// 平均值
+        }
+
+        // 计算负斜率的平均值
+        float negAverage = 0;
+        if (!negLines.empty()) {
+            int count = min(topN, static_cast<int>(negLines.size()));
+            for (int i = 0; i < count; i++) {
+                negAverage += get<2>(negLines[i]);
+            }
+            negAverage /= count;// 平均值
+        }
+
+        return {negAverage, posAverage};
+    }
+
+    void getLines() {
+        // 检查输入图像是否为空
+        if (frame.empty()) {
+            cerr << "Error: Input image is empty!" << endl;
+            return;
+        }
+        // 获取图像的高度和宽度
+
+        // 计算下部分的高度，根据给定的比例
+        int lowerHeight = static_cast<int>(frame_height * lowerFraction);
+        cv::Rect lowerPartRect(0, frame_height - lowerHeight, frame_width, lowerHeight);
+        cv::Mat lowerPart = frame(lowerPartRect);// 提取下部分图像
+
+        // 转换为HSV颜色空间
+        cv::Mat hsv;
+        cv::cvtColor(lowerPart, hsv, cv::COLOR_BGR2HSV);
+
+        // 定义白色的HSV范围
+        cv::Scalar lowerWhite(0, 0, 185);   // 白色下限
+        cv::Scalar upperWhite(180, 30, 255);// 白色上限
+
+        // 创建白色区域的掩码
+        cv::Mat mask;
+        cv::inRange(hsv, lowerWhite, upperWhite, mask);
+
+        // 形态学操作 - 腐蚀和膨胀
+        int erosion_size = 1; // 腐蚀结构元素的大小
+        int dilation_size = 1;// 膨胀结构元素的大小
+
+        cv::Mat element =
+            cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
+                                      cv::Point(erosion_size, erosion_size));
+
+        cv::erode(mask, mask, element); // 腐蚀
+        cv::dilate(mask, mask, element);// 膨胀
+
+        // 使用 Canny 边缘检测
+        cv::Mat edges;
+        cv::Canny(mask, edges, 50, 150, 3);
+
+        // 使用 HoughLinesP 检测线段
+        cv::HoughLinesP(edges, lines, 2, CV_PI / 180, 50, 20, 10);
+    }
+
+    pair<float, float> getLineSlope() {
+        for (size_t i = 0; i < lines.size(); i++) {
+            cv::Vec4i l = lines[i];
+            cv::Point start(l[0], l[1] + (frame_height - lowerHeight));
+            cv::Point end(l[2], l[3] + (frame_height - lowerHeight));
+            cv::line(frame, start, end, cv::Scalar(0, 0, 255), 2);
+        }
+        // 在原始图像上绘制检测到的线段并显示斜率
+        auto [neg_slope, pos_slope] = calculateAverageSlopes(3);
+        return {neg_slope, pos_slope};
+    }
+
+    int getCenter() {
+        // 根据中点y排序，取y最大的线段;
+
+        sort(posLines.begin(), posLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
+        sort(negLines.begin(), negLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
+        int res = 0;
+        bool valid = true;
+        if (not posLines.empty()) {
+            auto line = get<0>(posLines[0]);
+            int x0 = line[0], y0 = line[1], x1 = line[2], y1 = line[3];
+            res += (frame_height - y0) * (x1 - x0) / (y1 - y0) + x0;
+        }
+        if (not negLines.empty()) {
+            auto line = get<0>(negLines[0]);
+            int x0 = line[0], y0 = line[1], x1 = line[2], y1 = line[3];
+            res += (frame_height - y0) * (x1 - x0) / (y1 - y0) + x0;
+        } else {
+            res += frame_width;
+        }
+        prev_center.push(res / 2);
+        return prev_center.avg();
     }
 
     void lineSlopeStrategy_old(float left_slope, float right_slope) {
@@ -301,9 +336,9 @@ public:
         if (left_slope == 0 and right_slope == 0) {
             return;
         }
-        if (fabs(left_slope) > 2.5 ){
+        if (fabs(left_slope) > 2.5) {
             left_slope = 0;
-        } 
+        }
         if (fabs(right_slope) > 2.5) {
             right_slope = 0;
         }
@@ -313,14 +348,13 @@ public:
         prev_angle.push(static_cast<int>(res));
         int angle_value = prev_angle.avg();
         nh_.setParam("angle", angle_value);
-        ROS_INFO(TAG "ANGLE: %d", angle_value);
+        // ROS_INFO(TAG "ANGLE: %d", angle_value);
     }
 
     // 图像处理函数
     void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
         try {
-            cv::Mat frame = cv_bridge::toCvShare(msg, "bgr8")->image;
-
+            frame = cv_bridge::toCvShare(msg, "bgr8")->image;
             cv::resize(frame, frame, cv::Size(frame_width, frame_height));
             if (frame.empty()) {
                 ROS_WARN("Empty frame received");
@@ -328,9 +362,16 @@ public:
             }
 
             // detectWhite(frame);
-            // detectLine(frame.clone());
+            // visualizeLineInfo(frame.clone());
 
-            auto [neg_slope, pos_slope] = getLineSlope(frame);
+            // 流水线处理
+            getLines();
+            linePreprocess();
+            auto [neg_slope, pos_slope] = getLineSlope();
+            auto center = getCenter();
+            cv::circle(frame, cv::Point(center, frame_height - 10), 3, cv::Scalar(255, 0, 0),
+                       cv::FILLED);// 使用 cv::FILLED 填充圆
+
             /*
              * // 差错控制代码，将这一部分移入了lineSlopeStragety
              * if (fabs(neg_slope) < 0.001) {
@@ -345,7 +386,7 @@ public:
              */
 
             lineSlopeStrategy(neg_slope, pos_slope);
-            ROS_INFO(TAG "left slope: %lf right slope %lf ", neg_slope, pos_slope);
+            ROS_INFO(TAG "left slope: %lf right slope: %lf center: %d", neg_slope, pos_slope, center);
 
             cv::imshow("camera_node Feed", frame);
             cv::waitKey(30);

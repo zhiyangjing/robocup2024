@@ -47,7 +47,7 @@ void detectWhite(const cv::Mat &frame) {
     cv::drawContours(frame, contours, -1, cv::Scalar(0, 0, 255), 2);// 红色，线宽2
 }
 
-void detectLine(cv::Mat &image) {
+void visualizeLineInfo(cv::Mat &image) {
     // 检查输入图像是否为空
     if (image.empty()) {
         std::cerr << "Error: Input image is empty!" << std::endl;
@@ -142,7 +142,7 @@ public:
             }
 
             // detectWhite(frame);
-            detectLine(frame);
+            visualizeLineInfo(frame);
 
             ROS_INFO("%s image processed", TAG);
 
