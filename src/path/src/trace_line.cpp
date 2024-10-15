@@ -138,7 +138,7 @@ std::pair<float, float> calculateAverageSlopes(const std::vector<cv::Vec4i> &lin
         float slope = calculateSlope(line);
         double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
 
-        if (fabs(slope) < 0.35) {
+        if (fabs(slope) < 0.5) {
             continue;// 去除横向线段
         }
 
@@ -254,17 +254,23 @@ public:
         prev_pos_slope = Buffer<float>(5);
         prev_angle = Buffer<int>(10);
 
-        VectorXf x(10);
-        VectorXf y(10);
-        VectorXf z(10);
+        int point_nums = 9;
 
-        x << -0.676, -0.75, -0.53, -0.636, -0.45, -1.655, -1.16, -0.46, -0.51, -0.73;
-        y << 0.687, 0.75, 0.59, 0.716, 1.395, 0.42, 0.34, 1.631, 0.51, 0.76;
-        z << -2, 150, -150, 0, -100, 100, -25, 25, -200, 200;
+        VectorXf x(point_nums);
+        VectorXf y(point_nums);
+        VectorXf z(point_nums);
+
+        x << 0.653,0.487,0.910,0.668,0.42,0.692,0.43,0,0.883;
+        y << -0.693,-1,-0.539,-0.4,-0.48,-0.5,-1.5,-1.5,-0.6;
+        z << 0,0,0,-200,-100,-200,200,200,100;
+
+        // x << -0.676, -0.75, -0.53, -0.636, -0.45, -1.655, -1.16, -0.46, -0.51, -0.73;
+        // y << 0.687, 0.75, 0.59, 0.716, 1.395, 0.42, 0.34, 1.631, 0.51, 0.76;
+        // z << -2, 150, -150, 0, -100, 100, -25, 25, -200, 200;
 
         // 创建点矩阵
-        MatrixXf points(10, 2);
-        for (int i = 0; i < 10; ++i) {
+        MatrixXf points(point_nums, 2);
+        for (int i = 0; i < point_nums; ++i) {
             points(i, 0) = x(i);// 第一列为 x
             points(i, 1) = y(i);// 第二列为 y
         }

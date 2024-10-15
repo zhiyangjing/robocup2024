@@ -6,6 +6,8 @@
 
 using namespace std;
 
+int frame_height = 480;
+int frame_width = 720;
 int main(int argc, char **argv) {
     ros::init(argc, argv, "minimal_test");
     ros::NodeHandle nh;
@@ -26,6 +28,7 @@ int main(int argc, char **argv) {
         }
 
 
+        cv::resize(frame, frame, cv::Size(frame_width, frame_height));
         cv::imshow("camera_node Feed", frame);
         int key = cv::waitKey(30);
         if (key == 'q')
