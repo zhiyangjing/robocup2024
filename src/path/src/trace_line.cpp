@@ -301,6 +301,12 @@ public:
         if (left_slope == 0 and right_slope == 0) {
             return;
         }
+        if (fabs(left_slope) > 2.5 ){
+            left_slope = 0;
+        } 
+        if (fabs(right_slope) > 2.5) {
+            right_slope = 0;
+        }
         VectorXf slopes(2);
         slopes << left_slope, right_slope;
         float res = max(min(interpolator.interpolate(slopes), 200.f), -200.f);
