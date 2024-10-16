@@ -158,21 +158,28 @@ public:
 
         VectorXf x(point_nums);
         VectorXf y(point_nums);
+        VectorXf c(point_nums);
         VectorXf z(point_nums);
 
-        x << -0.664, -0.626, -0.604, -0.79, -0.943, -1.1, -1.1, 0, 0, 0.5, -1.146, 0, -1.629, -1.478;
-        y << 0.625, 0.580, 0.618, 0.603, 0.512, 0.5, 0, 0.633, 0.814, 0.814, 1.327, 1.327, 0, 0;
+        x << 0.625, 0.580, 0.618, 0.603, 0.512, 0.5, 0, 0.633, 0.814, 0.814, 1.327, 1.327, 0, 0;
+        y << -0.664, -0.626, -0.604, -0.79, -0.943, -1.1, -1.1, 0, 0, 0.5, -1.146, 0, -1.629, -1.478;
+        c << 360, 280, 440, 360, 631, 733, 600, 200, 230, 220, 100, 70, 690, 780;
         z << 0, 0, 0, 0, 100, 100, 100, -100, -100, -100, -200, -200, 200, 200;
+
+        // x << -0.664, -0.626, -0.604, -0.79, -0.943, -1.1, -1.1, 0, 0, 0.5, -1.146, 0, -1.629, -1.478;
+        // y << 0.625, 0.580, 0.618, 0.603, 0.512, 0.5, 0, 0.633, 0.814, 0.814, 1.327, 1.327, 0, 0;
+        // z << 0, 0, 0, 0, 100, 100, 100, -100, -100, -100, -200, -200, 200, 200;
 
         // x << -0.676, -0.75, -0.53, -0.636, -0.45, -1.655, -1.16, -0.46, -0.51, -0.73;
         // y << 0.687, 0.75, 0.59, 0.716, 1.395, 0.42, 0.34, 1.631, 0.51, 0.76;
         // z << -2, 150, -150, 0, -100, 100, -25, 25, -200, 200;
 
         // 创建点矩阵
-        MatrixXf points(point_nums, 2);
+        MatrixXf points(point_nums, 3);
         for (int i = 0; i < point_nums; ++i) {
             points(i, 0) = x(i);// 第一列为 x
             points(i, 1) = y(i);// 第二列为 y
+            points(i, 2) = c(i);// 第三列为 center
         }
 
         interpolator = Interpolator(points, z);
@@ -292,8 +299,6 @@ public:
     }
 
     int getCenter() {
-        // 根据中点y排序，取y最大的线段;
-
         sort(posLines.begin(), posLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
         sort(negLines.begin(), negLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
         int res = 0;
@@ -301,14 +306,18 @@ public:
         if (not posLines.empty()) {
             auto line = get<0>(posLines[0]);
             int x0 = line[0], y0 = line[1], x1 = line[2], y1 = line[3];
-            res += (frame_height - y0) * (x1 - x0) / (y1 - y0) + x0;
+            int right_point_pos = (frame_height - y0) * (x1 - x0) / (y1 - y0) + x0;
+            res += right_point_pos;
+            ROS_INFO(TAG "right pos : %d ", right_point_pos);
+        } else {
+            res += frame_width;
         }
         if (not negLines.empty()) {
             auto line = get<0>(negLines[0]);
             int x0 = line[0], y0 = line[1], x1 = line[2], y1 = line[3];
-            res += (frame_height - y0) * (x1 - x0) / (y1 - y0) + x0;
-        } else {
-            res += frame_width;
+            int left_point_pos = (frame_height - y0) * (x1 - x0) / (y1 - y0) + x0;
+            res += left_point_pos;
+            ROS_INFO(TAG "left pos : %d ", left_point_pos);
         }
         prev_center.push(res / 2);
         return prev_center.avg();
@@ -332,6 +341,25 @@ public:
         }
     }
 
+    void lineSlopeStrategy(float left_slope, float right_slope, int center) {
+        if (left_slope == 0 and right_slope == 0) {
+            return;
+        }
+        if (fabs(left_slope) > 2.5) {
+            left_slope = 0;
+        }
+        if (fabs(right_slope) > 2.5) {
+            right_slope = 0;
+        }
+        VectorXf slopes_center(3);
+        slopes_center << left_slope, right_slope, center;
+        float res = max(min(interpolator.interpolate(slopes_center), 200.f), -200.f);
+        prev_angle.push(static_cast<int>(res));
+        int angle_value = prev_angle.avg();
+        nh_.setParam("angle", angle_value);
+        ROS_INFO(TAG "ANGLE: %d", angle_value);
+    }
+
     void lineSlopeStrategy(float left_slope, float right_slope) {
         if (left_slope == 0 and right_slope == 0) {
             return;
@@ -348,7 +376,7 @@ public:
         prev_angle.push(static_cast<int>(res));
         int angle_value = prev_angle.avg();
         nh_.setParam("angle", angle_value);
-        // ROS_INFO(TAG "ANGLE: %d", angle_value);
+        ROS_INFO(TAG "ANGLE: %d", angle_value);
     }
 
     // 图像处理函数
@@ -385,7 +413,7 @@ public:
              * prev_pos_slope.push(pos_slope);
              */
 
-            lineSlopeStrategy(neg_slope, pos_slope);
+            lineSlopeStrategy(neg_slope, pos_slope, center);
             ROS_INFO(TAG "left slope: %lf right slope: %lf center: %d", neg_slope, pos_slope, center);
 
             cv::imshow("camera_node Feed", frame);
