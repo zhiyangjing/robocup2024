@@ -19,7 +19,7 @@ void detectWhite(const cv::Mat &frame) {
 
     // 定义白色的阈值范围
     // 白色的 HSV 值接近 (0, 0, 255)，因此饱和度 (S) 要低，亮度 (V) 要高
-    cv::Scalar lowerWhite(0, 0, 170);   // 最低值 (0, 0, 200)
+    cv::Scalar lowerWhite(0, 0, 160);   // 最低值 (0, 0, 200)
     cv::Scalar upperWhite(180, 30, 255);// 最高值 (180, 55, 255)
 
     // 创建白色部分的遮罩
@@ -73,7 +73,7 @@ void visualizeLineInfo(cv::Mat image) {
     cv::cvtColor(lowerPart, hsv, cv::COLOR_BGR2HSV);
 
     // 定义白色的HSV范围
-    cv::Scalar lowerWhite(0, 0, 170);   // 白色下限
+    cv::Scalar lowerWhite(0, 0, 160);   // 白色下限
     cv::Scalar upperWhite(180, 30, 255);// 白色上限
 
     // 创建白色区域的掩码
