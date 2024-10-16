@@ -155,7 +155,7 @@ public:
         prev_center = Buffer<int>(10);
 
         // 控制点个数
-        int point_nums = 13;
+        int point_nums = 15;
 
         VectorXf x(point_nums);
         VectorXf y(point_nums);
