@@ -154,17 +154,22 @@ public:
         prev_angle = Buffer<int>(10);
         prev_center = Buffer<int>(10);
 
-        int point_nums = 14;
+        int point_nums = 5;
 
         VectorXf x(point_nums);
         VectorXf y(point_nums);
         VectorXf c(point_nums);
         VectorXf z(point_nums);
 
-        x << 0.625, 0.580, 0.618, 0.603, 0.512, 0.5, 0, 0.633, 0.814, 0.814, 1.327, 1.327, 0, 0;
-        y << -0.664, -0.626, -0.604, -0.79, -0.943, -1.1, -1.1, 0, 0, 0.5, -1.146, 0, -1.629, -1.478;
-        c << 360, 280, 440, 360, 631, 733, 600, 200, 230, 220, 100, 70, 690, 780;
-        z << 0, 0, 0, 0, 100, 100, 100, -100, -100, -100, -200, -200, 200, 200;
+        x << -6.5, -0.45, -1.301, -0.475, -0.919;
+        y << 0.64, 1.271, 0.424, 0.806, 0.527;
+        c << 299, 150, 486, 112, 481;
+        z << 0, -100, 100, -200, 200;
+
+        // x << 0.625, 0.580, 0.618, 0.603, 0.512, 0.5, 0, 0.633, 0.814, 0.814, 1.327, 1.327, 0, 0;
+        // y << -0.664, -0.626, -0.604, -0.79, -0.943, -1.1, -1.1, 0, 0, 0.5, -1.146, 0, -1.629, -1.478;
+        // c << 360, 280, 440, 360, 631, 733, 600, 200, 230, 220, 100, 70, 690, 780;
+        // z << 0, 0, 0, 0, 100, 100, 100, -100, -100, -100, -200, -200, 200, 200;
 
         // x << -0.664, -0.626, -0.604, -0.79, -0.943, -1.1, -1.1, 0, 0, 0.5, -1.146, 0, -1.629, -1.478;
         // y << 0.625, 0.580, 0.618, 0.603, 0.512, 0.5, 0, 0.633, 0.814, 0.814, 1.327, 1.327, 0, 0;
@@ -309,7 +314,7 @@ public:
             int x0 = line[0], y0 = line[1], x1 = line[2], y1 = line[3];
             int right_point_pos = (lowerHeight - y0) * (x1 - x0) / (y1 - y0) + x0;
             res += right_point_pos;
-            ROS_INFO(TAG "right pos : %d ", right_point_pos);
+            // ROS_INFO(TAG "right pos : %d ", right_point_pos);
         } else {
             res += frame_width;
         }
@@ -318,7 +323,7 @@ public:
             int x0 = line[0], y0 = line[1], x1 = line[2], y1 = line[3];
             int left_point_pos = (lowerHeight - y0) * (x1 - x0) / (y1 - y0) + x0;
             res += left_point_pos;
-            ROS_INFO(TAG "left pos : %d ", left_point_pos);
+            // ROS_INFO(TAG "left pos : %d ", left_point_pos);
         }
         prev_center.push(res / 2);
         return prev_center.avg();

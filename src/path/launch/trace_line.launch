@@ -1,5 +1,5 @@
 <launch>
-    <param name="video_path" value="$(find camera_node)/../../data/src_videos/straight1.avi"/>
+    <param name="video_path" value="$(find camera_node)/../../data/src_videos/five_stage2.avi"/>
     <param name="output_path" value="$(find camera_node)/../../data/runtime_images/"/>
     <node pkg="camera_node" type="camera_node" name="camera_node" output="screen"/>
     <node pkg="path" type="trace_line" name="trace_line" output="log"/>
