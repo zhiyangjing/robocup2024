@@ -396,7 +396,7 @@ public:
             }
 
             // detectWhite(frame);
-            visualizeLineInfo(frame.clone());
+            // visualizeLineInfo(frame.clone());
 
             // 流水线处理
             getLines();
