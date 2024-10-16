@@ -301,12 +301,13 @@ public:
     int getCenter() {
         sort(posLines.begin(), posLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
         sort(negLines.begin(), negLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
+        // cv::line(frame, start, end, cv::Scalar(0, 0, 255), 2);
         int res = 0;
         bool valid = true;
         if (not posLines.empty()) {
             auto line = get<0>(posLines[0]);
             int x0 = line[0], y0 = line[1], x1 = line[2], y1 = line[3];
-            int right_point_pos = (frame_height - y0) * (x1 - x0) / (y1 - y0) + x0;
+            int right_point_pos = (lowerHeight - y0) * (x1 - x0) / (y1 - y0) + x0;
             res += right_point_pos;
             ROS_INFO(TAG "right pos : %d ", right_point_pos);
         } else {
@@ -315,7 +316,7 @@ public:
         if (not negLines.empty()) {
             auto line = get<0>(negLines[0]);
             int x0 = line[0], y0 = line[1], x1 = line[2], y1 = line[3];
-            int left_point_pos = (frame_height - y0) * (x1 - x0) / (y1 - y0) + x0;
+            int left_point_pos = (lowerHeight - y0) * (x1 - x0) / (y1 - y0) + x0;
             res += left_point_pos;
             ROS_INFO(TAG "left pos : %d ", left_point_pos);
         }
