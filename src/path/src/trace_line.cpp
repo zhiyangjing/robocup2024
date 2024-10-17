@@ -157,15 +157,16 @@ public:
         // 控制点个数
         int point_nums = 17;
 
+        VectorXf weights(3);
         VectorXf x(point_nums);
         VectorXf y(point_nums);
         VectorXf c(point_nums);
         VectorXf z(point_nums);
+        weights << 1, 1, 1.5;// 斜率的权重是1，中心点的权重是1.5
         x << -0.66, -0.45, -1.301, -0.475, -0.919, 0, 0, 0, 0, 0, 0, 0, -0.64, -0.54, -0.98, -0.65, 0;
         y << 0.64, 1.271, 0.424, 0.806, 0.527, 0.43, 0.71, 0.69, 0.48, 0.51, 0.72, 0.56, 0.6, 0.84, 0.52, 0.74, 0.96;
         c << 299, 150, 486, 112, 481, 250, 190, 340, 269, 271, 220, 232, 283, 242, 408, 275, 273;
         z << 0, -100, 100, -200, 200, -200, -100, 50, -200, -200, -200, -100, 0, 0, 0, 0, 0;
-
 
         // x << -6.61,1.271,0.424,0.806,0.527,0.43,0.71,0.69,0.5,0.56,0.6,0.84,0.52;
         // y << 0.64,-0.45,-1.301,-0.475,-0.919,0,0,0,0,0,-0.64,-0.54,-0.98;
@@ -200,7 +201,7 @@ public:
             points(i, 2) = c(i);// 第三列为 center
         }
 
-        interpolator = Interpolator(points, z);
+        interpolator = Interpolator(points, z, weights);
         ROS_INFO(TAG "TraceLine constructed succeeded! ");
     }
 

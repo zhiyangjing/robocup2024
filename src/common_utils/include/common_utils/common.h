@@ -1,10 +1,11 @@
 #ifndef TRAFFIC_LIGHT_H
 #define TRAFFIC_LIGHT_H
 #include <Eigen/Dense>
+#include <vector>
 
 using Eigen::MatrixXf;
-using Eigen::VectorXf;
 using Eigen::Vector2f;
+using Eigen::VectorXf;
 
 enum TrafficLight {
     RED = 0, // 红灯
@@ -44,12 +45,17 @@ private:
 
 class Interpolator {
 private:
-    MatrixXf points;
-    VectorXf values;
+    MatrixXf points;                                          // 参考点
+    VectorXf values;                                          // 与参考点匹配的值
+    VectorXf weights;                                         // 每个参考维度的权重
+    int points_rows = 0;                                      // 参考点个数
+    int points_cols = 0;                                      // 参考点维度
+    std::vector<std::pair<float, float>> normalization_params;// 保存每一个维度的最小值和跨度
+
 public:
-    Interpolator();   
-    Interpolator(const MatrixXf &points, const VectorXf &values);
-    Interpolator& operator=(const Interpolator& other);
+    Interpolator();
+    Interpolator(const MatrixXf &points, const VectorXf &values, VectorXf &weights);
+    Interpolator &operator=(const Interpolator &other);
     float interpolate(const VectorXf point);
 };
 

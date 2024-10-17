@@ -1,7 +1,7 @@
 <launch>
-    <param name="video_path" value="$(find camera_node)/../../data/src_videos/low_light.avi"/>
+    <param name="video_path" value="$(find camera_node)/../../data/src_videos/turning3.avi"/>
     <param name="output_path" value="$(find camera_node)/../../data/runtime_images/"/>
     <node pkg="camera_node" type="camera_node" name="camera_node" output="screen"/>
     <node pkg="path" type="trace_line" name="trace_line" output="log"/>
-    <param name="frame_rate" value="20"></param>
+    <param name="frame_rate" value="5"></param>
 </launch>
