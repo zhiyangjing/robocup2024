@@ -84,6 +84,7 @@ int main(int argc, char **argv) {
     auto lastTime = std::chrono::steady_clock::now();// 记录开始时间
     int frameCount = 0;                              // 统计帧数
     double currentFps = 0.0;
+    ros::Rate loop_rate(5);
 
     while (ros::ok()) {
         // 捕获帧
@@ -92,6 +93,7 @@ int main(int argc, char **argv) {
             ROS_WARN("Empty frame received");
             continue;
         }
+        cv::resize(frame,frame,cv::Size(img_width,img_height));
 
         cv::cvtColor(frame, hsv_frame, cv::COLOR_BGR2HSV);
 
@@ -124,6 +126,7 @@ int main(int argc, char **argv) {
         }
 
         ros::spinOnce();// 处理 ROS 事件
+        loop_rate.sleep();
     }
 
     // 释放资源
