@@ -24,7 +24,7 @@ catkin_package(
         lslidar_msgs
         roscpp diagnostic_updater nodelet
         pcl_ros pcl_conversions
-        # INCLUDE_DIRS include
+        INCLUDE_DIRS include
         #  LIBRARIES lslidar_driver
         DEPENDS
         boost
@@ -59,6 +59,12 @@ target_link_libraries(lslidar_input
         ${libpcap_LIBRARIES}
 )
 
+
+add_dependencies(lslidar_driver
+        ${catkin_generated_messages_targets}  # 添加此行
+)
+
+
 target_link_libraries(lslidar_serial
         ${catkin_LIBRARIES}
 )
@@ -72,9 +78,9 @@ target_link_libraries(lslidar_driver
 add_dependencies(lslidar_driver
         lslidar_input
         lslidar_serial
-        ${${PROJECT_NAME}_EXPORTED_TARGETS}
-        ${catkin_EXPORTED_TARGETS}
-        ${catkin_GENERATED_MESSAGES_TARGETS}  # 添加此行
+        ${${project_name}_exported_targets}
+        ${catkin_exported_targets}
+        ${catkin_generated_messages_targets}  # 添加此行
 )
 
 # Leishen lidar nodelet
