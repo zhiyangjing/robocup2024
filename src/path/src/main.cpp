@@ -83,16 +83,12 @@ private:
 
 public:
     PathController(ros::NodeHandle nh) : nh_(nh) {
-        states_stack = stack<int>({
-            LIGHT_DETECT, 
-            TRACE_LINE, 
-            UTURN,
-            TERMINAL
-        });
+        states_stack = stack<int>({LIGHT_DETECT, TRACE_LINE, UTURN, TERMINAL});
     }
     void start() {
         while (true) {
             STATE = states_stack.top();
+            ROS_INFO(TAG "State: %d", STATE);
             states_stack.pop();
             if (STATE == LIGHT_DETECT) {
                 auto light_dector = LightDetector(-1, nh_);
@@ -101,7 +97,7 @@ public:
                 auto trace_line_controller = TraceLine(-1, nh_);
                 trace_line_controller.run();
             } else if (STATE == UTURN) {
-                auto uturn = Uturn(-1,nh_);
+                auto uturn = Uturn(-1, nh_);
                 uturn.run();
             } else if (STATE == ROAD_LEFT_TURN) {
                 auto road_left_turn = RoadLeftTurn(-1, nh_);

@@ -50,7 +50,7 @@ target_link_libraries(
 
 
 # 默认设置为 OFF
-option(USE_SIMULATION "Use simulation mode" ON)
+option(USE_SIMULATION "Use simulation mode" OFF)
 
 # 输出当前 USE_SIMULATION 的状态
 if (USE_SIMULATION)
