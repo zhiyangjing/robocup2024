@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(libpcap_LIBRARIES -lpcap)
 
 find_package(catkin REQUIRED COMPONENTS
+        lslidar_msgs
         roscpp
         rospy
         sensor_msgs
@@ -14,18 +15,17 @@ find_package(catkin REQUIRED COMPONENTS
         nodelet
         pcl_ros
         pcl_conversions
-        lslidar_msgs
 )
 
 find_package(Boost REQUIRED)
 
 catkin_package(
-        INCLUDE_DIRS include
-        #  LIBRARIES lslidar_driver
         CATKIN_DEPENDS
         lslidar_msgs
         roscpp diagnostic_updater nodelet
         pcl_ros pcl_conversions
+        INCLUDE_DIRS include
+        #  LIBRARIES lslidar_driver
         DEPENDS
         boost
 )
