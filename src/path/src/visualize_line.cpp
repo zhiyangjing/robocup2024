@@ -115,7 +115,7 @@ void visualizeLineInfo(cv::Mat &image) {
     }
 }
 
-class TraceLine : public Ability {
+class TraceLineDemo : public Ability {
 private:
     ros::Subscriber sub_;
     int frameCount = 0;
@@ -126,8 +126,8 @@ private:
     double currentFps = 0;
 
 public:
-    TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, nh) {
-        sub_ = nh_.subscribe("image_topic", 1, &TraceLine::imageCallback, this);
+    TraceLineDemo(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, nh) {
+        sub_ = nh_.subscribe("image_topic", 1, &TraceLineDemo::imageCallback, this);
     }
 
     // 计算并显示帧率的函数
@@ -176,7 +176,7 @@ int main(int argc, char **argv) {
     cv::createTrackbar("Frame", "camera_node Feed", &currentFrame, totalFrames - 1, updateParameters); // 视频进度
 
 
-    TraceLine lightProcessor(10, nh);
+    TraceLineDemo lightProcessor(10, nh);
 
     ros::spin();
     cv::destroyAllWindows();

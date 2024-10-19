@@ -1,8 +1,10 @@
 #include <iostream>
-#include <ros/ros.h>
 #include <path/path.h>
+#include <ros/ros.h>
+#include <stack>
 
 #define TAG " [PATH]"
+int STATE = BIG_LEFT_TURN;
 
 class BigLeftTurn : public Ability {
 private:
@@ -34,23 +36,57 @@ public:
     }
 };
 
+class RoadLeftTurn : public Ability {
+private:
+    bool is_running_ = false;
+
+public:
+    RoadLeftTurn(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {}
+    void run() {
+        is_running_ = true;
+        int speed = 2;  // 默认速度是2；
+        nh_.getParam("speed", speed);
+        int default_time = 3000000 * 2 / speed;
+        nh_.setParam("angle", -200);
+        usleep(default_time);
+        stop();
+    }
+    void stop() { is_running_ = false; }
+};
+
 class PathController {
 private:
     ros::NodeHandle &nh_;
+    std::stack<int> states_stack;
 
 public:
-    PathController(ros::NodeHandle nh) : nh_(nh) {};
+    PathController(ros::NodeHandle nh) : nh_(nh) {
+        states_stack = stack<int>({
+            LIGHT_DETECT,
+            TRACE_LINE,
+
+        });
+    }
     void start() {
         while (true) {
-            if (STATE == BIG_LEFT_TURN) {
+            if (STATE == LIGHT_DETECT) {
+                auto light_dector = LightDetector(-1, nh_);
+                light_dector.run();
+            } else if (STATE == TRACE_LINE) {
+                auto trace_line_controller = TraceLine(-1, nh_);
+                trace_line_controller.run();
+            } else if (STATE == ROAD_LEFT_TURN) {
+                auto road_left_turn = RoadLeftTurn(-1, nh_);
+                road_left_turn.run();
+            } else if (STATE == BIG_LEFT_TURN) {
                 auto motion_controller = BigLeftTurn(10000, nh_);
                 motion_controller.run();
-                STATE = TERMINAL;
-            } 
-            if (STATE == TERMINAL) {
-                ROS_INFO("%s states equals TERMIANL node exit",TAG);
+            } else if (STATE == TERMINAL) {
+                ROS_INFO(TAG "States equals TERMIANL, node exit");
                 exit(0);
             }
+            STATE = states_stack.top();
+            states_stack.pop();
         }
     }
 };

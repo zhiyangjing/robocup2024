@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
 
     if (ser.isOpen()) {
         // 设置主循环的频率，比如50Hz
-        ros::Rate looprate(20);
+        ros::Rate looprate(15);
 
         // 主循环，持续执行，直到ros::ok()返回false
         int angle = 0, speed = 0;

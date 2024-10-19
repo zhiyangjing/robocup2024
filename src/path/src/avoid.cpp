@@ -26,10 +26,10 @@ public:
 
     float findMinDistance(vector<float> ranges) {
         float mindistance = ranges[175];
-        for (int i = 220;i < 230;i++) {
-           if (ranges[i] < mindistance) {
-            mindistance = ranges[i];
-           }
+        for (int i = 220; i < 230; i++) {
+            if (ranges[i] < mindistance) {
+                mindistance = ranges[i];
+            }
         }
         return mindistance;
     }
@@ -38,17 +38,20 @@ public:
     void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         if (findMinDistance(msg->ranges) > min_distance) {
             return;
+        } else if (findMinDistance(msg->ranges) <= min_distance) {
+            nh_.setParam("angle", -200);
+            usleep(1000000);
+            nh_.setParam("angle", 200);
+            usleep(1000000 * 2.75);
+            nh_.setParam("angle", -100);
+            usleep(1000000);
+            nh_.setParam("angle", 0);
         }
-        else if (findMinDistance(msg->ranges) <= min_distance) 
     }
 
     void run() { sub_ = nh_.subscribe("image_topic", 1, &AvoidObstacle::laserCallback, this); }
-    void stop() {
-        sub_ = ros::Subscriber();
-    }
+    void stop() { sub_ = ros::Subscriber(); }
     ~AvoidObstacle() {}
 };
 
-int main(){
-
-}
+int main() {}

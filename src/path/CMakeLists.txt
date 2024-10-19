@@ -32,16 +32,16 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(trace_line src/trace_line.cpp)
+# add_executable(trace_line src/trace_line.cpp)
 
-target_link_libraries(
-  trace_line
-  common_utils
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-)
+# target_link_libraries(
+#   trace_line
+#   common_utils
+#   ${catkin_LIBRARIES}
+#   ${OpenCV_LIBRARIES}
+# )
 
-target_include_directories(trace_line PRIVATE ${EIGEN3_INCLUDE_DIR})
+# target_include_directories(trace_line PRIVATE ${EIGEN3_INCLUDE_DIR})
 
 add_executable(visualize_line src/visualize_line.cpp)
 
@@ -51,11 +51,13 @@ target_link_libraries(
   ${OpenCV_LIBRARIES}
 )
 
-add_executable(path_node src/main.cpp)
+add_executable(path_node src/main.cpp src/light.cpp src/trace_line.cpp)
 
 target_link_libraries(
   path_node
+  common_utils
   ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
 )
 
 
