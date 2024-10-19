@@ -25,9 +25,13 @@ void LightDetector::run() {
         ros::spinOnce();
         rate.sleep();
     }
-    sub_.shutdown();
 }
-void LightDetector::stop() { is_running_ = false; }
+
+void LightDetector::stop() {
+    is_running_ = false;
+    sub_.shutdown();
+    ROS_INFO(TAG "Light detector Ability exit");
+}
 
 void LightDetector::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     try {

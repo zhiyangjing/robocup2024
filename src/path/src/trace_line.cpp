@@ -208,6 +208,7 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh, TraceLineInitParams p
     }
 
     interpolator = Interpolator(points, params.ref_value, weights);
+    nh_.setParam("speed", 2);
     ROS_INFO(TAG "TraceLine constructed succeeded! ");
 }
 
@@ -555,7 +556,7 @@ void TraceLine::run() {
     sub_ = nh_.subscribe("image_topic", 1, &TraceLine::imageCallback, this);
 
     while (ros::ok() && is_running_) {
-        ros::spinOnce;
+        ros::spinOnce();
     }
     sub_.shutdown();
 }

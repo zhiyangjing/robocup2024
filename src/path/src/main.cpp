@@ -1,6 +1,6 @@
-#include <queue>
 #include <iostream>
 #include <path/path.h>
+#include <queue>
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
 #include <stack>
@@ -67,7 +67,10 @@ public:
         nh_.setParam("angle", -200);  // 向左拐
         usleep(1000000 * speed / 2);
         nh_.setParam("angle", 0);
+        nh_.setParam("speed", 0);
         nh_.setParam("direction", std::string(1, 'S'));  // 后退
+        usleep(500000 * speed / 2);
+        nh_.setParam("speed", 2);
         usleep(1000000 * speed / 2);
         nh_.setParam("direction", std::string(1, 'W'));  // 改为前进
         nh_.setParam("angle", -200);
