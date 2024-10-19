@@ -8,23 +8,24 @@ using namespace std;
 cv::Mat frame;
 int h_min = 0, s_min = 0, v_min = 0;
 int h_max = 179, s_max = 255, v_max = 255;
-cv::Mat hsv_frame, mask;// 全局变量，存储图像和处理结果
+cv::Mat hsv_frame, mask;  // 全局变量，存储图像和处理结果
 int img_height = 480;
 int img_width = 720;
 
 void on_trackbar(int, void *) {
     cv::inRange(hsv_frame, cv::Scalar(h_min, s_min, v_min), cv::Scalar(h_max, s_max, v_max), mask);
-    cv::imshow("Mask", mask);// 显示二值化的掩码
+    cv::imshow("Mask", mask);  // 显示二值化的掩码
 
     // 查找遮罩中的轮廓
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
-    for (size_t i = 0; i < contours.size(); i++) {
-        cv::Scalar greenColor(0, 255, 0);  // 绿色
-        cv::drawContours(frame, contours, static_cast<int>(i), greenColor, 2, cv::LINE_8);
+    if (contours.size() < 20) {
+        for (size_t i = 0; i < contours.size(); i++) {
+            cv::Scalar greenColor(0, 255, 0);  // 绿色
+            cv::drawContours(frame, contours, static_cast<int>(i), greenColor, 2, cv::LINE_8);
+        }
     }
-
 }
 
 int main(int argc, char **argv) {
@@ -49,7 +50,7 @@ int main(int argc, char **argv) {
     nh.param<string>("picture_path", picture_path, "");
     ROS_INFO("%s picuter path: %s", TAG, picture_path.c_str());
     cv::Mat frame = cv::imread(picture_path);
-    cv::resize(frame,frame,cv::Size(img_width,img_height));
+    cv::resize(frame, frame, cv::Size(img_width, img_height));
     while (ros::ok()) {
         // 捕获帧
         if (frame.empty()) {
@@ -64,17 +65,17 @@ int main(int argc, char **argv) {
 
         // 使用 waitKey 控制帧率和响应键盘输入
         int key = cv::waitKey(30);
-        if (key == 'q') {// 按 'q' 键退出
+        if (key == 'q') {  // 按 'q' 键退出
             break;
         }
 
-        ros::spinOnce();// 处理 ROS 事件
+        ros::spinOnce();  // 处理 ROS 事件
     }
 
 #else
 
     // 打开摄像头
-    cv::VideoCapture cap(0);// 0 表示默认摄像头
+    cv::VideoCapture cap(0);  // 0 表示默认摄像头
     if (!cap.isOpened()) {
         ROS_ERROR("Failed to open the camera_node");
         return -1;
@@ -82,16 +83,14 @@ int main(int argc, char **argv) {
         cout << "Camera opened successfully." << endl;
     }
 
-    cout << "Starting the video feed..." << endl;// 开始视频流
+    cout << "Starting the video feed..." << endl;  // 开始视频流
 
-    int targetFps = 20;                              // 目标帧率
-    int delay = 1000 / targetFps;                    // 计算每帧的延迟时间
-    auto lastTime = std::chrono::steady_clock::now();// 记录开始时间
-    int frameCount = 0;                              // 统计帧数
+    int targetFps = 20;                                // 目标帧率
+    int delay = 1000 / targetFps;                      // 计算每帧的延迟时间
+    auto lastTime = std::chrono::steady_clock::now();  // 记录开始时间
+    int frameCount = 0;                                // 统计帧数
     double currentFps = 0.0;
     ros::Rate loop_rate(5);
-
-
 
     while (ros::ok()) {
         // 捕获帧
@@ -101,7 +100,7 @@ int main(int argc, char **argv) {
             loop_rate.sleep();
             continue;
         }
-        cv::resize(frame,frame,cv::Size(img_width,img_height));
+        cv::resize(frame, frame, cv::Size(img_width, img_height));
 
         cv::cvtColor(frame, hsv_frame, cv::COLOR_BGR2HSV);
 
@@ -114,26 +113,31 @@ int main(int argc, char **argv) {
         frameCount++;
         auto currentTime = std::chrono::steady_clock::now();
         std::chrono::duration<double> elapsed = currentTime - lastTime;
-        if (elapsed.count() >= 1.0) {// 每秒更新一次帧率
+        if (elapsed.count() >= 1.0) {  // 每秒更新一次帧率
             currentFps = frameCount / elapsed.count();
             frameCount = 0;
             lastTime = currentTime;
         }
 
         // 在帧上显示帧率
-        cv::putText(frame, "FPS: " + std::to_string(static_cast<int>(currentFps)), cv::Point(10, 30),
-                    cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0), 2);
+        cv::putText(frame,
+                    "FPS: " + std::to_string(static_cast<int>(currentFps)),
+                    cv::Point(10, 30),
+                    cv::FONT_HERSHEY_SIMPLEX,
+                    1,
+                    cv::Scalar(0, 255, 0),
+                    2);
 
         // 显示捕获的帧
         cv::imshow("camera_node Feed", frame);
 
         // 使用 waitKey 控制帧率和响应键盘输入
         int key = cv::waitKey(delay);
-        if (key == 'q') {// 按 'q' 键退出
+        if (key == 'q') {  // 按 'q' 键退出
             break;
         }
 
-        ros::spinOnce();// 处理 ROS 事件
+        ros::spinOnce();  // 处理 ROS 事件
         loop_rate.sleep();
     }
 
