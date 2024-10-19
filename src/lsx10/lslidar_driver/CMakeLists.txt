@@ -24,7 +24,7 @@ catkin_package(
         lslidar_msgs
         roscpp diagnostic_updater nodelet
         pcl_ros pcl_conversions
-        INCLUDE_DIRS include
+        # INCLUDE_DIRS include
         #  LIBRARIES lslidar_driver
         DEPENDS
         boost
