@@ -1,6 +1,7 @@
 #include <iostream>
 #include <path/path.h>
 #include <ros/ros.h>
+#include <sensor_msgs/LaserScan.h>
 #include <stack>
 
 #define TAG " [PATH]"
@@ -54,6 +55,27 @@ public:
     void stop() { is_running_ = false; }
 };
 
+class Uturn : Ability {
+
+public:
+    Uturn(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {}
+    void run() {
+        int speed = 2;  // 默认速度是2，所有参数，在调试的时候使用速度2来测试
+        nh_.getParam("speed", speed);
+        nh_.setParam("angle", 100);  // 向向右拐一点
+        usleep(500000 * speed / 2);
+        nh_.setParam("angle", -200);  // 向左拐
+        usleep(1000000 * speed / 2);
+        nh_.setParam("angle", 0);
+        nh_.setParam("direction", std::string(1, 'S'));  // 后退
+        usleep(1000000 * speed / 2);
+        nh_.setParam("direction", std::string(1, 'W'));  // 改为前进
+        nh_.setParam("angle", -200);
+        usleep(1000000 * speed / 2);
+        nh_.setParam("angle", 0);  // 回正
+    }
+};
+
 class PathController {
 private:
     ros::NodeHandle &nh_;
@@ -62,9 +84,10 @@ private:
 public:
     PathController(ros::NodeHandle nh) : nh_(nh) {
         states_stack = stack<int>({
-            LIGHT_DETECT,
-            TRACE_LINE,
-
+            LIGHT_DETECT, 
+            TRACE_LINE, 
+            UTURN,
+            TERMINAL
         });
     }
     void start() {
@@ -75,6 +98,9 @@ public:
             } else if (STATE == TRACE_LINE) {
                 auto trace_line_controller = TraceLine(-1, nh_);
                 trace_line_controller.run();
+            } else if (STATE == UTURN) {
+                auto uturn = Uturn(-1,nh_);
+                uturn.run();
             } else if (STATE == ROAD_LEFT_TURN) {
                 auto road_left_turn = RoadLeftTurn(-1, nh_);
                 road_left_turn.run();

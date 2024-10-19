@@ -17,10 +17,12 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   std_msgs
+  std_srvs
 )
 
 catkin_package(
   INCLUDE_DIRS include
+  CATKIN_DEPENDS lslidar_msgs
 #  LIBRARIES path
 #  CATKIN_DEPENDS common_utils cv_bridge image_transport roscpp sensor_msgs std_msgs
 #  DEPENDS system_lib

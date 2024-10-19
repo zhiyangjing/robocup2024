@@ -6,6 +6,7 @@
 #include <path/path.h>
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
+#include <sensor_msgs/LaserScan.h>
 
 #define TAG "[Trace Line]"
 
@@ -502,14 +503,44 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
             }
         }
 
-        lineSlopeStrategy(neg_slope, pos_slope, center);
-        ROS_INFO(TAG "left slope: %lf right slope: %lf center: %d", neg_slope, pos_slope, center);
+        if (not is_avoid_obstacle) {
+            lineSlopeStrategy(neg_slope, pos_slope, center);
+            ROS_INFO(TAG "left slope: %lf right slope: %lf center: %d", neg_slope, pos_slope, center);
+        }
 
         cv::imshow("camera_node Feed", frame);
         cv::waitKey(10);
 
         ros::spinOnce();  // 处理 ROS 事件
     } catch (cv_bridge::Exception &e) { ROS_ERROR("Could not convert from '%s' to 'bgr8'.", msg->encoding.c_str()); }
+}
+
+void TraceLine::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
+    if (findMinDistance(msg->ranges) > min_distance) {
+        return;
+    } else if (findMinDistance(msg->ranges) <= min_distance) {
+        int speed = 2;  // 默认速度是2，所有参数，在调试的时候使用速度2来测试
+        nh_.getParam("speed", speed);
+        is_avoid_obstacle = true;
+        nh_.setParam("angle", -200);
+        usleep(1000000 * speed / 2);
+        nh_.setParam("angle", 200);
+        usleep(1000000 * 2.75 * speed / 2);
+        nh_.setParam("angle", -100);
+        usleep(1000000 * speed / 2);
+        nh_.setParam("angle", 0);
+        is_avoid_obstacle = false;
+    }
+}
+
+float TraceLine::findMinDistance(vector<float> ranges) {
+    float mindistance = ranges[175];
+    for (int i = 220; i < 230; i++) {
+        if (ranges[i] < mindistance) {
+            mindistance = ranges[i];
+        }
+    }
+    return mindistance;
 }
 
 void TraceLine::run() {

@@ -5,9 +5,10 @@
 #include <opencv2/opencv.hpp>
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
+#include <sensor_msgs/LaserScan.h>
 
 using namespace std;
-enum States { BIG_LEFT_TURN = 0, LIGHT_DETECT, TRACE_LINE, ROAD_LEFT_TURN, SMALL_LEFT_TURN, TERMINAL };
+enum States { BIG_LEFT_TURN = 0, LIGHT_DETECT, TRACE_LINE,UTURN, ROAD_LEFT_TURN, SMALL_LEFT_TURN, TERMINAL };
 
 class Ability {
 public:
@@ -30,10 +31,12 @@ private:
     ros::Subscriber sub_;
     bool is_running_ = false;
     bool blue_line_found = false;
+    bool is_avoid_obstacle = false;
     int frame_height = 480;
     int frame_width = 720;
     int countdownTimer = 1000;  //  单位毫秒，在识别到蓝色线条之后剩余的运行时间
     int min_blue_length = 300;
+    int min_distance = 50;
     float lowerFraction = 0.4;
     int lowerHeight = static_cast<int>(frame_height * lowerFraction);
     int line_pos = frame_width * 0.422;
@@ -64,6 +67,8 @@ public:
     void lineSlopeStrategy(float left_slope, float right_slope, int center);
     void lineSlopeStrategy(float left_slope, float right_slope);
     void imageCallback(const sensor_msgs::ImageConstPtr &msg);
+    void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg);
+    float findMinDistance(vector<float> ranges);
     void checkBlueLine();
     void run();
     void stop();
