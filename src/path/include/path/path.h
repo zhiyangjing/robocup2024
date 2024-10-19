@@ -8,7 +8,7 @@
 #include <sensor_msgs/LaserScan.h>
 
 using namespace std;
-enum States { BIG_LEFT_TURN = 0, LIGHT_DETECT, TRACE_LINE,UTURN, ROAD_LEFT_TURN, SMALL_LEFT_TURN, TERMINAL };
+enum States { BIG_LEFT_TURN = 0, LIGHT_DETECT, TRACE_LINE, UTURN, ROAD_LEFT_TURN, SMALL_LEFT_TURN, TERMINAL };
 
 class Ability {
 public:

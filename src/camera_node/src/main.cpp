@@ -25,6 +25,7 @@ public:
 #else
         ROS_INFO(TAG " Now using real camera");
         cap_.open(0);// 打开摄像头
+        ROS_INFO(TAG " Camera open succeeded");
 #endif
         if (!cap_.isOpened()) {
             ROS_ERROR("Failed to open the camera");
@@ -58,8 +59,8 @@ public:
 int main(int argc, char **argv) {
     ros::init(argc, argv, "camera_node");
     ros::NodeHandle nh;
-    VideoRecorder imagePublisher(nh);
     ROS_INFO("%s Camera node init...", TAG);
+    VideoRecorder imagePublisher(nh);
     int frame_rate = 10;
     nh.getParam("frame_rate",frame_rate);
     ros::Rate rate(frame_rate);

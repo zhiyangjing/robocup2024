@@ -1,3 +1,4 @@
+#include <queue>
 #include <iostream>
 #include <path/path.h>
 #include <ros/ros.h>
@@ -78,21 +79,21 @@ public:
 class PathController {
 private:
     ros::NodeHandle &nh_;
-    std::stack<int> states_stack;
+    std::deque<int> states_queue;
     int STATE;
 
 public:
     PathController(ros::NodeHandle nh) : nh_(nh) {
-        states_stack = stack<int>({LIGHT_DETECT, TRACE_LINE, UTURN, TERMINAL});
+        states_queue = std::deque<int>({LIGHT_DETECT, TRACE_LINE, UTURN, TERMINAL});
     }
     void start() {
         while (true) {
-            STATE = states_stack.top();
+            STATE = states_queue.front();
+            states_queue.pop_front();
             ROS_INFO(TAG "State: %d", STATE);
-            states_stack.pop();
             if (STATE == LIGHT_DETECT) {
-                auto light_dector = LightDetector(-1, nh_);
-                light_dector.run();
+                auto light_detector = LightDetector(-1, nh_);
+                light_detector.run();
             } else if (STATE == TRACE_LINE) {
                 auto trace_line_controller = TraceLine(-1, nh_);
                 trace_line_controller.run();

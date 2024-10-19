@@ -51,6 +51,7 @@ int main(int argc, char **argv) {
         cout << "Failed to open serial port!" << endl;
     }
 
+    USART_SEND(ser, 0, 0, 'W');
     return 0;
 }
 
