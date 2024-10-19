@@ -91,6 +91,7 @@ int main(int argc, char **argv) {
         cap >> frame;
         if (frame.empty()) {
             ROS_WARN("Empty frame received");
+            loop_rate.sleep();
             continue;
         }
         cv::resize(frame,frame,cv::Size(img_width,img_height));
