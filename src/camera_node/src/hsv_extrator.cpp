@@ -71,11 +71,6 @@ int main(int argc, char **argv) {
         cout << "Camera opened successfully." << endl;
     }
 
-    // 设置摄像头的分辨率为 1080p (1920x1080) 和目标帧率
-    cap.set(cv::CAP_PROP_FRAME_WIDTH, 720); // 设置分辨率宽度
-    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);// 设置分辨率高度
-    cap.set(cv::CAP_PROP_FPS, 33);          // 设置目标帧率为 30
-
     cv::Mat frame;
     cout << "Starting the video feed..." << endl;// 开始视频流
 
@@ -85,6 +80,8 @@ int main(int argc, char **argv) {
     int frameCount = 0;                              // 统计帧数
     double currentFps = 0.0;
     ros::Rate loop_rate(5);
+
+
 
     while (ros::ok()) {
         // 捕获帧
