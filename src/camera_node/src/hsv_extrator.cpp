@@ -90,7 +90,6 @@ int main(int argc, char **argv) {
         cap >> frame;
         if (frame.empty()) {
             ROS_WARN("Empty frame received");
-            break;
         }
 
         cv::cvtColor(frame, hsv_frame, cv::COLOR_BGR2HSV);
