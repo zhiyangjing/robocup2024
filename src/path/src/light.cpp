@@ -9,7 +9,10 @@
 
 using namespace std;
 
+#define TAG "[Light]"
+
 LightDetector::LightDetector(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, nh) {
+    ROS_INFO(TAG "LightDetector Constructed");
     light_states = Buffer<int>(5);
 }
 
@@ -17,8 +20,10 @@ void LightDetector::run() {
     is_running_ = true;
     sub_ = nh_.subscribe("image_topic", 1, &LightDetector::imageCallback, this);
 
+    ros::Rate rate(30);
     while (ros::ok() && is_running_) {
         ros::spinOnce;
+        rate.sleep();
     }
     sub_.shutdown();
 }

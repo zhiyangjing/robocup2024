@@ -83,8 +83,8 @@ void visualizeLineInfo(cv::Mat image) {
     int erosion_size = 1;   // 腐蚀结构元素的大小
     int dilation_size = 1;  // 膨胀结构元素的大小
 
-    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
-                                                cv::Point(erosion_size, erosion_size));
+    cv::Mat element = cv::getStructuringElement(
+        cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1), cv::Point(erosion_size, erosion_size));
 
     cv::erode(mask, mask, element);   // 腐蚀
     cv::dilate(mask, mask, element);  // 膨胀
@@ -307,8 +307,8 @@ void TraceLine::getBlueLines() {
     int erosion_size = 1;   // 腐蚀结构元素的大小
     int dilation_size = 1;  // 膨胀结构元素的大小
 
-    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
-                                                cv::Point(erosion_size, erosion_size));
+    cv::Mat element = cv::getStructuringElement(
+        cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1), cv::Point(erosion_size, erosion_size));
 
     cv::erode(mask, mask, element);   // 腐蚀
     cv::dilate(mask, mask, element);  // 膨胀
@@ -319,6 +319,15 @@ void TraceLine::getBlueLines() {
 
     // 使用 HoughLinesP 检测线段
     cv::HoughLinesP(edges, blue_lines_raw, 2, CV_PI / 180, 50, 20, 10);
+}
+
+void TraceLine::visualizeLines(const vector<cv::Vec4i> &lines) {
+    for (size_t i = 0; i < lines.size(); i++) {
+        cv::Vec4i l = lines[i];
+        cv::Point start(l[0], l[1] + (frame_height - lowerHeight));
+        cv::Point end(l[2], l[3] + (frame_height - lowerHeight));
+        cv::line(frame, start, end, cv::Scalar(0, 0, 255), 2);
+    }
 }
 
 void TraceLine::checkBlueLine() {
@@ -362,8 +371,8 @@ void TraceLine::getLines() {
     int erosion_size = 1;   // 腐蚀结构元素的大小
     int dilation_size = 1;  // 膨胀结构元素的大小
 
-    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
-                                                cv::Point(erosion_size, erosion_size));
+    cv::Mat element = cv::getStructuringElement(
+        cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1), cv::Point(erosion_size, erosion_size));
 
     cv::erode(mask, mask, element);   // 腐蚀
     cv::dilate(mask, mask, element);  // 膨胀
@@ -377,12 +386,6 @@ void TraceLine::getLines() {
 }
 
 pair<float, float> TraceLine::getLineSlope() {
-    for (size_t i = 0; i < lines_raw.size(); i++) {
-        cv::Vec4i l = lines_raw[i];
-        cv::Point start(l[0], l[1] + (frame_height - lowerHeight));
-        cv::Point end(l[2], l[3] + (frame_height - lowerHeight));
-        cv::line(frame, start, end, cv::Scalar(0, 0, 255), 2);
-    }
     // 在原始图像上绘制检测到的线段并显示斜率
     auto [neg_slope, pos_slope] = calculateAverageSlopes(3);
     return {neg_slope, pos_slope};
@@ -489,9 +492,13 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
         linePreprocess();
         auto [neg_slope, pos_slope] = getLineSlope();
         auto center = getCenter();
-        cv::circle(frame, cv::Point(center, frame_height - 10), 3, cv::Scalar(255, 0, 0),
+        cv::circle(frame,
+                   cv::Point(center, frame_height - 10),
+                   3,
+                   cv::Scalar(255, 0, 0),
                    cv::FILLED);  // 使用 cv::FILLED 填充圆
 
+        visualizeLines(lines_raw);
         checkBlueLine();
         if (blue_line_found) {
             int speed, frame_rate;

@@ -5,7 +5,6 @@
 #include <stack>
 
 #define TAG " [PATH]"
-int STATE = BIG_LEFT_TURN;
 
 class BigLeftTurn : public Ability {
 private:
@@ -80,6 +79,7 @@ class PathController {
 private:
     ros::NodeHandle &nh_;
     std::stack<int> states_stack;
+    int STATE;
 
 public:
     PathController(ros::NodeHandle nh) : nh_(nh) {
@@ -92,6 +92,8 @@ public:
     }
     void start() {
         while (true) {
+            STATE = states_stack.top();
+            states_stack.pop();
             if (STATE == LIGHT_DETECT) {
                 auto light_dector = LightDetector(-1, nh_);
                 light_dector.run();
@@ -109,10 +111,8 @@ public:
                 motion_controller.run();
             } else if (STATE == TERMINAL) {
                 ROS_INFO(TAG "States equals TERMIANL, node exit");
-                exit(0);
+                break;
             }
-            STATE = states_stack.top();
-            states_stack.pop();
         }
     }
 };
