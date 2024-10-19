@@ -5,6 +5,7 @@
 #define TAG "[hsv_extrator]"
 using namespace std;
 
+cv::Mat frame;
 int h_min = 0, s_min = 0, v_min = 0;
 int h_max = 179, s_max = 255, v_max = 255;
 cv::Mat hsv_frame, mask;// 全局变量，存储图像和处理结果
@@ -14,6 +15,16 @@ int img_width = 720;
 void on_trackbar(int, void *) {
     cv::inRange(hsv_frame, cv::Scalar(h_min, s_min, v_min), cv::Scalar(h_max, s_max, v_max), mask);
     cv::imshow("Mask", mask);// 显示二值化的掩码
+
+    // 查找遮罩中的轮廓
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+    for (size_t i = 0; i < contours.size(); i++) {
+        cv::Scalar greenColor(0, 255, 0);  // 绿色
+        cv::drawContours(frame, contours, static_cast<int>(i), greenColor, 2, cv::LINE_8);
+    }
+
 }
 
 int main(int argc, char **argv) {
@@ -71,7 +82,6 @@ int main(int argc, char **argv) {
         cout << "Camera opened successfully." << endl;
     }
 
-    cv::Mat frame;
     cout << "Starting the video feed..." << endl;// 开始视频流
 
     int targetFps = 20;                              // 目标帧率
