@@ -74,6 +74,7 @@ add_dependencies(lslidar_driver
         lslidar_serial
         ${${PROJECT_NAME}_EXPORTED_TARGETS}
         ${catkin_EXPORTED_TARGETS}
+        ${catkin_GENERATED_MESSAGES_TARGETS}  # 添加此行
 )
 
 # Leishen lidar nodelet
