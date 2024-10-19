@@ -22,6 +22,7 @@ void LightDetector::run() {
 
     ros::Rate rate(30);
     while (ros::ok() && is_running_) {
+        ROS_INFO(TAG "Light detect running");
         ros::spinOnce;
         rate.sleep();
     }
