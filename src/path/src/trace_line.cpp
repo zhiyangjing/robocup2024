@@ -240,7 +240,7 @@ void TraceLine::linePreprocess() {
         float slope = calculateSlope(line);
 
         if (fabs(slope) > 0.5) {
-            continue;  // 去除横向线段
+            continue;  // 去除竖向线段
         }
 
         double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
@@ -296,8 +296,8 @@ void TraceLine::getBlueLines() {
     cv::Mat hsv;
     cv::cvtColor(lowerPart, hsv, cv::COLOR_BGR2HSV);
 
-    cv::Scalar lowerBlue(100, 150, 0);
-    cv::Scalar upperBlue(140, 255, 255);
+    cv::Scalar lowerBlue(110, 28, 0);
+    cv::Scalar upperBlue(150, 185, 255);
 
     cv::Mat mask;
     cv::inRange(hsv, lowerBlue, upperBlue, mask);
@@ -317,23 +317,42 @@ void TraceLine::getBlueLines() {
 
     // 使用 HoughLinesP 检测线段
     cv::HoughLinesP(edges, blue_lines_raw, 2, CV_PI / 180, 50, 20, 10);
+
+    vector<vector<cv::Point>> contours;
+    cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+    // 在原始帧上用红色绘制轮廓
+    cv::drawContours(frame, contours, -1, cv::Scalar(255, 100, 0), 2);  // 红色，线宽2
 }
 
-void TraceLine::visualizeLines(const vector<cv::Vec4i> &lines) {
+void TraceLine::visualizeLines(const vector<cv::Vec4i> &lines, int level = 0) {
     for (size_t i = 0; i < lines.size(); i++) {
         cv::Vec4i l = lines[i];
         cv::Point start(l[0], l[1] + (frame_height - lowerHeight));
         cv::Point end(l[2], l[3] + (frame_height - lowerHeight));
         cv::line(frame, start, end, cv::Scalar(0, 0, 255), 2);
+
+        if (level > 0) {
+            float slope = calculateSlope(l);
+            cv::Point midPoint((start.x + end.x) / 2, (start.y + end.y) / 2);
+            string slopeText = "Slope: " + to_string(slope) + " Length: " + to_string(cv::norm(start - end)) + " Center"
+                + to_string(midPoint.x) + "," + to_string(midPoint.y);
+            cout << slopeText << endl;
+            cv::putText(frame, slopeText, midPoint, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 1);
+        }
     }
 }
 
+/**
+ * @brief 检测蓝色横线，作为阶段切换的标志，一般在返回true时，车体距离蓝线还有35cm
+ * 
+ */
 void TraceLine::checkBlueLine() {
     if (blueLines.empty()) {
         return;
     }
     for (auto line : blueLines) {
-        if (get<1>(line) > min_blue_length and get<3>(line)[1] < 50) {
+        if (get<1>(line) > min_blue_length and get<3>(line)[1] > 430) {
             // 长度大于特定最小值，并且处于屏幕下方
             blue_line_found = true;
         }
@@ -497,12 +516,14 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
                    cv::FILLED);  // 使用 cv::FILLED 填充圆
 
         visualizeLines(lines_raw);
+        visualizeLines(blue_lines_raw, 1);
         checkBlueLine();
         if (blue_line_found) {
             int speed, frame_rate;
             nh_.getParam("speed", speed);
             nh_.getParam("frame_rate", speed);
             countdownTimer -= (speed / 2) * (1 / frame_rate);
+            ROS_INFO(TAG "Blue line found, time remaining: %d", countdownTimer);
             if (countdownTimer <= 0) {
                 stop();
             }

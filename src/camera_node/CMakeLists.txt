@@ -51,6 +51,25 @@ target_link_libraries(
 
 # 默认设置为 OFF
 option(USE_SIMULATION "Use simulation mode" OFF)
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    file(READ "/proc/version" VERSION_STRING)
+    if (VERSION_STRING MATCHES "microsoft")
+        message(STATUS "=========================")
+        message(STATUS "Detected WSL environment.")
+        message(STATUS "=========================")
+        set(USE_SIMULATION ON)  # 在 WSL 中启用模拟模式
+    elseif (VERSION_STRING MATCHES "tegra")
+        message(STATUS "=========================")
+        message(STATUS "Detected native Tegra environment.")
+        message(STATUS "=========================")
+        set(USE_SIMULATION OFF) # 在实际的 Tegra 机器中禁用模拟模式
+    else()
+        message(STATUS "=========================")
+        message(STATUS "Detected other Linux environment.")
+        message(STATUS "=========================")
+        set(USE_SIMULATION OFF) # 在其他 Linux 系统中禁用模拟模式
+    endif()
+endif()
 
 # 输出当前 USE_SIMULATION 的状态
 if (USE_SIMULATION)

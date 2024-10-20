@@ -14,9 +14,19 @@ int img_width = 720;
 
 void on_trackbar(int, void *) {
     cv::inRange(hsv_frame, cv::Scalar(h_min, s_min, v_min), cv::Scalar(h_max, s_max, v_max), mask);
+
+    int erosion_size = 1;   // 腐蚀结构元素的大小
+    int dilation_size = 1;  // 膨胀结构元素的大小
+
+    cv::Mat element = cv::getStructuringElement(
+        cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1), cv::Point(erosion_size, erosion_size));
+
+    cv::erode(mask, mask, element);   // 腐蚀
+    cv::dilate(mask, mask, element);  // 膨胀
+    // 查找遮罩中的轮廓
+
     cv::imshow("Mask", mask);  // 显示二值化的掩码
 
-    // 查找遮罩中的轮廓
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
@@ -46,13 +56,38 @@ int main(int argc, char **argv) {
     ROS_INFO("%s HRERE", TAG);
 
 #ifdef USE_SIMULATION
-    string picture_path;
-    nh.param<string>("picture_path", picture_path, "");
-    ROS_INFO("%s picuter path: %s", TAG, picture_path.c_str());
-    cv::Mat frame = cv::imread(picture_path);
-    cv::resize(frame, frame, cv::Size(img_width, img_height));
+    string source_path;
+    nh.param<string>("source_path", source_path, "");
+    ROS_INFO("%s picuter path: %s", TAG, source_path.c_str());
+    std::string extension = source_path.substr(source_path.find_last_of(".") + 1);
+    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);  // 转为小写
+    cv::Mat frame;
+    cv::VideoCapture cap;
+    bool is_video = false;
+    if (extension == "png" || extension == "jpg" || extension == "jpeg") {
+        // 处理图片
+        frame = cv::imread(source_path);
+        cv::resize(frame, frame, cv::Size(img_width, img_height));
+    } else if (extension == "mp4" || extension == "avi") {
+        cap.open(source_path);
+        is_video = true;
+    } else {
+        ROS_WARN("Unsupported file type: %s", source_path.c_str());
+    }
+    
+    int frame_rate = 5;
+    nh.getParam("frame_rate",frame_rate);
+    ros::Rate looprate(frame_rate);
     while (ros::ok()) {
         // 捕获帧
+        if (is_video) {
+            cap >> frame;
+        }
+        if (frame.empty()) {
+            ROS_WARN("Empty Frame received");
+            continue;
+        }
+        cv::resize(frame, frame, cv::Size(img_width, img_height));
         if (frame.empty()) {
             ROS_WARN("Empty frame received");
             break;
@@ -64,11 +99,12 @@ int main(int argc, char **argv) {
         cv::imshow("camera_node Feed", frame);
 
         // 使用 waitKey 控制帧率和响应键盘输入
-        int key = cv::waitKey(30);
+        int key = cv::waitKey(10);
         if (key == 'q') {  // 按 'q' 键退出
             break;
         }
 
+        looprate.sleep();
         ros::spinOnce();  // 处理 ROS 事件
     }
 

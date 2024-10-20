@@ -35,7 +35,7 @@ private:
     int frame_height = 480;
     int frame_width = 720;
     int countdownTimer = 1000;  //  单位毫秒，在识别到蓝色线条之后剩余的运行时间
-    int min_blue_length = 300;
+    int min_blue_length = 90;
     int min_distance = 50;
     float lowerFraction = 0.4;
     int lowerHeight = static_cast<int>(frame_height * lowerFraction);
@@ -69,7 +69,7 @@ public:
     void imageCallback(const sensor_msgs::ImageConstPtr &msg);
     void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg);
     float findMinDistance(vector<float> ranges);
-    void visualizeLines(const vector<cv::Vec4i>& lines);
+    void visualizeLines(const vector<cv::Vec4i>& lines,int level);
     void checkBlueLine();
     void run();
     void stop();
