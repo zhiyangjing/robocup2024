@@ -15,6 +15,7 @@ enum States {
     UTURN,
     ROAD_LEFT_TURN,
     ROAD_RIGHT_TURN,
+    REVERSE,
     SMALL_LEFT_TURN,
     TERMINAL
 };
