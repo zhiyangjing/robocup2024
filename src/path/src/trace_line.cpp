@@ -570,6 +570,7 @@ float TraceLine::findMinDistance(vector<float> ranges) {
 }
 
 void TraceLine::run() {
+    ROS_INFO(TAG "TraceLine started to run");
     is_running_ = true;
     sub_ = nh_.subscribe("image_topic", 1, &TraceLine::imageCallback, this);
 
