@@ -37,6 +37,31 @@ public:
     }
 };
 
+class Straight : public Ability {
+private:
+    bool is_running_ = false;
+
+public:
+    Straight(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {}
+    void run() {
+        is_running_ = true;
+        int speed = 2;  // 默认速度是2
+        int rate_num = 10;
+        ros::Rate loop_rate(rate_num);  // 设置循环频率为10Hz
+
+        ROS_INFO(TAG "Turning Left");
+        nh_.getParam("speed", speed);
+        nh_.getParam("direction", speed);
+        nh_.setParam("direction", std::string(1, 'W'));
+        nh_.setParam("angle", 0);  // 向左拐
+        for (int i = 0; i < (5 * speed / 2) * rate_num; ++i) {
+            loop_rate.sleep();
+        }
+        nh_.setParam("angle", 0);  // 回正
+    }
+    void stop() { is_running_ = false; }
+};
+
 class Reverse : public Ability {
 private:
     bool is_running_ = false;
@@ -54,7 +79,7 @@ public:
         nh_.getParam("direction", speed);
         nh_.setParam("direction", std::string(1, 'S'));
         nh_.setParam("angle", 100);  // 向左拐
-        for (int i = 0; i < (8 * speed / 2) * rate_num; ++i) {
+        for (int i = 0; i < (10 * speed / 2) * rate_num; ++i) {
             loop_rate.sleep();
         }
         nh_.setParam("angle", 0);  // 回正
@@ -156,7 +181,7 @@ private:
 public:
     PathController(ros::NodeHandle nh) : nh_(nh) {
         // states_queue = std::deque<int>({LIGHT_DETECT,TRACE_LINE, ROAD_LEFT_TURN ,UTURN, TRACE_LINE, UTURN, TRACE_LINE, TERMINAL});
-        states_queue = std::deque<int>({TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE, ROAD_RIGHT_TURN, REVERSE, TERMINAL});
+        states_queue = std::deque<int>({TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE, ROAD_RIGHT_TURN, REVERSE,STRAIGHT, TERMINAL});
     }
     void start() {
         while (true) {
@@ -174,6 +199,10 @@ public:
             } else if (STATE == UTURN) {
                 auto uturn = Uturn(-1, nh_);
                 uturn.run();
+            } else if (STATE == STRAIGHT) {
+                auto straight = Straight(-1, nh_);
+                straight.run();
+            }
             } else if (STATE == ROAD_LEFT_TURN) {
                 auto road_left_turn = RoadLeftTurn(-1, nh_);
                 road_left_turn.run();
