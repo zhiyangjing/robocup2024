@@ -95,7 +95,9 @@ public:
         while (true) {
             STATE = states_queue.front();
             states_queue.pop_front();
+            ROS_INFO(TAG "%s", string(20, '-').c_str());
             ROS_INFO(TAG "State: %d", STATE);
+            ROS_INFO(TAG "%s", string(20, '-').c_str());
             if (STATE == LIGHT_DETECT) {
                 auto light_detector = LightDetector(-1, nh_);
                 light_detector.run();
