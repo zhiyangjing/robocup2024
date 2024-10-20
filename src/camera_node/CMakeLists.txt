@@ -57,7 +57,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         message(STATUS "=========================")
         message(STATUS "Detected WSL environment.")
         message(STATUS "=========================")
-        set(USE_SIMULATION ON)  # 在 WSL 中启用模拟模式
+        set(USE_SIMULATION OFF)  # 在 WSL 中启用模拟模式
     elseif (VERSION_STRING MATCHES "tegra")
         message(STATUS "=========================")
         message(STATUS "Detected native Tegra environment.")

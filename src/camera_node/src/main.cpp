@@ -51,6 +51,7 @@ public:
         }
 
         sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
+        ROS_INFO("Image Published");
         pub_.publish(msg);
     }
     ~VideoRecorder() { cap_.release(); }
