@@ -202,7 +202,6 @@ public:
             } else if (STATE == STRAIGHT) {
                 auto straight = Straight(-1, nh_);
                 straight.run();
-            }
             } else if (STATE == ROAD_LEFT_TURN) {
                 auto road_left_turn = RoadLeftTurn(-1, nh_);
                 road_left_turn.run();
