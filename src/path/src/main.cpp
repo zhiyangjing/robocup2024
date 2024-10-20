@@ -132,7 +132,7 @@ private:
 public:
     PathController(ros::NodeHandle nh) : nh_(nh) {
         // states_queue = std::deque<int>({LIGHT_DETECT,TRACE_LINE, ROAD_LEFT_TURN ,UTURN, TRACE_LINE, UTURN, TRACE_LINE, TERMINAL});
-        states_queue = std::deque<int>({TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE, UTURN, TRACE_LINE, TERMINAL});
+        states_queue = std::deque<int>({TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE, ROAD_RIGHT_TURN, TRACE_LINE, TERMINAL});
     }
     void start() {
         while (true) {
@@ -153,6 +153,9 @@ public:
             } else if (STATE == ROAD_LEFT_TURN) {
                 auto road_left_turn = RoadLeftTurn(-1, nh_);
                 road_left_turn.run();
+            }else if (STATE == ROAD_RIGHT_TURN) {
+                auto road_right_turn = RoadRightTurn(-1, nh_);
+                road_right_turn.run();
             } else if (STATE == BIG_LEFT_TURN) {
                 auto motion_controller = BigLeftTurn(10000, nh_);
                 motion_controller.run();

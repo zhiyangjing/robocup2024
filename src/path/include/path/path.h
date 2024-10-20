@@ -8,7 +8,16 @@
 #include <sensor_msgs/LaserScan.h>
 
 using namespace std;
-enum States { BIG_LEFT_TURN = 0, LIGHT_DETECT, TRACE_LINE, UTURN, ROAD_LEFT_TURN, SMALL_LEFT_TURN, TERMINAL };
+enum States {
+    BIG_LEFT_TURN = 0,
+    LIGHT_DETECT,
+    TRACE_LINE,
+    UTURN,
+    ROAD_LEFT_TURN,
+    ROAD_RIGHT_TURN,
+    SMALL_LEFT_TURN,
+    TERMINAL
+};
 
 class Ability {
 public:
@@ -49,8 +58,8 @@ private:
     Buffer<int> prev_center;
     Interpolator interpolator;
     cv::Mat frame;
-    vector<cv::Vec4i> lines_raw;       // 存储检测到的白色车道线段
-    vector<cv::Vec4i> blue_lines_raw;  // 存储检测到的蓝色线段
+    vector<cv::Vec4i> lines_raw;                                  // 存储检测到的白色车道线段
+    vector<cv::Vec4i> blue_lines_raw;                             // 存储检测到的蓝色线段
     vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> posLines;   // 线段，长度，斜率 , 中点
     vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> negLines;   // 线段，长度，斜率 , 中点
     vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> blueLines;  // 线段，长度，斜率 , 中点
@@ -70,7 +79,7 @@ public:
     void imageCallback(const sensor_msgs::ImageConstPtr &msg);
     void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg);
     float findMinDistance(vector<float> ranges);
-    void visualizeLines(const vector<cv::Vec4i>& lines,int level);
+    void visualizeLines(const vector<cv::Vec4i> &lines, int level);
     void checkBlueLine();
     void run();
     void stop();
