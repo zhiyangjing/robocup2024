@@ -60,25 +60,47 @@ class Uturn : Ability {
 public:
     Uturn(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) { ROS_INFO(TAG "Uturn Ability Constructed"); }
     void run() {
-        int speed = 2;  // 默认速度是2，所有参数，在调试的时候使用速度2来测试
+        int speed = 2;  // 默认速度是2
+        int rate_num = 10;
+        ros::Rate loop_rate(rate_num);  // 设置循环频率为10Hz
+
         ROS_INFO(TAG "Turning right");
         nh_.getParam("speed", speed);
-        nh_.setParam("angle", 100);  // 向向右拐一点
-        usleep(100000 * speed / 2);
+        nh_.setParam("angle", 100);  // 向右拐一点
+
+        for (int i = 0; i < (1 * speed / 2) * rate_num; ++i) {
+            loop_rate.sleep();
+        }
+
         ROS_INFO(TAG "Turning left");
         nh_.setParam("angle", -200);  // 向左拐
-        usleep(2000000 * speed / 2);
+
+        for (int i = 0; i < (2 * speed / 2) * rate_num; ++i) {
+            loop_rate.sleep();
+        }
+
         nh_.setParam("angle", 0);
         nh_.setParam("speed", 0);
         ROS_INFO(TAG "Goback back");
         nh_.setParam("direction", std::string(1, 'S'));  // 后退
-        usleep(100000 * speed / 2);
+
+        for (int i = 0; i < (1 * speed / 2) * rate_num; ++i) {
+            loop_rate.sleep();
+        }
+
         nh_.setParam("speed", 2);
-        usleep(2000000 * speed / 2);
+
+        for (int i = 0; i < (2 * speed / 2) * rate_num; ++i) {
+            loop_rate.sleep();
+        }
+
         ROS_INFO(TAG "Keep on turn right");
         nh_.setParam("direction", std::string(1, 'W'));  // 改为前进
         nh_.setParam("angle", -200);
-        usleep(2000000 * speed / 2);
+
+        for (int i = 0; i < (2 * speed / 2) * rate_num; ++i) {
+            loop_rate.sleep();
+        }
         nh_.setParam("angle", 0);  // 回正
     }
 };
