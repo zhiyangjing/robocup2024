@@ -64,21 +64,21 @@ public:
         ROS_INFO(TAG "Turning right");
         nh_.getParam("speed", speed);
         nh_.setParam("angle", 100);  // 向向右拐一点
-        usleep(500000 * speed / 2);
+        usleep(100000 * speed / 2);
         ROS_INFO(TAG "Turning left");
         nh_.setParam("angle", -200);  // 向左拐
-        usleep(1000000 * speed / 2);
+        usleep(2000000 * speed / 2);
         nh_.setParam("angle", 0);
         nh_.setParam("speed", 0);
         ROS_INFO(TAG "Goback back");
         nh_.setParam("direction", std::string(1, 'S'));  // 后退
-        usleep(500000 * speed / 2);
+        usleep(100000 * speed / 2);
         nh_.setParam("speed", 2);
-        usleep(1000000 * speed / 2);
+        usleep(2000000 * speed / 2);
         ROS_INFO(TAG "Keep on turn right");
         nh_.setParam("direction", std::string(1, 'W'));  // 改为前进
         nh_.setParam("angle", -200);
-        usleep(1000000 * speed / 2);
+        usleep(2000000 * speed / 2);
         nh_.setParam("angle", 0);  // 回正
     }
 };

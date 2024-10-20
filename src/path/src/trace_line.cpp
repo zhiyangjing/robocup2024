@@ -246,7 +246,8 @@ void TraceLine::linePreprocess() {
         }
 
         double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
-        blueLines.emplace_back(line, lineLength, slope, cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight));
+        blueLines.emplace_back(
+            line, lineLength, slope, cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight));
     }
 }
 
@@ -354,7 +355,6 @@ void TraceLine::checkBlueLine() {
         return;
     }
     for (auto line : blueLines) {
-        cout << get<1>(line) << " " << get<2>(line) << " " << get<3>(line)[1] << endl;
         if (get<1>(line) > min_blue_length and get<3>(line)[1] > 430) {
             // 长度大于特定最小值，并且处于屏幕下方
             blue_line_found = true;
@@ -528,7 +528,7 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
             int speed, frame_rate = 10;
             nh_.getParam("speed", speed);
             nh_.getParam("frame_rate", frame_rate);
-            countdownTimer -=  (1 / frame_rate) * 1000;
+            countdownTimer -= (1000 / frame_rate);
             ROS_INFO(TAG "Blue line found, time remaining: %d", countdownTimer);
             if (countdownTimer <= 0) {
                 stop();
