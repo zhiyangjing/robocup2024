@@ -328,8 +328,8 @@ void TraceLine::getBlueLines() {
 void TraceLine::visualizeLines(const vector<cv::Vec4i> &lines, int level = 0) {
     for (size_t i = 0; i < lines.size(); i++) {
         cv::Vec4i l = lines[i];
-        cv::Point start(l[0], l[1] + (frame_height - lowerHeight));
-        cv::Point end(l[2], l[3] + (frame_height - lowerHeight));
+        cv::Point start(l[0], l[1] + upperHeight);
+        cv::Point end(l[2], l[3] + upperHeight);
         cv::line(frame, start, end, cv::Scalar(0, 0, 255), 2);
 
         if (level > 0) {
@@ -528,7 +528,7 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
             int speed, frame_rate;
             nh_.getParam("speed", speed);
             nh_.getParam("frame_rate", speed);
-            countdownTimer -= (speed / 2) * (1 / frame_rate);
+            countdownTimer -=  (1 / frame_rate) * 1000;
             ROS_INFO(TAG "Blue line found, time remaining: %d", countdownTimer);
             if (countdownTimer <= 0) {
                 stop();
