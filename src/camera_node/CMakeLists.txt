@@ -72,12 +72,14 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 endif()
 
 # 输出当前 USE_SIMULATION 的状态
+message(STATUS "=========================")
 if (USE_SIMULATION)
     message(STATUS "Simulation mode is enabled.")
     add_definitions(-DUSE_SIMULATION)  # 添加宏定义以便于条件编译
 else()
     message(STATUS "Simulation mode is disabled.")
 endif()
+message(STATUS "=========================")
 
 add_executable(camera_node src/main.cpp)
 

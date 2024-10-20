@@ -40,6 +40,7 @@ private:
     float lowerFraction = 0.4;
     int lowerHeight = static_cast<int>(frame_height * lowerFraction);
     int line_pos = frame_width * 0.422;
+    int handle_rate_ = 20;
     double currentFps = 0;
     Buffer<float> prev_neg_slope;
     Buffer<float> prev_pos_slope;
@@ -49,7 +50,6 @@ private:
     cv::Mat frame;
     vector<cv::Vec4i> lines_raw;       // 存储检测到的白色车道线段
     vector<cv::Vec4i> blue_lines_raw;  // 存储检测到的蓝色线段
-
     vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> posLines;   // 线段，长度，斜率 , 中点
     vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> negLines;   // 线段，长度，斜率 , 中点
     vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> blueLines;  // 线段，长度，斜率 , 中点

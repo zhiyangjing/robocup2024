@@ -318,11 +318,10 @@ void TraceLine::getBlueLines() {
     // 使用 HoughLinesP 检测线段
     cv::HoughLinesP(edges, blue_lines_raw, 2, CV_PI / 180, 50, 20, 10);
 
-    vector<vector<cv::Point>> contours;
-    cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-
-    // 在原始帧上用红色绘制轮廓
-    cv::drawContours(frame, contours, -1, cv::Scalar(255, 100, 0), 2);  // 红色，线宽2
+    // vector<vector<cv::Point>> contours;
+    // cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    // // 在原始帧上用红色绘制轮廓
+    // cv::drawContours(frame, contours, -1, cv::Scalar(255, 100, 0), 2);  // 红色，线宽2
 }
 
 void TraceLine::visualizeLines(const vector<cv::Vec4i> &lines, int level = 0) {
@@ -337,7 +336,9 @@ void TraceLine::visualizeLines(const vector<cv::Vec4i> &lines, int level = 0) {
             cv::Point midPoint((start.x + end.x) / 2, (start.y + end.y) / 2);
             string slopeText = "Slope: " + to_string(slope) + " Length: " + to_string(cv::norm(start - end)) + " Center"
                 + to_string(midPoint.x) + "," + to_string(midPoint.y);
-            cout << slopeText << endl;
+            if (midPoint.y > 430) {
+                cout << slopeText << endl;
+            }
             cv::putText(frame, slopeText, midPoint, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 1);
         }
     }
@@ -355,6 +356,9 @@ void TraceLine::checkBlueLine() {
         if (get<1>(line) > min_blue_length and get<3>(line)[1] > 430) {
             // 长度大于特定最小值，并且处于屏幕下方
             blue_line_found = true;
+            ROS_INFO(TAG "%s", string(20, '-').c_str());
+            ROS_INFO(TAG "Blue Line Found!");
+            ROS_INFO(TAG "%s", string(20, '-').c_str());
         }
     }
 }
@@ -574,8 +578,10 @@ void TraceLine::run() {
     is_running_ = true;
     sub_ = nh_.subscribe("image_topic", 1, &TraceLine::imageCallback, this);
 
+    ros::Rate handle_rate(handle_rate_);  // 处理频率
     while (ros::ok() && is_running_) {
         ros::spinOnce();
+        handle_rate.sleep();
     }
     sub_.shutdown();
 }
