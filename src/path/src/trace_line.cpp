@@ -225,10 +225,10 @@ void TraceLine::linePreprocess() {
             double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
             if (slope > 0) {
                 posLines.emplace_back(
-                    line, lineLength, slope, cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2));
+                    line, lineLength, slope, cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight));
             } else {
                 negLines.emplace_back(
-                    line, lineLength, slope, cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2));
+                    line, lineLength, slope, cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight));
             }
         }
     }
@@ -236,7 +236,7 @@ void TraceLine::linePreprocess() {
     if (blue_lines_raw.empty()) {
         ROS_INFO("No blue line to preprocess");
         return;
-    } 
+    }
     blueLines.clear();
     for (const auto &line : blue_lines_raw) {
         float slope = calculateSlope(line);
@@ -246,7 +246,7 @@ void TraceLine::linePreprocess() {
         }
 
         double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
-        blueLines.emplace_back(line, lineLength, slope, cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2));
+        blueLines.emplace_back(line, lineLength, slope, cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight));
     }
 }
 
@@ -290,7 +290,6 @@ void TraceLine::getBlueLines() {
     // 获取图像的高度和宽度
 
     // 计算下部分的高度，根据给定的比例
-    int lowerHeight = static_cast<int>(frame_height * lowerFraction);
     cv::Rect lowerPartRect(0, frame_height - lowerHeight, frame_width, lowerHeight);
     cv::Mat lowerPart = frame(lowerPartRect);  // 提取下部分图像
 

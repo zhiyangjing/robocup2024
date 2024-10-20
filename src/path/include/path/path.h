@@ -39,6 +39,7 @@ private:
     int min_distance = 50;
     float lowerFraction = 0.4;
     int lowerHeight = static_cast<int>(frame_height * lowerFraction);
+    int upperHeight = frame_height - lowerHeight;
     int line_pos = frame_width * 0.422;
     int handle_rate_ = 20;
     double currentFps = 0;
