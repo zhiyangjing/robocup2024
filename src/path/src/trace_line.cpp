@@ -360,7 +360,9 @@ void TraceLine::checkBlueLine() {
             blue_line_found = true;
             ROS_INFO(TAG "%s", string(20, '-').c_str());
             ROS_INFO(TAG "Blue Line Found!");
+            ROS_INFO(TAG "slope : %d length: %d center_y: %d", get<2>(line), get<1>(line), get<3>(line)[1]);
             ROS_INFO(TAG "%s", string(20, '-').c_str());
+            return;
         }
     }
 }
