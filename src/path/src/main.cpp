@@ -45,15 +45,43 @@ public:
     RoadLeftTurn(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {}
     void run() {
         is_running_ = true;
-        int speed = 2;  // 默认速度是2；
+        int speed = 2;  // 默认速度是2
+        int rate_num = 10;
+        ros::Rate loop_rate(rate_num);  // 设置循环频率为10Hz
+
+        ROS_INFO(TAG "Turning Left");
         nh_.getParam("speed", speed);
-        int default_time = 3000000 * 2 / speed;
-        nh_.setParam("angle", -200);
-        usleep(default_time);
-        stop();
+        nh_.setParam("angle", -200);  // 向左拐
+        for (int i = 0; i < (8 * speed / 2) * rate_num; ++i) {
+            loop_rate.sleep();
+        }
+        nh_.setParam("angle", 0);  // 回正
     }
     void stop() { is_running_ = false; }
 };
+
+class RoadRightTurn : public Ability {
+private:
+    bool is_running_ = false;
+
+public:
+    RoadRightTurn(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {};
+    void run() {
+        is_running_ = true;
+        int speed = 2;  // 默认速度是2
+        int rate_num = 10;
+        ros::Rate loop_rate(rate_num);  // 设置循环频率为10Hz
+
+        ROS_INFO(TAG "Turning Left");
+        nh_.getParam("speed", speed);
+        nh_.setParam("angle", 200);  // 向左拐
+        for (int i = 0; i < (6 * speed / 2) * rate_num; ++i) {
+            loop_rate.sleep();
+        }
+        nh_.setParam("angle", 0);  // 回正
+    }
+    void stop() { is_running_ = false; }
+}
 
 class Uturn : Ability {
 
@@ -78,7 +106,7 @@ public:
         }
 
         ROS_INFO(TAG "Goback back");
-        nh_.setParam("direction", std::string(1, 'S'));  
+        nh_.setParam("direction", std::string(1, 'S'));
         nh_.setParam("angle", 200);  // 后退
         for (int i = 0; i < (4 * speed / 2) * rate_num; ++i) {
             loop_rate.sleep();
@@ -102,7 +130,10 @@ private:
     int STATE;
 
 public:
-    PathController(ros::NodeHandle nh) : nh_(nh) { states_queue = std::deque<int>({TRACE_LINE, UTURN, TRACE_LINE, UTURN,TRACE_LINE ,TERMINAL}); }
+    PathController(ros::NodeHandle nh) : nh_(nh) {
+        // states_queue = std::deque<int>({LIGHT_DETECT,TRACE_LINE, ROAD_LEFT_TURN ,UTURN, TRACE_LINE, UTURN, TRACE_LINE, TERMINAL});
+        states_queue = std::deque<int>({TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE, UTURN, TRACE_LINE, TERMINAL});
+    }
     void start() {
         while (true) {
             STATE = states_queue.front();
