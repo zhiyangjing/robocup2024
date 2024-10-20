@@ -81,7 +81,7 @@ public:
         nh_.setParam("angle", 0);  // 回正
     }
     void stop() { is_running_ = false; }
-}
+};
 
 class Uturn : Ability {
 
