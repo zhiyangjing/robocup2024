@@ -68,14 +68,14 @@ public:
         nh_.getParam("speed", speed);
         nh_.setParam("angle", 100);  // 向右拐一点
 
-        for (int i = 0; i < (1 * speed / 2) * rate_num; ++i) {
+        for (int i = 0; i < (2 * speed / 2) * rate_num; ++i) {
             loop_rate.sleep();
         }
 
         ROS_INFO(TAG "Turning left");
         nh_.setParam("angle", -200);  // 向左拐
 
-        for (int i = 0; i < (2 * speed / 2) * rate_num; ++i) {
+        for (int i = 0; i < (4 * speed / 2) * rate_num; ++i) {
             loop_rate.sleep();
         }
 
@@ -84,13 +84,13 @@ public:
         ROS_INFO(TAG "Goback back");
         nh_.setParam("direction", std::string(1, 'S'));  // 后退
 
-        for (int i = 0; i < (1 * speed / 2) * rate_num; ++i) {
+        for (int i = 0; i < (2 * speed / 2) * rate_num; ++i) {
             loop_rate.sleep();
         }
 
         nh_.setParam("speed", 2);
 
-        for (int i = 0; i < (2 * speed / 2) * rate_num; ++i) {
+        for (int i = 0; i < (4 * speed / 2) * rate_num; ++i) {
             loop_rate.sleep();
         }
 
@@ -98,7 +98,7 @@ public:
         nh_.setParam("direction", std::string(1, 'W'));  // 改为前进
         nh_.setParam("angle", -200);
 
-        for (int i = 0; i < (2 * speed / 2) * rate_num; ++i) {
+        for (int i = 0; i < (4 * speed / 2) * rate_num; ++i) {
             loop_rate.sleep();
         }
         nh_.setParam("angle", 0);  // 回正
