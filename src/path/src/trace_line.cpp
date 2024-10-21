@@ -362,7 +362,7 @@ void TraceLine::checkBlueLine() {
             ROS_INFO(TAG "%s", string(20, '-').c_str());
             ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
             ROS_INFO(TAG "slope : %f length: %f", get<2>(line), get<1>(line));
-            ROS_INFO(TAG "center_x: center_y: %d",  get<3>(line)[2],get<3>(line)[1]);
+            ROS_INFO(TAG "center_x:  %d center_y: %d", get<3>(line)[2], get<3>(line)[1]);
             ROS_INFO(TAG "%s", string(20, '-').c_str());
             return;
         }

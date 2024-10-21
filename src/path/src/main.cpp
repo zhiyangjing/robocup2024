@@ -5,7 +5,7 @@
 #include <sensor_msgs/LaserScan.h>
 #include <stack>
 
-#define TAG " [PATH]"
+#define TAG " [PATH] "
 
 class BigLeftTurn : public Ability {
 private:
@@ -28,7 +28,7 @@ public:
     void run() {
         ros::Rate looprate(50);
         while (ros::ok() and remain_time_ > 0) {
-            ROS_INFO("%s TIME REMAIN: %d ,TIME DELTA: %d", TAG, remain_time_, time_delta);
+            ROS_INFO(TAG "TIME REMAIN: %d ,TIME DELTA: %d", remain_time_, time_delta);
             setMotion();
             looprate.sleep();
             remain_time_ -= time_delta;
