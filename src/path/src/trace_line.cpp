@@ -355,18 +355,18 @@ void TraceLine::checkBlueLine() {
     if (blueLines.empty()) {
         return;
     }
-    for (auto line : blueLines) {
-        if (get<1>(line) > min_blue_length and get<3>(line)[1] > 430) {
-            // 长度大于特定最小值，并且处于屏幕下方
-            // blue_line_found = true;
-            ROS_INFO(TAG "%s", string(20, '-').c_str());
-            ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
-            ROS_INFO(TAG "slope : %f length: %f", get<2>(line), get<1>(line));
-            ROS_INFO(TAG "center_x:  %d center_y: %d", get<3>(line)[2], get<3>(line)[1]);
-            ROS_INFO(TAG "%s", string(20, '-').c_str());
-            return;
-        }
+
+    sort(blueLines.begin(), blueLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
+    if (get<1>(blueLines[0]) > min_blue_length or (get<1>(blueLines[0]) > 130 and blueLines.size() > 6)) {
+        blue_line_found = true;
+        // ROS_INFO(TAG "%s", string(20, '-').c_str());
+        ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
+        // ROS_INFO(TAG "%s", string(20, '-').c_str());
+        // ROS_INFO(TAG "slope : %f length: %f", get<2>(blueLines[0]), get<1>(blueLines[0]));
+        // ROS_INFO(TAG "center_x:  %d center_y: %d", get<3>(blueLines[0])[2], get<3>(blueLines[0])[1]);
+        // ROS_INFO(TAG "%s", string(20, '-').c_str());
     }
+    // 长度大于特定最小值，并且处于屏幕下方
 }
 
 void TraceLine::getLines() {
