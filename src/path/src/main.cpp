@@ -112,7 +112,7 @@ public:
 
         ROS_INFO(TAG "Total Time: 7s , %d iteration", (7 * speed / 2) * rate_num);
         for (int i = 0; i < (7 * speed / 2) * rate_num; ++i) {
-            ROS_INFO(TAG "Turning Right Iteration: %d");
+            ROS_INFO(TAG "Turning Right Iteration: %d",i);
             loop_rate.sleep();
         }
         nh_.setParam("angle", 0);  // 回正
