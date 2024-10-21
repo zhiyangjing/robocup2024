@@ -357,7 +357,8 @@ void TraceLine::checkBlueLine() {
     }
 
     sort(blueLines.begin(), blueLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
-    if (get<1>(blueLines[0]) > min_blue_length or (get<1>(blueLines[0]) > 130 and blueLines.size() > 6)) {
+    if ((get<1>(blueLines[0]) > min_blue_length and blueLines.size() > 3)
+        or (get<1>(blueLines[0]) > 130 and blueLines.size() > 6)) {
         blue_line_found = true;
         // ROS_INFO(TAG "%s", string(20, '-').c_str());
         ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
