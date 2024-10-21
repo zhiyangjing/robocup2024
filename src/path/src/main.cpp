@@ -71,6 +71,7 @@ public:
 class RoadLeftTurn : public Ability {
 private:
     bool is_running_ = false;
+    int lasting_time = 10;
 
 public:
     RoadLeftTurn(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {}
@@ -79,13 +80,13 @@ public:
         int speed = 2;  // 默认速度是2
         int rate_num = 10;
         ros::Rate loop_rate(rate_num);  // 设置循环频率为10Hz
-        ROS_INFO(TAG "Turning Right");
+        ROS_INFO(TAG "Turning Left");
         nh_.getParam("speed", speed);
 
-        nh_.setParam("angle", -200);  // 向左拐
+        nh_.setParam("angle", -130);  // 向左拐
 
-        ROS_INFO(TAG "Total Time: 8s , %d iteration", (8 * speed / 2) * rate_num);
-        for (int i = 0; i < (8 * speed / 2) * rate_num; ++i) {
+        ROS_INFO(TAG "Total Time: %ds , %d iteration", lasting_time, (lasting_time * speed / 2) * rate_num);
+        for (int i = 0; i < (lasting_time * speed / 2) * rate_num; ++i) {
             ROS_INFO(TAG "Turning Left Iteration: %d", i);
             loop_rate.sleep();
         }
@@ -97,6 +98,7 @@ public:
 class RoadRightTurn : public Ability {
 private:
     bool is_running_ = false;
+    int lasting_time = 8;
 
 public:
     RoadRightTurn(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {};
@@ -106,13 +108,13 @@ public:
         int rate_num = 10;
         ros::Rate loop_rate(rate_num);  // 设置循环频率为10Hz
 
-        ROS_INFO(TAG "Turning Left");
+        ROS_INFO(TAG "Turning Right");
         nh_.getParam("speed", speed);
         nh_.setParam("angle", 200);  // 向左拐
 
-        ROS_INFO(TAG "Total Time: 7s , %d iteration", (7 * speed / 2) * rate_num);
-        for (int i = 0; i < (7 * speed / 2) * rate_num; ++i) {
-            ROS_INFO(TAG "Turning Right Iteration: %d",i);
+        ROS_INFO(TAG "Total Time: %ds , %d iteration", lasting_time, (lasting_time * speed / 2) * rate_num);
+        for (int i = 0; i < (lasting_time * speed / 2) * rate_num; ++i) {
+            ROS_INFO(TAG "Turning Right Iteration: %d", i);
             loop_rate.sleep();
         }
         nh_.setParam("angle", 0);  // 回正
