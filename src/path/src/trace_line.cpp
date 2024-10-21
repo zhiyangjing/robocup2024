@@ -237,6 +237,7 @@ void TraceLine::linePreprocess() {
         ROS_INFO("No blue line to preprocess");
         return;
     }
+
     blueLines.clear();
     for (const auto &line : blue_lines_raw) {
         float slope = calculateSlope(line);
@@ -359,8 +360,9 @@ void TraceLine::checkBlueLine() {
             // 长度大于特定最小值，并且处于屏幕下方
             blue_line_found = true;
             ROS_INFO(TAG "%s", string(20, '-').c_str());
-            ROS_INFO(TAG "Blue Line Found!");
-            ROS_INFO(TAG "slope : %f length: %f center_y: %d", get<2>(line), get<1>(line), get<3>(line)[1]);
+            ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
+            ROS_INFO(TAG "slope : %f length: %f", get<2>(line), get<1>(line));
+            ROS_INFO(TAG "center_x: center_y: %d",  get<3>(line)[2],get<3>(line)[1]);
             ROS_INFO(TAG "%s", string(20, '-').c_str());
             return;
         }
@@ -531,7 +533,8 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
             nh_.getParam("speed", speed);
             nh_.getParam("frame_rate", frame_rate);
             countdownTimer -= (1000 / frame_rate);
-            ROS_INFO(TAG "Blue line found, time remaining: %d", countdownTimer);
+            ROS_INFO(TAG "Blue line found");
+            ROS_INFO(TAG "time before exit: %d", countdownTimer);
             if (countdownTimer <= 0) {
                 stop();
             }
