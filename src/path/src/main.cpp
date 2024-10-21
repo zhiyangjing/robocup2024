@@ -49,9 +49,11 @@ public:
         int rate_num = 10;
         ros::Rate loop_rate(rate_num);  // 设置循环频率为10Hz
 
-        ROS_INFO(TAG "Turning Left");
+        ROS_INFO(TAG "Going Straight");
+
         nh_.getParam("speed", speed);
         nh_.getParam("direction", speed);
+
         nh_.setParam("direction", std::string(1, 'W'));
         nh_.setParam("angle", 0);  // 向左拐
         for (int i = 0; i < (5 * speed / 2) * rate_num; ++i) {
