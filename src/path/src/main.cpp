@@ -162,8 +162,8 @@ private:
 public:
     PathController(ros::NodeHandle nh) : nh_(nh) {
         // states_queue = std::deque<int>({LIGHT_DETECT,TRACE_LINE, ROAD_LEFT_TURN ,UTURN, TRACE_LINE, UTURN, TRACE_LINE, TERMINAL});
-        states_queue = std::deque<int>(
-            {TRACE_LINE, STRAIGHT, ROAD_LEFT_TURN, TRACE_LINE, ROAD_RIGHT_TURN, REVERSE, STRAIGHT, TERMINAL});
+        states_queue =
+            std::deque<int>({TRACE_LINE, STRAIGHT, TRACE_LINE, ROAD_LEFT_TURN, ROAD_RIGHT_TURN, REVERSE, TERMINAL});
     }
     void start() {
         while (true) {
