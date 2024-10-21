@@ -79,11 +79,14 @@ public:
         int speed = 2;  // 默认速度是2
         int rate_num = 10;
         ros::Rate loop_rate(rate_num);  // 设置循环频率为10Hz
-
-        ROS_INFO(TAG "Turning Left");
+        ROS_INFO(TAG "Turning Right");
         nh_.getParam("speed", speed);
+
         nh_.setParam("angle", -200);  // 向左拐
+
+        ROS_INFO(TAG "Total Time: 8s , %d iteration", (8 * speed / 2) * rate_num);
         for (int i = 0; i < (8 * speed / 2) * rate_num; ++i) {
+            ROS_INFO(TAG "Turning Left Iteration: %d");
             loop_rate.sleep();
         }
         nh_.setParam("angle", 0);  // 回正
@@ -106,7 +109,10 @@ public:
         ROS_INFO(TAG "Turning Left");
         nh_.getParam("speed", speed);
         nh_.setParam("angle", 200);  // 向左拐
-        for (int i = 0; i < (6 * speed / 2) * rate_num; ++i) {
+
+        ROS_INFO(TAG "Total Time: 7s , %d iteration", (7 * speed / 2) * rate_num);
+        for (int i = 0; i < (7 * speed / 2) * rate_num; ++i) {
+            ROS_INFO(TAG "Turning Right Iteration: %d");
             loop_rate.sleep();
         }
         nh_.setParam("angle", 0);  // 回正
