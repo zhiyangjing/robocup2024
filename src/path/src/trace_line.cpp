@@ -358,7 +358,7 @@ void TraceLine::checkBlueLine() {
     for (auto line : blueLines) {
         if (get<1>(line) > min_blue_length and get<3>(line)[1] > 430) {
             // 长度大于特定最小值，并且处于屏幕下方
-            blue_line_found = true;
+            // blue_line_found = true;
             ROS_INFO(TAG "%s", string(20, '-').c_str());
             ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
             ROS_INFO(TAG "slope : %f length: %f", get<2>(line), get<1>(line));
@@ -387,8 +387,8 @@ void TraceLine::getLines() {
     cv::cvtColor(lowerPart, hsv, cv::COLOR_BGR2HSV);
 
     // 定义白色的HSV范围
-    cv::Scalar lowerWhite(0, 0, 170);     // 白色下限
-    cv::Scalar upperWhite(180, 30, 255);  // 白色上限
+    cv::Scalar lowerWhite(0, 0, 165);     // 白色下限
+    cv::Scalar upperWhite(180, 35, 255);  // 白色上限
 
     // 创建白色区域的掩码
     cv::Mat mask;
@@ -526,7 +526,7 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
                    cv::FILLED);  // 使用 cv::FILLED 填充圆
 
         visualizeLines(lines_raw);
-        visualizeLines(blue_lines_raw, 0);
+        visualizeLines(blue_lines_raw, 1);
         checkBlueLine();
         if (blue_line_found) {
             int speed, frame_rate = 10;
