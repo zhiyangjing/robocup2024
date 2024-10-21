@@ -56,7 +56,10 @@ public:
 
         nh_.setParam("direction", std::string(1, 'W'));
         nh_.setParam("angle", 0);  // 向左拐
+
+        ROS_INFO(TAG "Total Time: 5s , %d iteration", (5 * speed / 2) * rate_num);
         for (int i = 0; i < (5 * speed / 2) * rate_num; ++i) {
+            ROS_INFO(TAG "iteration: %d", i);
             loop_rate.sleep();
         }
         nh_.setParam("angle", 0);  // 回正
