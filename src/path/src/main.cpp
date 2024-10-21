@@ -40,6 +40,7 @@ public:
 class Straight : public Ability {
 private:
     bool is_running_ = false;
+    int lasting_time = 7;
 
 public:
     Straight(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {}
@@ -52,14 +53,13 @@ public:
         ROS_INFO(TAG "Going Straight");
 
         nh_.getParam("speed", speed);
-        nh_.getParam("direction", speed);
 
         nh_.setParam("direction", std::string(1, 'W'));
         nh_.setParam("angle", 0);
         ROS_INFO(TAG "Angle now is: %d", 0);
 
-        ROS_INFO(TAG "Total Time: 5s , %d iteration", (5 * speed / 2) * rate_num);
-        for (int i = 0; i < (5 * speed / 2) * rate_num; ++i) {
+        ROS_INFO(TAG "Total Time: %ds , %d iteration", lasting_time, (lasting_time * speed / 2) * rate_num);
+        for (int i = 0; i < (lasting_time * speed / 2) * rate_num; ++i) {
             ROS_INFO(TAG "iteration: %d", i);
             loop_rate.sleep();
         }
@@ -170,8 +170,8 @@ private:
 public:
     PathController(ros::NodeHandle nh) : nh_(nh) {
         // states_queue = std::deque<int>({LIGHT_DETECT,TRACE_LINE, ROAD_LEFT_TURN ,UTURN, TRACE_LINE, UTURN, TRACE_LINE, TERMINAL});
-        states_queue =
-            std::deque<int>({TRACE_LINE, STRAIGHT, TRACE_LINE, ROAD_LEFT_TURN, ROAD_RIGHT_TURN, REVERSE, TERMINAL});
+        states_queue = std::deque<int>(
+            {TRACE_LINE, STRAIGHT, TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE, ROAD_RIGHT_TURN, REVERSE, TERMINAL});
     }
     void start() {
         while (true) {
