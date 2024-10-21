@@ -319,7 +319,7 @@ void TraceLine::getBlueLines() {
     cv::Canny(mask, edges, 50, 150, 3);
 
     // 使用 HoughLinesP 检测线段，调大最后一个参数，识别到的直线更长
-    cv::HoughLinesP(edges, blue_lines_raw, 2, CV_PI / 180, 50, 40, 30);
+    cv::HoughLinesP(edges, blue_lines_raw, 2, CV_PI / 90, 40, 40, 40);
 
     // vector<vector<cv::Point>> contours;
     // cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
