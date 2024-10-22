@@ -35,7 +35,12 @@ public:
         int x = target_center.x;
         int res;
         res = -(x - frame_width / 2);
+        cv::circle(frame, cv::Point(frame_width / 2, frame_height - 10), 3, cv::Scalar(0, 255, 0),
+                   cv::FILLED);  // 使用 cv::FILLED 填充圆
+        cv::circle(frame, cv::Point(x, frame_height - 10), 3, cv::Scalar(0, 0, 255),
+                   cv::FILLED);  // 使用 cv::FILLED 填充圆
         int angle_value = max(min(res, 200), -200);
+        ROS_INFO(TAG "Angle: %d", angle_value);
         nh_.setParam("angle", angle_value);
     }
 
@@ -65,11 +70,10 @@ public:
             sorted_contours.emplace_back(i, cv::contourArea(contour), contour_center);
         }
 
-        sort(sorted_contours.begin(), sorted_contours.end(), [](auto const &a, auto const &b) {
-            return get<1>(a) > get<1>(b);
-        });
+        sort(sorted_contours.begin(), sorted_contours.end(),
+             [](auto const &a, auto const &b) { return get<1>(a) > get<1>(b); });
 
-        ROS_INFO(TAG "Contour lenght: %d", (int) sorted_contours.size());
+        ROS_INFO(TAG "Contour lenght: %d", static_cast<int>(sorted_contours.size()));
         // cv::drawContours(frame, contours, -1, cv::Scalar(0, 0, 255), 2);
         if (contours.size() >= 1) {
             for (int i = 0; i < min(2, static_cast<int>(contours.size())); i++) {
