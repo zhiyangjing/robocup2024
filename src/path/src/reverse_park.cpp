@@ -26,7 +26,7 @@ public:
         string target;
         nh_.getParam("target", target);
         if (target == "left") {
-            target_index = 1;
+            target_index = 1;  // 要停入左侧的车库，理论上来说，停车标志更小，会在排序中位居第二
         } else {
             target_index = 0;
         }
@@ -85,14 +85,13 @@ public:
                 cv::circle(frame, get<2>(sorted_contours[i]), 5, color, -1);
             }
         }
-        sort(sorted_contours.begin(), sorted_contours.end(), [](auto const &a, auto const &b) {
-            return get<2>(a).x < get<2>(b).x;  // 按照中点位置从小到大排列
-        });
-
-        if (sorted_contours.size() >= 2) {
-            target_center = get<2>(sorted_contours[target_index]);
+        auto first_x = get<2>(sorted_contours[0]).y;
+        auto second_x = get<2>(sorted_contours[1]).y;
+        if (first_x < second_x) {
+            target_center = get<2>(sorted_contours[target_index]);  // 最大的在左侧，符合一般情况的排序
         } else {
-            target_center = get<2>(sorted_contours[0]);
+            target_center = get<2>(sorted_contours[!target_index]);
+            // 这里写的比较奇怪，总之就是如果按照x的排序是反着的，target_index就得0，1调转。
         }
     }
 
