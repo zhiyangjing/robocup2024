@@ -13,7 +13,6 @@ private:
     bool is_running_ = false;
     ros::Subscriber sub_;
     cv::Mat frame;
-    cv::Mat hsv_frame;
     int frame_height = 480;
     int frame_width = 720;
     int handle_rate_ = 20;
@@ -139,15 +138,46 @@ public:
     void getIntersection() {
         // 计算下部分的高度，根据给定的比例
         cv::Rect lowerPartRect(0, upperHeight, frame_width, lowerHeight);
-        cv::Mat lowerPart = hsv_frame(lowerPartRect);  // 提取下部分图像
+        cv::Mat lowerPart = frame(lowerPartRect);  // 提取下部分图像
 
-        // 转换为HSV颜色空间
-        cv::Mat hsv;
-        cv::cvtColor(lowerPart, hsv, cv::COLOR_BGR2HSV);
+        cv::Mat hsv_frame;
+        cv::cvtColor(lowerPart, hsv_frame, cv::COLOR_BGR2HSV);
 
         // 定义白色的HSV范围
         cv::Scalar lowerWhite(0, 0, 160);     // 白色下限
         cv::Scalar upperWhite(180, 30, 255);  // 白色上限
+
+        // 创建白色区域的掩码
+        cv::Mat mask;
+        cv::inRange(hsv_frame, lowerWhite, upperWhite, mask);
+
+        int erosion_size = 1;   // 腐蚀结构元素的大小
+        int dilation_size = 1;  // 膨胀结构元素的大小
+
+        cv::Mat element =
+            cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
+                                      cv::Point(erosion_size, erosion_size));
+
+        cv::erode(mask, mask, element);   // 腐蚀
+        cv::dilate(mask, mask, element);  // 膨胀
+
+        // 使用 Canny 边缘检测
+        cv::Mat edges;
+        cv::Canny(mask, edges, 50, 150, 3);
+        // cv::imshow("mask",mask);
+
+        vector<cv::Vec4i> lines_raw;  // 存储检测到的白色车道线段
+        // 使用 HoughLinesP 检测线段
+        cv::HoughLinesP(edges, lines_raw, 2, CV_PI / 180, 50, 20, 10);
+
+        ROS_INFO(TAG "lines count: %d", (int) lines_raw.size());
+
+        for (size_t i = 0; i < lines_raw.size(); i++) {
+            cv::Vec4i l = lines_raw[i];
+            cv::Point start(l[0], l[1] + (upperHeight));
+            cv::Point end(l[2], l[3] + (upperHeight));
+            cv::line(frame, start, end, cv::Scalar(0, 0, 255), 2);
+        }
     }
 
     void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
@@ -159,6 +189,7 @@ public:
         }
 
         getContour();
+        getIntersection();
         contourPreprocess();
         getContourCenter();
         towardCenter();
