@@ -99,13 +99,17 @@ public:
             if (m.m00 != 0) {  // 防止除以零
                 contour_center = cv::Point2i(static_cast<int>(m.m10 / m.m00), static_cast<int>(m.m01 / m.m00));
             }
-            double area = cv::contourArea(contour);
-            double perimeter = cv::arcLength(contour, true);
-            if (fabs((pow((perimeter / 4), 2) - area) / area) < 1.3) {
-                blueContours.emplace_back(i, cv::contourArea(contour), contour_center);
-                // 用周长和面积的关系排除掉不接近正方形的物体
-            }
+            blueContours.emplace_back(i, cv::contourArea(contour), contour_center);
+            // double area = cv::contourArea(contour);
+            // double perimeter = cv::arcLength(contour, true);
+            // double diff_rate = fabs((pow((perimeter / 4), 2) - area) / area);
+            // // cout << diff_rate << " " << area << " " << perimeter << endl;
+            // if (diff_rate < 1) {
+            //     blueContours.emplace_back(i, cv::contourArea(contour), contour_center);
+            //     // 用周长和面积的关系排除掉不接近正方形的物体，测试发现这个不太准确，主要是矩形膨胀导致的
+            // }
         }
+        cv::drawContours(frame, contours, -1, cv::Scalar(255, 0, 255), 2);
         ROS_INFO(TAG "blueContours length: %d", static_cast<int>(blueContours.size()));
     }
 
@@ -114,10 +118,12 @@ public:
              [](auto const &a, auto const &b) { return get<1>(a) > get<1>(b); });
 
         ROS_INFO(TAG "Contour lenght: %d", static_cast<int>(blueContours.size()));
-        cv::drawContours(frame, contours, -1, cv::Scalar(0, 0, 255), 2);  // 怎么会有几百个contour呢？
+        for (int i = 0; i < blueContours.size(); i++) {
+            cv::drawContours(frame, contours, get<0>(blueContours[i]), cv::Scalar(0, 0, 255), 2);
+        }
         if (contours.size() >= 1) {
             for (int i = 0; i < min(2, static_cast<int>(contours.size())); i++) {
-                auto color = (i == 0 ? cv::Scalar(255, 0, 0) : cv::Scalar(0, 0, 255));
+                auto color = (i == 0 ? cv::Scalar(255, 0, 0) : cv::Scalar(0, 255, 0));
                 cv::drawContours(frame, contours, get<0>(blueContours[i]), color, 2);
                 cv::circle(frame, get<2>(blueContours[i]), 5, color, -1);
             }

@@ -26,7 +26,7 @@ void on_trackbar(int, void *) {
 
     // 定义膨胀的结构元素
     cv::Mat dilation_element =
-        cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1),
+        cv::getStructuringElement(cv::MORPH_ELLIPSE , cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1),
                                   cv::Point(dilation_size, dilation_size));
 
     // 腐蚀操作
