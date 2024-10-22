@@ -101,7 +101,7 @@ public:
              [](auto const &a, auto const &b) { return get<1>(a) > get<1>(b); });
 
         ROS_INFO(TAG "Contour lenght: %d", static_cast<int>(blueContours.size()));
-        // cv::drawContours(frame, contours, -1, cv::Scalar(0, 0, 255), 2);  // 怎么会有几百个contour呢？
+        cv::drawContours(frame, contours, -1, cv::Scalar(0, 0, 255), 2);  // 怎么会有几百个contour呢？
         if (contours.size() >= 1) {
             for (int i = 0; i < min(2, static_cast<int>(contours.size())); i++) {
                 auto color = (i == 0 ? cv::Scalar(255, 0, 0) : cv::Scalar(0, 0, 255));
