@@ -109,7 +109,6 @@ public:
             //     // 用周长和面积的关系排除掉不接近正方形的物体，测试发现这个不太准确，主要是矩形膨胀导致的
             // }
         }
-        cv::drawContours(frame, contours, -1, cv::Scalar(255, 0, 255), 2);
         ROS_INFO(TAG "blueContours length: %d", static_cast<int>(blueContours.size()));
     }
 

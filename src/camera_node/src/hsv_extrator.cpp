@@ -124,7 +124,9 @@ int main(int argc, char **argv) {
 #else
 
     // 打开摄像头
-    cv::VideoCapture cap(0);  // 0 表示默认摄像头
+    int camera_port = 0;
+    nh.getParam("camera_port",camera_port);
+    cv::VideoCapture cap(camera_port);  // 0 表示默认摄像头
     if (!cap.isOpened()) {
         ROS_ERROR("Failed to open the camera_node");
         return -1;
