@@ -20,7 +20,7 @@ private:
     cv::Point target_center;
     std::vector<std::vector<cv::Point>> contours;
     std::vector<tuple<int, int, cv::Point2i>> blueContours;  // 边缘集合的下标、面积、中心点
-    float lowerFraction = 0.4;
+    float lowerFraction = 0.7;
     int lowerHeight = static_cast<int>(frame_height * lowerFraction);
     int upperHeight = frame_height - lowerHeight;
 
