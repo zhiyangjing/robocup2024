@@ -19,7 +19,8 @@ private:
     int handle_rate_ = 20;
     int target_index = 0;  // 0 代表左侧车库，1代表右侧车库
     cv::Point target_center;
-    std::vector<tuple<int, int, cv::Point2i>> sorted_contours;  // 边缘集合的下标、面积、中心点
+    std::vector<std::vector<cv::Point>> contours;
+    std::vector<tuple<int, int, cv::Point2i>> blueContours;  // 边缘集合的下标、面积、中心点
     float lowerFraction = 0.4;
     int lowerHeight = static_cast<int>(frame_height * lowerFraction);
     int upperHeight = frame_height - lowerHeight;
@@ -49,7 +50,7 @@ public:
         nh_.setParam("angle", angle_value);
     }
 
-    void getCenter() {
+    void getContour() {
         cv::Mat hsv_frame, mask;
         cv::cvtColor(frame, hsv_frame, cv::COLOR_BGR2HSV);
         cv::Scalar lowerBlue(100, 50, 0);
@@ -66,12 +67,14 @@ public:
         cv::erode(mask, mask, element);   // 腐蚀
         cv::dilate(mask, mask, element);  // 膨胀
         // 查找轮廓
-        std::vector<std::vector<cv::Point>> contours;
+        contours.clear();
         cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-
-        sorted_contours.clear();
-
         ROS_INFO(TAG "Contour lenght: %d", static_cast<int>(contours.size()));
+    }
+
+    void contourPreprocess() {
+        blueContours.clear();
+
         for (int i = 0; i < contours.size(); i++) {
             auto contour = contours[i];
 
@@ -83,27 +86,36 @@ public:
             if (m.m00 != 0) {  // 防止除以零
                 contour_center = cv::Point2i(static_cast<int>(m.m10 / m.m00), static_cast<int>(m.m01 / m.m00));
             }
-            sorted_contours.emplace_back(i, cv::contourArea(contour), contour_center);
+            double area = cv::contourArea(contour);
+            double perimeter = cv::arcLength(contour, true);
+            if (((pow((perimeter / 4), 2) - area) / area) < 0.3) {
+                blueContours.emplace_back(i, cv::contourArea(contour), contour_center);
+                // 用周长和面积的关系排除掉不接近正方形的物体
+            }
         }
+        ROS_INFO(TAG "blueContours length: %d", static_cast<int>(blueContours.size()));
 
-        sort(sorted_contours.begin(), sorted_contours.end(),
+        sort(blueContours.begin(), blueContours.end(),
              [](auto const &a, auto const &b) { return get<1>(a) > get<1>(b); });
 
-        ROS_INFO(TAG "Contour lenght: %d", static_cast<int>(sorted_contours.size()));
+        ROS_INFO(TAG "Contour lenght: %d", static_cast<int>(blueContours.size()));
         // cv::drawContours(frame, contours, -1, cv::Scalar(0, 0, 255), 2);  // 怎么会有几百个contour呢？
         if (contours.size() >= 1) {
             for (int i = 0; i < min(2, static_cast<int>(contours.size())); i++) {
                 auto color = (i == 0 ? cv::Scalar(255, 0, 0) : cv::Scalar(0, 0, 255));
-                cv::drawContours(frame, contours, get<0>(sorted_contours[i]), color, 2);
-                cv::circle(frame, get<2>(sorted_contours[i]), 5, color, -1);
+                cv::drawContours(frame, contours, get<0>(blueContours[i]), color, 2);
+                cv::circle(frame, get<2>(blueContours[i]), 5, color, -1);
             }
         }
-        auto first_x = get<2>(sorted_contours[0]).y;
-        auto second_x = get<2>(sorted_contours[1]).y;
+    }
+
+    void getContourCenter() {
+        auto first_x = get<2>(blueContours[0]).y;
+        auto second_x = get<2>(blueContours[1]).y;
         if (target_index == 0) {  // 左侧车库，选择x更大的那个
-            target_center = (first_x > second_x) ? (get<2>(sorted_contours[0])) : (get<2>(sorted_contours[1]));
+            target_center = (first_x > second_x) ? (get<2>(blueContours[0])) : (get<2>(blueContours[1]));
         } else {  // 右侧车库，选择x更小的那一个
-            target_center = (first_x > second_x) ? (get<2>(sorted_contours[1])) : (get<2>(sorted_contours[0]));
+            target_center = (first_x > second_x) ? (get<2>(blueContours[1])) : (get<2>(blueContours[0]));
         }
     }
 
@@ -129,7 +141,7 @@ public:
             return;
         }
 
-        getCenter();
+        getContour();
         towardCenter();
 
         cv::imshow("camera_node Feed", frame);
