@@ -6,5 +6,6 @@
         <remap from="/image_topic" to="/image_topic/back"/>
     </node>
     <node pkg="path" type="reverse_park" name="reverse_park" output="screen">
+        <param name="target" value="left"/>
     </node>
 </launch>

@@ -16,10 +16,28 @@ private:
     int frame_height = 480;
     int frame_width = 720;
     int handle_rate_ = 20;
+    int target_index = 1;
+    cv::Point target_center;
     std::vector<tuple<int, int, cv::Point2i>> sorted_contours;  // 边缘集合的下标、面积、中心点
 
 public:
-    ReversePark(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {}
+    ReversePark(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
+        string target;
+        nh_.getParam("target", target);
+        if (target == "left") {
+            target_index = 1;
+        } else {
+            target_index = 0;
+        }
+    }
+
+    void towardCenter() {
+        int x = target_center.x;
+        int res;
+        res = (x - frame_width / 2);
+        int angle_value = max(min(res, 200), -200);
+        nh_.setParam("angle", angle_value);
+    }
 
     void getCenter() {
         cv::Mat hsv, mask;
@@ -40,11 +58,11 @@ public:
             cv::Moments m = cv::moments(contour);
 
             // 计算重心
-            cv::Point2d center(0, 0);
+            cv::Point2d contour_center(0, 0);
             if (m.m00 != 0) {  // 防止除以零
-                center = cv::Point2i(static_cast<int>(m.m10 / m.m00), static_cast<int>(m.m01 / m.m00));
+                contour_center = cv::Point2i(static_cast<int>(m.m10 / m.m00), static_cast<int>(m.m01 / m.m00));
             }
-            sorted_contours.emplace_back(i, cv::contourArea(contour), center);
+            sorted_contours.emplace_back(i, cv::contourArea(contour), contour_center);
         }
 
         sort(sorted_contours.begin(), sorted_contours.end(), [](auto const &a, auto const &b) {
@@ -60,6 +78,15 @@ public:
                 cv::circle(frame, get<2>(sorted_contours[i]), 5, color, -1);
             }
         }
+        sort(sorted_contours.begin(), sorted_contours.end(), [](auto const &a, auto const &b) {
+            return get<2>(a).x < get<2>(b).x;  // 按照中点位置从小到大排列
+        });
+
+        if (sorted_contours.size() >= 2) {
+            target_center = get<2>(sorted_contours[target_index]);
+        } else {
+            target_center = get<2>(sorted_contours[0]);
+        }
     }
 
     void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
@@ -71,6 +98,7 @@ public:
         }
 
         getCenter();
+        towardCenter();
 
         cv::imshow("camera_node Feed", frame);
         cv::waitKey(10);
