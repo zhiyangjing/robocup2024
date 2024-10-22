@@ -20,6 +20,9 @@ private:
     int target_index = 1;
     cv::Point target_center;
     std::vector<tuple<int, int, cv::Point2i>> sorted_contours;  // 边缘集合的下标、面积、中心点
+    float lowerFraction = 0.4;
+    int lowerHeight = static_cast<int>(frame_height * lowerFraction);
+    int upperHeight = frame_height - lowerHeight;
 
 public:
     ReversePark(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
@@ -48,10 +51,19 @@ public:
     void getCenter() {
         cv::Mat hsv_frame, mask;
         cv::cvtColor(frame, hsv_frame, cv::COLOR_BGR2HSV);
-        cv::Scalar lower_blue(100, 50, 0);
-        cv::Scalar upper_blue(140, 255, 255);
-        cv::inRange(hsv_frame, lower_blue, upper_blue, mask);
+        cv::Scalar lowerBlue(100, 50, 0);
+        cv::Scalar upperBlue(140, 255, 255);
+        cv::inRange(hsv_frame, lowerBlue, upperBlue, mask);
 
+        int erosion_size = 1;   // 腐蚀结构元素的大小
+        int dilation_size = 1;  // 膨胀结构元素的大小
+
+        cv::Mat element =
+            cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
+                                      cv::Point(erosion_size, erosion_size));
+
+        cv::erode(mask, mask, element);   // 腐蚀
+        cv::dilate(mask, mask, element);  // 膨胀
         // 查找轮廓
         std::vector<std::vector<cv::Point>> contours;
         cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
@@ -77,7 +89,7 @@ public:
              [](auto const &a, auto const &b) { return get<1>(a) > get<1>(b); });
 
         ROS_INFO(TAG "Contour lenght: %d", static_cast<int>(sorted_contours.size()));
-        cv::drawContours(frame, contours, -1, cv::Scalar(0, 0, 255), 2);  // 怎么会有几百个contour呢？
+        // cv::drawContours(frame, contours, -1, cv::Scalar(0, 0, 255), 2);  // 怎么会有几百个contour呢？
         if (contours.size() >= 1) {
             for (int i = 0; i < min(2, static_cast<int>(contours.size())); i++) {
                 auto color = (i == 0 ? cv::Scalar(255, 0, 0) : cv::Scalar(0, 0, 255));
@@ -96,10 +108,8 @@ public:
     }
 
     void getIntersection() {
-        float lowerFraction = 0.4;
         // 计算下部分的高度，根据给定的比例
-        int lowerHeight = static_cast<int>(frame_height * lowerFraction);
-        cv::Rect lowerPartRect(0, frame_height - lowerHeight, frame_width, lowerHeight);
+        cv::Rect lowerPartRect(0, upperHeight, frame_width, lowerHeight);
         cv::Mat lowerPart = hsv_frame(lowerPartRect);  // 提取下部分图像
 
         // 转换为HSV颜色空间
