@@ -5,31 +5,41 @@
 #define TAG "[hsv_extrator]"
 using namespace std;
 
+// cv::Scalar lowerBlue(100, 100, 0);
+// cv::Scalar upperBlue(140, 255, 255);
+
 cv::Mat frame;
-int h_min = 0, s_min = 0, v_min = 0;
-int h_max = 179, s_max = 255, v_max = 255;
+int h_min = 100, s_min = 100, v_min = 0;
+int h_max = 140, s_max = 255, v_max = 255;
 cv::Mat hsv_frame, mask;  // 全局变量，存储图像和处理结果
 int img_height = 480;
 int img_width = 720;
+int erosion_size = 1;   // 腐蚀结构元素的大小
+int dilation_size = 1;  // 膨胀结构元素的大小
 
 void on_trackbar(int, void *) {
     cv::inRange(hsv_frame, cv::Scalar(h_min, s_min, v_min), cv::Scalar(h_max, s_max, v_max), mask);
 
-    int erosion_size = 1;   // 腐蚀结构元素的大小
-    int dilation_size = 1;  // 膨胀结构元素的大小
+    // 定义腐蚀的结构元素
+    cv::Mat erosion_element = cv::getStructuringElement(
+        cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1), cv::Point(erosion_size, erosion_size));
 
-    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
-                                                cv::Point(erosion_size, erosion_size));
+    // 定义膨胀的结构元素
+    cv::Mat dilation_element =
+        cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1),
+                                  cv::Point(dilation_size, dilation_size));
 
-    cv::erode(mask, mask, element);   // 腐蚀
-    cv::dilate(mask, mask, element);  // 膨胀
-    // 查找遮罩中的轮廓
+    // 腐蚀操作
+    cv::erode(mask, mask, erosion_element);
+
+    // 膨胀操作
+    cv::dilate(mask, mask, dilation_element);
 
     cv::imshow("Mask", mask);  // 显示二值化的掩码
 
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-    ROS_INFO(TAG "contours length: %d",static_cast<int>(contours.size()));
+    ROS_INFO(TAG "contours length: %d", static_cast<int>(contours.size()));
 
     if (contours.size() < 100) {
         for (size_t i = 0; i < contours.size(); i++) {
@@ -48,12 +58,14 @@ int main(int argc, char **argv) {
     cv::namedWindow("Mask", cv::WINDOW_AUTOSIZE);
 
     // 创建滑动条，调节 HSV 值
-    cv::createTrackbar("H Min", "Mask", &h_min, 179, on_trackbar);
-    cv::createTrackbar("H Max", "Mask", &h_max, 179, on_trackbar);
-    cv::createTrackbar("S Min", "Mask", &s_min, 255, on_trackbar);
-    cv::createTrackbar("S Max", "Mask", &s_max, 255, on_trackbar);
-    cv::createTrackbar("V Min", "Mask", &v_min, 255, on_trackbar);
-    cv::createTrackbar("V Max", "Mask", &v_max, 255, on_trackbar);
+    cv::createTrackbar("erosion", "Mask", &erosion_size, 10, on_trackbar);
+    cv::createTrackbar("dilation", "Mask", &dilation_size, 10, on_trackbar);
+    // cv::createTrackbar("H Min", "Mask", &h_min, 179, on_trackbar);
+    // cv::createTrackbar("H Max", "Mask", &h_max, 179, on_trackbar);
+    // cv::createTrackbar("S Min", "Mask", &s_min, 255, on_trackbar);
+    // cv::createTrackbar("S Max", "Mask", &s_max, 255, on_trackbar);
+    // cv::createTrackbar("V Min", "Mask", &v_min, 255, on_trackbar);
+    // cv::createTrackbar("V Max", "Mask", &v_max, 255, on_trackbar);
     ROS_INFO("%s HRERE", TAG);
 
 #ifdef USE_SIMULATION

@@ -52,20 +52,33 @@ public:
 
     void getContour() {
         cv::Mat hsv_frame, mask;
+
+        cv::Rect lowerPartRect(0, frame_height - lowerHeight, frame_width, lowerHeight);
+        cv::Mat lowerPart = frame(lowerPartRect);  // 提取下部分图像
+
         cv::cvtColor(frame, hsv_frame, cv::COLOR_BGR2HSV);
+
         cv::Scalar lowerBlue(100, 100, 0);
         cv::Scalar upperBlue(140, 255, 255);
         cv::inRange(hsv_frame, lowerBlue, upperBlue, mask);
 
-        int erosion_size = 1;   // 腐蚀结构元素的大小
-        int dilation_size = 1;  // 膨胀结构元素的大小
+        int erosion_size = 1;
+        int dilation_size = 4;
 
-        cv::Mat element =
+        cv::Mat erosion_element =
             cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
                                       cv::Point(erosion_size, erosion_size));
 
-        cv::erode(mask, mask, element);   // 腐蚀
-        cv::dilate(mask, mask, element);  // 膨胀
+        // 定义膨胀的结构元素
+        cv::Mat dilation_element =
+            cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1),
+                                      cv::Point(dilation_size, dilation_size));
+
+        // 腐蚀操作
+        cv::erode(mask, mask, erosion_element);
+
+        // 膨胀操作
+        cv::dilate(mask, mask, dilation_element);
         // 查找轮廓
         contours.clear();
         cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
