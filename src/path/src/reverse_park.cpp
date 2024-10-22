@@ -142,6 +142,8 @@ public:
         }
 
         getContour();
+        contourPreprocess();
+        getContourCenter();
         towardCenter();
 
         cv::imshow("camera_node Feed", frame);

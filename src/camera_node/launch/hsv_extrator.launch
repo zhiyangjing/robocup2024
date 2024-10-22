@@ -1,6 +1,6 @@
 <launch>
     <!-- <param name="source_path" value="$(find camera_node)/../../data/src_images/low_light2.png"/> -->
-    <param name="source_path" value="$(find camera_node)/../../data/src_videos/reverse_park.mp4"/>
-    <param name="frame_rate" value="2"></param>
+    <param name="source_path" value="$(find camera_node)/../../data/src_videos/reverse_back.avi"/>
+    <param name="frame_rate" value="5"></param>
     <node pkg="camera_node" type="hsv_extrator" name="hsv_extrator" output="screen"/>
 </launch>

@@ -18,8 +18,8 @@ void on_trackbar(int, void *) {
     int erosion_size = 1;   // 腐蚀结构元素的大小
     int dilation_size = 1;  // 膨胀结构元素的大小
 
-    cv::Mat element = cv::getStructuringElement(
-        cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1), cv::Point(erosion_size, erosion_size));
+    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
+                                                cv::Point(erosion_size, erosion_size));
 
     cv::erode(mask, mask, element);   // 腐蚀
     cv::dilate(mask, mask, element);  // 膨胀
@@ -29,8 +29,9 @@ void on_trackbar(int, void *) {
 
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    ROS_INFO(TAG "contours length: %d",static_cast<int>(contours.size()));
 
-    if (contours.size() < 20) {
+    if (contours.size() < 100) {
         for (size_t i = 0; i < contours.size(); i++) {
             cv::Scalar greenColor(0, 255, 0);  // 绿色
             cv::drawContours(frame, contours, static_cast<int>(i), greenColor, 2, cv::LINE_8);
@@ -61,7 +62,6 @@ int main(int argc, char **argv) {
     ROS_INFO("%s picuter path: %s", TAG, source_path.c_str());
     std::string extension = source_path.substr(source_path.find_last_of(".") + 1);
     std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);  // 转为小写
-    cv::Mat frame;
     cv::VideoCapture cap;
     bool is_video = false;
     if (extension == "png" || extension == "jpg" || extension == "jpeg") {
@@ -74,9 +74,9 @@ int main(int argc, char **argv) {
     } else {
         ROS_WARN("Unsupported file type: %s", source_path.c_str());
     }
-    
+
     int frame_rate = 5;
-    nh.getParam("frame_rate",frame_rate);
+    nh.getParam("frame_rate", frame_rate);
     ros::Rate looprate(frame_rate);
     while (ros::ok()) {
         // 捕获帧
@@ -96,6 +96,7 @@ int main(int argc, char **argv) {
         cv::cvtColor(frame, hsv_frame, cv::COLOR_BGR2HSV);
 
         on_trackbar(0, 0);
+
         cv::imshow("camera_node Feed", frame);
 
         // 使用 waitKey 控制帧率和响应键盘输入
@@ -156,13 +157,8 @@ int main(int argc, char **argv) {
         }
 
         // 在帧上显示帧率
-        cv::putText(frame,
-                    "FPS: " + std::to_string(static_cast<int>(currentFps)),
-                    cv::Point(10, 30),
-                    cv::FONT_HERSHEY_SIMPLEX,
-                    1,
-                    cv::Scalar(0, 255, 0),
-                    2);
+        cv::putText(frame, "FPS: " + std::to_string(static_cast<int>(currentFps)), cv::Point(10, 30),
+                    cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0), 2);
 
         // 显示捕获的帧
         cv::imshow("camera_node Feed", frame);
