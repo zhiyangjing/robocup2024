@@ -88,7 +88,7 @@ public:
             }
             double area = cv::contourArea(contour);
             double perimeter = cv::arcLength(contour, true);
-            if (((pow((perimeter / 4), 2) - area) / area) < 0.3) {
+            if (fabs((pow((perimeter / 4), 2) - area) / area) < 1.3) {
                 blueContours.emplace_back(i, cv::contourArea(contour), contour_center);
                 // 用周长和面积的关系排除掉不接近正方形的物体
             }
