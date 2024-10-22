@@ -53,7 +53,7 @@ public:
     void getContour() {
         cv::Mat hsv_frame, mask;
         cv::cvtColor(frame, hsv_frame, cv::COLOR_BGR2HSV);
-        cv::Scalar lowerBlue(100, 50, 0);
+        cv::Scalar lowerBlue(100, 100, 0);
         cv::Scalar upperBlue(140, 255, 255);
         cv::inRange(hsv_frame, lowerBlue, upperBlue, mask);
 
@@ -94,7 +94,9 @@ public:
             }
         }
         ROS_INFO(TAG "blueContours length: %d", static_cast<int>(blueContours.size()));
+    }
 
+    void getContourCenter() {
         sort(blueContours.begin(), blueContours.end(),
              [](auto const &a, auto const &b) { return get<1>(a) > get<1>(b); });
 
@@ -107,9 +109,6 @@ public:
                 cv::circle(frame, get<2>(blueContours[i]), 5, color, -1);
             }
         }
-    }
-
-    void getContourCenter() {
         auto first_x = get<2>(blueContours[0]).y;
         auto second_x = get<2>(blueContours[1]).y;
         if (target_index == 0) {  // 左侧车库，选择x更大的那个
