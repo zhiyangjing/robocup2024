@@ -34,7 +34,7 @@ public:
     void towardCenter() {
         int x = target_center.x;
         int res;
-        res = (x - frame_width / 2);
+        res = -(x - frame_width / 2);
         int angle_value = max(min(res, 200), -200);
         nh_.setParam("angle", angle_value);
     }
