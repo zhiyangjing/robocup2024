@@ -33,6 +33,7 @@ public:
         } else {
             target_index = 0;
         }
+        ROS_INFO(TAG "Target index: %d", target_index);
     }
 
     void towardCenter() {
