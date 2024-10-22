@@ -6,7 +6,7 @@
 #include <sensor_msgs/LaserScan.h>
 #include <stack>
 
-#define TAG " [REVERSE]"
+#define TAG " [REVERSE] "
 
 class ReversePark : public Ability {
 private:
@@ -17,7 +17,7 @@ private:
     int frame_height = 480;
     int frame_width = 720;
     int handle_rate_ = 20;
-    int target_index = 1;
+    int target_index = 0;  // 0 代表左侧车库，1代表右侧车库
     cv::Point target_center;
     std::vector<tuple<int, int, cv::Point2i>> sorted_contours;  // 边缘集合的下标、面积、中心点
     float lowerFraction = 0.4;
@@ -27,11 +27,11 @@ private:
 public:
     ReversePark(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
         string target;
-        nh_.getParam("target", target);
+        nh_.getParam("reverse_park/target", target);
         if (target == "left") {
-            target_index = 1;  // 要停入左侧的车库，理论上来说，停车标志更小，会在排序中位居第二
+            target_index = 0;  // 0 代表左侧车库
         } else {
-            target_index = 0;
+            target_index = 1;  // 1代表右侧车库
         }
         ROS_INFO(TAG "Target index: %d", target_index);
     }
@@ -100,11 +100,10 @@ public:
         }
         auto first_x = get<2>(sorted_contours[0]).y;
         auto second_x = get<2>(sorted_contours[1]).y;
-        if (first_x < second_x) {
-            target_center = get<2>(sorted_contours[target_index]);  // 最大的在左侧，符合一般情况的排序
-        } else {
-            target_center = get<2>(sorted_contours[!target_index]);
-            // 这里写的比较奇怪，总之就是如果按照x的排序是反着的，target_index就得0，1调转。
+        if (target_index == 0) {  // 左侧车库，选择x更大的那个
+            target_center = (first_x > second_x) ? (get<2>(sorted_contours[0])) : (get<2>(sorted_contours[1]));
+        } else {  // 右侧车库，选择x更小的那一个
+            target_center = (first_x > second_x) ? (get<2>(sorted_contours[1])) : (get<2>(sorted_contours[0]));
         }
     }
 
@@ -140,7 +139,7 @@ public:
     }
 
     void run() {
-        ROS_INFO(TAG "TraceLine started to run");
+        ROS_INFO(TAG "Reverse started to run");
         is_running_ = true;
         sub_ = nh_.subscribe("/image_topic/back", 1, &ReversePark::imageCallback, this);
 
