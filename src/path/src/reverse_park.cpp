@@ -13,6 +13,7 @@ private:
     bool is_running_ = false;
     ros::Subscriber sub_;
     cv::Mat frame;
+    cv::Mat hsv_frame;
     int frame_height = 480;
     int frame_width = 720;
     int handle_rate_ = 20;
@@ -40,22 +41,24 @@ public:
         cv::circle(frame, cv::Point(x, frame_height - 10), 3, cv::Scalar(0, 0, 255),
                    cv::FILLED);  // 使用 cv::FILLED 填充圆
         int angle_value = max(min(res, 200), -200);
-        ROS_INFO(TAG "Angle: %d", angle_value);
+        ROS_INFO(TAG "Center x: %d,y: %d ; Angle: %d", target_center.x, target_center.y, angle_value);
         nh_.setParam("angle", angle_value);
     }
 
     void getCenter() {
-        cv::Mat hsv, mask;
-        cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+        cv::Mat hsv_frame, mask;
+        cv::cvtColor(frame, hsv_frame, cv::COLOR_BGR2HSV);
         cv::Scalar lower_blue(100, 50, 0);
         cv::Scalar upper_blue(140, 255, 255);
-        cv::inRange(hsv, lower_blue, upper_blue, mask);
+        cv::inRange(hsv_frame, lower_blue, upper_blue, mask);
 
         // 查找轮廓
         std::vector<std::vector<cv::Point>> contours;
         cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
         sorted_contours.clear();
+
+        ROS_INFO(TAG "Contour lenght: %d", static_cast<int>(contours.size()));
         for (int i = 0; i < contours.size(); i++) {
             auto contour = contours[i];
 
@@ -91,6 +94,22 @@ public:
         } else {
             target_center = get<2>(sorted_contours[0]);
         }
+    }
+
+    void getIntersection() {
+        float lowerFraction = 0.4;
+        // 计算下部分的高度，根据给定的比例
+        int lowerHeight = static_cast<int>(frame_height * lowerFraction);
+        cv::Rect lowerPartRect(0, frame_height - lowerHeight, frame_width, lowerHeight);
+        cv::Mat lowerPart = hsv_frame(lowerPartRect);  // 提取下部分图像
+
+        // 转换为HSV颜色空间
+        cv::Mat hsv;
+        cv::cvtColor(lowerPart, hsv, cv::COLOR_BGR2HSV);
+
+        // 定义白色的HSV范围
+        cv::Scalar lowerWhite(0, 0, 160);     // 白色下限
+        cv::Scalar upperWhite(180, 30, 255);  // 白色上限
     }
 
     void imageCallback(const sensor_msgs::ImageConstPtr &msg) {
