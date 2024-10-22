@@ -11,7 +11,7 @@
 
 using namespace std;
 
-class VideoRecorder {
+class CameraNode {
 private:
     cv::VideoCapture cap_;
     ros::NodeHandle nh_;
@@ -26,7 +26,7 @@ private:
     thread write_thread;
 
 public:
-    VideoRecorder(ros::NodeHandle &nh) : nh_(nh) {
+    CameraNode(ros::NodeHandle &nh) : nh_(nh) {
         cap_.open(0);// 打开摄像头
         nh_.param<string>("output_video_path", output_path_, "");
         ROS_INFO("%s video path: %s", TAG, output_path_.c_str());
@@ -46,7 +46,7 @@ public:
             ros::shutdown();
         }
         ROS_INFO("%s Creating write thread ", TAG);
-        write_thread = thread(&VideoRecorder::writeVideo, this);
+        write_thread = thread(&CameraNode::writeVideo, this);
         // write_thread.detach();
     }
 
@@ -107,7 +107,7 @@ public:
         frame_cv.notify_one();
     }
 
-    ~VideoRecorder() {
+    ~CameraNode() {
         if (write_thread.joinable()) {
             write_thread.join();
         }
@@ -116,7 +116,7 @@ public:
     }
 };
 
-VideoRecorder *recorderPtr;
+CameraNode *recorderPtr;
 void signalHandler(int signum) {
     if (recorderPtr) {
         recorderPtr->stop();
@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
     cv::namedWindow("video writer", cv::WINDOW_AUTOSIZE);
     ROS_INFO("%s Used for record video in runtime! ", TAG);
     ros::NodeHandle nh;
-    VideoRecorder video_recorder(nh);
+    CameraNode video_recorder(nh);
     recorderPtr = &video_recorder;
     ROS_INFO("%s Video Recorder node init...", TAG);
     video_recorder.run();

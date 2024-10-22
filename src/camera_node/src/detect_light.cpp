@@ -32,7 +32,7 @@ private:
 
 public:
     Visualizer(ros::NodeHandle &nh) : nh_(nh) {
-        sub_ = nh_.subscribe("image_topic", 1, &Visualizer::imageCallback, this);
+        sub_ = nh_.subscribe("/image_topic", 1, &Visualizer::imageCallback, this);
     }
 
     // 计算并显示帧率的函数

@@ -62,6 +62,15 @@ target_link_libraries(
   ${OpenCV_LIBRARIES}
 )
 
+add_executable(reverse_park src/reverse_park.cpp)
+
+target_link_libraries(
+  reverse_park
+  common_utils
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
+
 
 # add_executable(avoid src/avoid.cpp)
 

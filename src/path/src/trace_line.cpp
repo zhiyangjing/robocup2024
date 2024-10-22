@@ -449,6 +449,12 @@ int TraceLine::getCenter() {
     return prev_center.avg();
 }
 
+/**
+ * @brief 基于区间划分的策略函数，未使用
+ * 
+ * @param left_slope 
+ * @param right_slope 
+ */
 void TraceLine::lineSlopeStrategy_old(float left_slope, float right_slope) {
     if (left_slope == 0 and right_slope == 0) {
         ROS_WARN(TAG " No line detected");
@@ -486,6 +492,12 @@ void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int cente
     ROS_INFO(TAG "ANGLE: %d", angle_value);
 }
 
+/**
+ * @brief 不使用线段中点插值的策略函数，未使用
+ * 
+ * @param left_slope 
+ * @param right_slope 
+ */
 void TraceLine::lineSlopeStrategy(float left_slope, float right_slope) {
     if (left_slope == 0 and right_slope == 0) {
         return;
@@ -588,7 +600,7 @@ float TraceLine::findMinDistance(vector<float> ranges) {
 void TraceLine::run() {
     ROS_INFO(TAG "TraceLine started to run");
     is_running_ = true;
-    sub_ = nh_.subscribe("image_topic", 1, &TraceLine::imageCallback, this);
+    sub_ = nh_.subscribe("/image_topic", 1, &TraceLine::imageCallback, this);
 
     ros::Rate handle_rate(handle_rate_);  // 处理频率
     while (ros::ok() && is_running_) {

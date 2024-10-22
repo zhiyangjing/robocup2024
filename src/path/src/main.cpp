@@ -171,7 +171,7 @@ public:
     PathController(ros::NodeHandle nh) : nh_(nh) {
         // states_queue = std::deque<int>({LIGHT_DETECT,TRACE_LINE, ROAD_LEFT_TURN ,UTURN, TRACE_LINE, UTURN, TRACE_LINE, TERMINAL});
         states_queue = std::deque<int>(
-            {TRACE_LINE, STRAIGHT, TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE, ROAD_RIGHT_TURN, REVERSE, TERMINAL});
+            {TRACE_LINE, STRAIGHT, TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE, ROAD_RIGHT_TURN, REVERSE_PARK, TERMINAL});
     }
     void start() {
         while (true) {
@@ -199,8 +199,8 @@ public:
                 auto road_right_turn = RoadRightTurn(-1, nh_);
                 road_right_turn.run();
             }
-            //  else if (STATE == REVERSE) {
-            //     auto reverse = Reverse(-1, nh_);
+            //  else if (STATE == REVERSE_PARK) {
+            //     auto reverse = ReversePark(-1, nh_);
             //     reverse.run();
             // }
             else if (STATE == BIG_LEFT_TURN) {

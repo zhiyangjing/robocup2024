@@ -1,0 +1,13 @@
+<launch>
+    <node pkg="camera_node" type="camera_node" name="camera_node" output="screen" ns="camera_node/front">
+        <param name="frame_rate" value="10"></param>
+        <param name="camera_port" value="0"><param>
+        <remap from="/image_topic" to="/image_topic/front"/>
+        <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/turning3.avi"/> -->
+    </node>
+    <node pkg="camera_node" type="camera_node" name="camera_node" output="screen" ns="camera_node/back">
+        <param name="frame_rate" value="10"></param>
+        <param name="camera_port" value="1"><param>
+        <remap from="/image_topic" to="/image_topic/back"/>
+    </node>
+</launch>

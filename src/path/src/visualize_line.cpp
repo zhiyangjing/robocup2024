@@ -127,7 +127,7 @@ private:
 
 public:
     TraceLineDemo(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, nh) {
-        sub_ = nh_.subscribe("image_topic", 1, &TraceLineDemo::imageCallback, this);
+        sub_ = nh_.subscribe("/image_topic", 1, &TraceLineDemo::imageCallback, this);
     }
 
     // 计算并显示帧率的函数
