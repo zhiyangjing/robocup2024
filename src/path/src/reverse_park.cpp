@@ -216,10 +216,9 @@ public:
     }
 
     void getIntersection() {
-        int target_x = target_center.x;
-        sort(laneLines.begin(), laneLines.end(), [target_x](auto const &a, auto const &b) {
-            return abs(get<3>(a)[0] - target_x) < abs(get<3>(b)[0] - target_x);
-        });
+        int c_x = target_x.avg();
+        sort(laneLines.begin(), laneLines.end(),
+             [c_x](auto const &a, auto const &b) { return abs(get<3>(a)[0] - c_x) < abs(get<3>(b)[0] - c_x); });
         bool right_lane_found = false;
         bool left_lane_found = false;
         for (auto &Lane : laneLines) {
@@ -227,14 +226,14 @@ public:
             auto length = get<1>(Lane);
             auto slope = get<2>(Lane);
             auto center_x = get<3>(Lane)[0];
-            if (not right_lane_found and slope > 0 and center_x > target_x) {
+            if (not right_lane_found and (slope > 0 or slope < -30) and center_x > c_x) {
                 cv::Point start(line[0], line[1] + (upperHeight));
                 cv::Point end(line[2], line[3] + (upperHeight));
                 cv::line(frame, start, end, cv::Scalar(255, 0, 0), 2);
                 right_lane_found = true;
                 right_lane_found_times++;
                 right_point.push(get<4>(Lane));
-            } else if (not left_lane_found and length > 50 and slope < 0 and center_x < target_x) {
+            } else if (not left_lane_found and length > 50 and (slope < 0 or slope > 20) and center_x < c_x) {
                 cv::Point start(line[0], line[1] + (upperHeight));
                 cv::Point end(line[2], line[3] + (upperHeight));
                 cv::line(frame, start, end, cv::Scalar(0, 255, 0), 2);
