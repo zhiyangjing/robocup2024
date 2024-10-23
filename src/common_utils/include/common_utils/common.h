@@ -8,8 +8,8 @@ using Eigen::Vector2f;
 using Eigen::VectorXf;
 
 enum TrafficLight {
-    RED = 0, // 红灯
-    GREEN = 1// 绿灯
+    RED = 0,   // 红灯
+    GREEN = 1  // 绿灯
 };
 
 #define COLOR_RESET "\033[0m"
@@ -24,33 +24,34 @@ enum TrafficLight {
 
 template<typename T> class Buffer {
 public:
-    explicit Buffer(size_t capacity);// 指定大小的构造函数
     explicit Buffer();
-    ~Buffer();                                   // 析构函数
-    Buffer<T> &operator=(const Buffer<T> &other);// 赋值运算符重载
+    explicit Buffer(size_t capacity);  // 指定大小的构造函数
+    explicit Buffer(size_t capacity, T default_value);
+    ~Buffer();                                     // 析构函数
+    Buffer<T> &operator=(const Buffer<T> &other);  // 赋值运算符重载
     Buffer(const Buffer<T> &other);
 
-    void push(const T &value);  // 从头部添加元素
-    T &operator[](size_t index);// 重载下标运算符
+    void push(const T &value);    // 从头部添加元素
+    T &operator[](size_t index);  // 重载下标运算符
     T avg();
-    size_t getSize() const;  // 获取当前缓冲区的大小
-    void printBuffer() const;// 打印缓冲区内容（可选）
+    size_t getSize() const;    // 获取当前缓冲区的大小
+    void printBuffer() const;  // 打印缓冲区内容（可选）
 
 private:
-    T *buffer;      // 用于存储元素的动态数组
-    size_t capacity;// 缓冲区的最大容量
-    size_t size;    // 当前元素数量
-    size_t head;    // 指向最新元素的索引
+    T *buffer;        // 用于存储元素的动态数组
+    size_t capacity;  // 缓冲区的最大容量
+    size_t size;      // 当前元素数量
+    size_t head;      // 指向最新元素的索引
 };
 
 class Interpolator {
 private:
-    MatrixXf points;                                          // 参考点
-    VectorXf values;                                          // 与参考点匹配的值
-    VectorXf weights;                                         // 每个参考维度的权重
-    int points_rows = 0;                                      // 参考点个数
-    int points_cols = 0;                                      // 参考点维度
-    std::vector<std::pair<float, float>> normalization_params;// 保存每一个维度的最小值和跨度
+    MatrixXf points;                                            // 参考点
+    VectorXf values;                                            // 与参考点匹配的值
+    VectorXf weights;                                           // 每个参考维度的权重
+    int points_rows = 0;                                        // 参考点个数
+    int points_cols = 0;                                        // 参考点维度
+    std::vector<std::pair<float, float>> normalization_params;  // 保存每一个维度的最小值和跨度
 
 public:
     Interpolator();
@@ -60,4 +61,4 @@ public:
 };
 
 #include "common_impl.h"
-#endif// TRAFFIC_LIGHT_H
+#endif  // TRAFFIC_LIGHT_H

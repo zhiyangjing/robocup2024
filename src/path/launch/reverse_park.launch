@@ -2,7 +2,8 @@
     <node pkg="camera_node" type="camera_node" name="camera_node" output="screen" ns="camera_node/back">
         <param name="frame_rate" value="10"></param>
         <param name="camera_port" value="0"></param>
-        <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_back.avi"> </param>
+        <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_short.mp4"> </param> -->
+        <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_back2.avi"> </param>
         <remap from="/image_topic" to="/image_topic/back"/>
     </node>
     <node pkg="path" type="reverse_park" name="reverse_park" output="screen">

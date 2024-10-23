@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
     ROS_INFO("%s Camera node init...", TAG);
     CameraNode imagePublisher(nh);
     int frame_rate = 10;
-    nh.getParam("frame_rate", frame_rate);
+    nh.getParam("camera_node/frame_rate", frame_rate);
     ros::Rate rate(frame_rate);
     while (ros::ok()) {
         imagePublisher.publishImage();

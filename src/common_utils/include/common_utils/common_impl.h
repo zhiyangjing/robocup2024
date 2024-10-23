@@ -14,7 +14,14 @@ template<typename T> Buffer<T>::Buffer() {
 template<typename T> Buffer<T>::Buffer(size_t capacity) : capacity(capacity), size(0), head(0) {
     buffer = new T[capacity];
     memset(buffer, 0, sizeof(T) * capacity);
-    printf("size location: %pl\n", &size);
+    printf("buffer location: %p\n", buffer);
+}
+
+template<typename T> Buffer<T>::Buffer(size_t capacity, T default_value) : capacity(capacity), size(0), head(0) {
+    buffer = new T[capacity];
+    for (size_t i = 0; i < capacity; i++) {
+        buffer[i] = default_value;
+    }
     printf("buffer location: %p\n", buffer);
 }
 
@@ -33,24 +40,21 @@ template<typename T> Buffer<T>::Buffer(const Buffer<T> &other) {
     printf("Copy constructor called - buffer location: %p\n", buffer);
 }
 
-template<typename T> 
-T Buffer<T>::avg() {
+template<typename T> T Buffer<T>::avg() {
     T sum = 0;
     if (size == 0) {
         return 0;
     }
-    for (int i = 0;i < size;i++) {
+    for (int i = 0; i < size; i++) {
         sum += buffer[(head + i) % capacity];
     }
     return sum / static_cast<int>(size);
 }
 
-
 // 赋值运算符重载
-template<typename T> 
-Buffer<T>& Buffer<T>::operator=(const Buffer<T>& other) {
-    if (this != &other) {// 自赋值检查
-        delete[] buffer; // 释放旧内存
+template<typename T> Buffer<T> &Buffer<T>::operator=(const Buffer<T> &other) {
+    if (this != &other) {  // 自赋值检查
+        delete[] buffer;   // 释放旧内存
 
         // 复制新内容
         capacity = other.capacity;
@@ -58,14 +62,14 @@ Buffer<T>& Buffer<T>::operator=(const Buffer<T>& other) {
         head = other.head;
 
         if (other.buffer) {
-            buffer = new T[capacity];                          // 分配新内存
-            memcpy(buffer, other.buffer, sizeof(T) * capacity);// 深拷贝
+            buffer = new T[capacity];                            // 分配新内存
+            memcpy(buffer, other.buffer, sizeof(T) * capacity);  // 深拷贝
         } else {
             buffer = nullptr;
         }
     }
     printf("Assignment operator called - buffer location: %p\n", buffer);
-    return *this;// 返回当前对象的引用
+    return *this;  // 返回当前对象的引用
 }
 
 // 析构函数
@@ -73,11 +77,11 @@ template<typename T> Buffer<T>::~Buffer() { delete[] buffer; }
 
 // 从头部添加元素
 template<typename T> void Buffer<T>::push(const T &value) {
-    head = (head - 1 + capacity) % capacity;// 更新头部索引
+    head = (head - 1 + capacity) % capacity;  // 更新头部索引
     buffer[head] = value;
 
     if (size < capacity) {
-        size++;// 如果未满，则增加大小
+        size++;  // 如果未满，则增加大小
     }
 }
 
