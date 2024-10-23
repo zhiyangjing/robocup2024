@@ -49,7 +49,7 @@ public:
     void towardCenter() {
         int x = target_center.x;
         int res;
-        res = -(x - frame_width / 2);
+        res = -(x - frame_width / 2) * 4;
         cv::circle(frame, cv::Point(frame_width / 2, frame_height - 10), 3, cv::Scalar(0, 255, 0),
                    cv::FILLED);  // 使用 cv::FILLED 填充圆
         cv::circle(frame, cv::Point(x, frame_height - 10), 3, cv::Scalar(0, 0, 255),
@@ -183,7 +183,7 @@ public:
                 right_lane_found = true;
                 right_point.push(get<4>(Lane));
                 ROS_INFO(TAG "RIGHT: %d", right_point.avg());
-            } else if (not left_lane_found and length > 120 and slope < 0 and center_x < target_x) {
+            } else if (not left_lane_found and length > 50 and slope < 0 and center_x < target_x) {
                 cv::Point start(line[0], line[1] + (upperHeight));
                 cv::Point end(line[2], line[3] + (upperHeight));
                 cv::line(frame, start, end, cv::Scalar(0, 255, 0), 2);
