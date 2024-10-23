@@ -27,16 +27,21 @@ private:
     float lowerFraction = 0.55;
     int lowerHeight = static_cast<int>(frame_height * lowerFraction);
     int upperHeight = frame_height - lowerHeight;
-    vector<cv::Vec4i> lines_raw;                                       // 存储检测到的白色车道线段
-    vector<tuple<cv::Vec4i, float, float, cv::Vec2i, int>> laneLines;  // 线段，长度，斜率 , 中点， 和下边界的交点
+    vector<cv::Vec4i> lines_raw;  // 存储检测到的白色车道线段
+    vector<tuple<cv::Vec4i, float, float, cv::Vec2i, int>>
+        laneLines;  // 车库底线，线段，长度，斜率 , 中点， 和下边界的交点
+    vector<tuple<cv::Vec4i, float, float, cv::Vec2i, int>>
+        bottomLines;  // 车库底线，线段，长度，斜率 , 中点， 和下边界的交点
     Buffer<int> right_point;
     Buffer<int> left_point;
     Buffer<int> target_x;
     Buffer<int> prev_angle;
-    bool first_stage_end = false;
+    bool second_stage = false;
     int left_lane_found_times = 0;
     int right_lane_found_times = 0;
     Interpolator interpolator;
+    bool bottom_line_found = true;
+    int min_bottom_length = 100;
 
 public:
     ReversePark(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
@@ -80,7 +85,7 @@ public:
     }
 
     void moveToPlace() {
-        if (not first_stage_end) {
+        if (not second_stage) {
             int x = target_center.x;
             int res = -(x - frame_width / 2) * 4;
             cv::circle(frame, cv::Point(frame_width / 2, frame_height - 10), 3, cv::Scalar(0, 255, 0),
@@ -102,7 +107,7 @@ public:
         }
 
         ROS_INFO(TAG "RIGHT: %d, CENTER: %d, LEFT: %d, ANGLE: %d, STAGE: %d", right_point.avg(), target_x.avg(),
-                 left_point.avg(), prev_angle.avg(), static_cast<int>(first_stage_end));
+                 left_point.avg(), prev_angle.avg(), static_cast<int>(second_stage));
     }
 
     void getContour() {
@@ -185,6 +190,7 @@ public:
             ROS_WARN(TAG "No line to preprocess");
         } else {
             laneLines.clear();
+            bottomLines.clear();
             // ROS_INFO(TAG "lines count %d", (int) lines_raw.size());
             for (const auto &line : lines_raw) {
                 float slope = calculateSlope(line);
@@ -194,14 +200,17 @@ public:
                     cv::Point end(line[2], line[3] + (upperHeight));
                     cv::line(frame, start, end, cv::Scalar(255, 255, 0), 2);
                 }
+                double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
                 if (fabs(slope) < 0.2) {
-                    continue;  // 去除横向线段，以及过于垂直的线段
+                    bottomLines.emplace_back(line, lineLength, slope,
+                                             cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight),
+                                             0);  // 不填充于底边的交点（无用）
+                    continue;                     // 去除横向线段，以及过于垂直的线段
                 }
 
                 int x0 = line[0], y0 = line[1], x1 = line[2], y1 = line[3];
                 int intersection_pos = (lowerHeight - y0) * (x1 - x0) / (y1 - y0) + x0;
 
-                double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
                 laneLines.emplace_back(line, lineLength, slope,
                                        cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight),
                                        intersection_pos);
@@ -215,6 +224,31 @@ public:
         // ROS_INFO(TAG "lines count: %d", (int) laneLines.size());
     }
 
+    void checkBottomLine() {
+        if (bottomLines.empty() or second_stage) {
+            return;
+        }
+
+        sort(bottomLines.begin(), bottomLines.end(),
+             [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
+        auto longestLine = bottomLines[0];
+        ROS_INFO(TAG "%f", get<1>(longestLine));
+        if (get<3>(longestLine)[1] > 445) {
+            if ((get<1>(longestLine) > min_bottom_length and bottomLines.size() > 2)
+                or (get<1>(longestLine) > 130 and bottomLines.size() > 6)) {
+                bottom_line_found = true;
+                // ROS_INFO(TAG "%s", string(20, '-').c_str());
+                ROS_INFO(TAG COLOR_YELLOW "Bottom Line detected!" COLOR_RESET);
+                // ROS_INFO(TAG "%s", string(20, '-').c_str());
+                ROS_INFO(TAG "slope : %f length: %f", get<2>(longestLine), get<1>(longestLine));
+                ROS_INFO(TAG "center_x:  %d center_y: %d", get<3>(longestLine)[2], get<3>(longestLine)[1]);
+                ROS_INFO(TAG "bottomLines size:  %d ", static_cast<int>(bottomLines.size()));
+                // ROS_INFO(TAG "%s", string(20, '-').c_str());
+            }
+        }
+        // 长度大于特定最小值，并且处于屏幕下方
+    }
+
     void getIntersection() {
         int c_x = target_x.avg();
         sort(laneLines.begin(), laneLines.end(),
@@ -226,25 +260,29 @@ public:
             auto length = get<1>(Lane);
             auto slope = get<2>(Lane);
             auto center_x = get<3>(Lane)[0];
-            if (not right_lane_found and (slope > 0 or slope < -30) and center_x > c_x) {
+            auto intersection_pos = get<4>(Lane);
+            if (not right_lane_found and (slope > 0 or slope < -30) and center_x > c_x and intersection_pos < 920) {
                 cv::Point start(line[0], line[1] + (upperHeight));
                 cv::Point end(line[2], line[3] + (upperHeight));
                 cv::line(frame, start, end, cv::Scalar(255, 0, 0), 2);
+                cv::circle(frame, get<3>(Lane), 5, cv::Scalar(0, 255, 0), -1);
                 right_lane_found = true;
                 right_lane_found_times++;
                 right_point.push(get<4>(Lane));
-            } else if (not left_lane_found and length > 50 and (slope < 0 or slope > 20) and center_x < c_x) {
+            } else if (not left_lane_found and length > 50 and (slope < 0 or slope > 20) and center_x < c_x
+                       and intersection_pos > -200) {
                 cv::Point start(line[0], line[1] + (upperHeight));
                 cv::Point end(line[2], line[3] + (upperHeight));
                 cv::line(frame, start, end, cv::Scalar(0, 255, 0), 2);
+                cv::circle(frame, get<3>(Lane), 5, cv::Scalar(255, 0, 0), -1);
                 left_lane_found = true;
                 left_point.push(get<4>(Lane));
                 left_lane_found_times++;
             }
         }
 
-        if (left_lane_found_times >= 3 and right_lane_found_times >= 3 and not first_stage_end) {
-            first_stage_end = true;
+        if (left_lane_found_times >= 4 and right_lane_found_times >= 4 and not second_stage) {
+            second_stage = true;
             ROS_INFO(TAG COLOR_YELLOW "Stage 2 started! " COLOR_RESET);
         }
     }
@@ -386,6 +424,7 @@ public:
         getLines();
         linePreprocess();
         getIntersection();
+        checkBottomLine();
         moveToPlace();
 
         cv::imshow("camera_node Feed", frame);
