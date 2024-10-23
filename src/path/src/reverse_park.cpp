@@ -31,11 +31,44 @@ private:
     vector<tuple<cv::Vec4i, float, float, cv::Vec2i, int>> laneLines;  // 线段，长度，斜率 , 中点， 和下边界的交点
     Buffer<int> right_point;
     Buffer<int> left_point;
+    Buffer<int> target_x;
+    Buffer<int> prev_angle;
+    bool first_stage_end = false;
+    int left_lane_found_times = 0;
+    int right_lane_found_times = 0;
+    Interpolator interpolator;
 
 public:
     ReversePark(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
         right_point = Buffer<int>(5);
         left_point = Buffer<int>(5);
+        target_x = Buffer<int>(5);
+        prev_angle = Buffer<int>(3);
+
+        int point_nums = 11;
+
+        VectorXf weights(3);
+        VectorXf R(point_nums);
+        VectorXf C(point_nums);
+        VectorXf L(point_nums);
+        VectorXf A(point_nums);
+        weights << 1, 1, 1;
+
+        R << 609, 627, 612, 889, 876, 370, 370, 588, 737, 743, 559;
+        C << 363, 370, 360, 424, 444, 311, 303, 249, 470, 489, 270;
+        L << 124, 136, 113, 363, 369, -136, -128, 37, 200, 253, 30;
+        A << 0, 0, 0, -200, -200, 200, 200, 100, -100, -150, 150;
+
+        // 创建点矩阵
+        MatrixXf points(point_nums, 3);
+        for (int i = 0; i < point_nums; ++i) {
+            points(i, 0) = R(i);  // 第一列为 x
+            points(i, 1) = C(i);  // 第二列为 y
+            points(i, 2) = L(i);  // 第三列为 center
+        }
+
+        interpolator = Interpolator(points, A, weights);
+
         string target;
         nh_.getParam("reverse_park/target", target);
         if (target == "left") {
@@ -46,17 +79,30 @@ public:
         ROS_INFO(TAG "Target index: %d", target_index);
     }
 
-    void towardCenter() {
-        int x = target_center.x;
-        int res;
-        res = -(x - frame_width / 2) * 4;
-        cv::circle(frame, cv::Point(frame_width / 2, frame_height - 10), 3, cv::Scalar(0, 255, 0),
-                   cv::FILLED);  // 使用 cv::FILLED 填充圆
-        cv::circle(frame, cv::Point(x, frame_height - 10), 3, cv::Scalar(0, 0, 255),
-                   cv::FILLED);  // 使用 cv::FILLED 填充圆
-        int angle_value = max(min(res, 200), -200);
-        // ROS_INFO(TAG "Center x: %d,y: %d ; Angle: %d", target_center.x, target_center.y, angle_value);
-        nh_.setParam("angle", angle_value);
+    void moveToPlace() {
+        if (not first_stage_end) {
+            int x = target_center.x;
+            int res = -(x - frame_width / 2) * 4;
+            cv::circle(frame, cv::Point(frame_width / 2, frame_height - 10), 3, cv::Scalar(0, 255, 0),
+                       cv::FILLED);  // 使用 cv::FILLED 填充圆
+            cv::circle(frame, cv::Point(x, frame_height - 10), 3, cv::Scalar(0, 0, 255),
+                       cv::FILLED);  // 使用 cv::FILLED 填充圆
+            prev_angle.push(max(min(res, 200), -200));
+            int angle_value = prev_angle.avg();
+            nh_.setParam("angle", angle_value);
+        } else {
+            VectorXf point_data(3);
+            // ROS_INFO(TAG "RIGHT: %d", right_point.avg());
+            // ROS_INFO(TAG "LEFT: %d", left_point.avg());
+            point_data << right_point.avg(), target_x.avg(), left_point.avg();
+            float res = max(min(interpolator.interpolate(point_data), 200.f), -200.f);
+            prev_angle.push(static_cast<int>(res));
+            int angle_value = prev_angle.avg();
+            nh_.setParam("angle", angle_value);
+        }
+
+        ROS_INFO(TAG "RIGHT: %d, CENTER: %d, LEFT: %d, ANGLE: %d, STAGE: %d", right_point.avg(), target_x.avg(),
+                 left_point.avg(), prev_angle.avg(), static_cast<int>(first_stage_end));
     }
 
     void getContour() {
@@ -143,7 +189,12 @@ public:
             for (const auto &line : lines_raw) {
                 float slope = calculateSlope(line);
 
-                if (fabs(slope) < 0.7 or fabs(slope) > 20) {
+                {
+                    cv::Point start(line[0], line[1] + (upperHeight));
+                    cv::Point end(line[2], line[3] + (upperHeight));
+                    cv::line(frame, start, end, cv::Scalar(255, 255, 0), 2);
+                }
+                if (fabs(slope) < 0.2) {
                     continue;  // 去除横向线段，以及过于垂直的线段
                 }
 
@@ -181,16 +232,21 @@ public:
                 cv::Point end(line[2], line[3] + (upperHeight));
                 cv::line(frame, start, end, cv::Scalar(255, 0, 0), 2);
                 right_lane_found = true;
+                right_lane_found_times++;
                 right_point.push(get<4>(Lane));
-                ROS_INFO(TAG "RIGHT: %d", right_point.avg());
             } else if (not left_lane_found and length > 50 and slope < 0 and center_x < target_x) {
                 cv::Point start(line[0], line[1] + (upperHeight));
                 cv::Point end(line[2], line[3] + (upperHeight));
                 cv::line(frame, start, end, cv::Scalar(0, 255, 0), 2);
                 left_lane_found = true;
                 left_point.push(get<4>(Lane));
-                ROS_INFO(TAG "LEFT: %d", left_point.avg());
+                left_lane_found_times++;
             }
+        }
+
+        if (left_lane_found_times >= 3 and right_lane_found_times >= 3 and not first_stage_end) {
+            first_stage_end = true;
+            ROS_INFO(TAG COLOR_YELLOW "Stage 2 started! " COLOR_RESET);
         }
     }
 
@@ -226,7 +282,7 @@ public:
                 // 如果大小差异过大，则说明小一点的那个不可能是二号标志牌，这里的valid最终会是的如果有第二个蓝色区域，那么该蓝色区域会被判否。
                 // 由于这里的判断不太好和下面的if段匹配，所以分开来写。
                 valid = false;
-                cout << COLOR_RED "not valid: " << COLOR_RESET << ratio << endl;
+                // cout << COLOR_RED "not valid: " << COLOR_RESET << ratio << endl;
             }
         }
         if (blueContours.size() >= 2 and valid) {
@@ -260,6 +316,7 @@ public:
         } else {
             target_center = cv::Point(frame_width / 2, frame_height / 2);
         }
+        target_x.push(target_center.x);
     }
 
     void getLines() {
@@ -310,7 +367,7 @@ public:
         cv::imshow("contour", contourImage);
 
         // 使用 HoughLinesP 检测线段
-        cv::HoughLinesP(contourImage, lines_raw, 2, CV_PI / 180, 30, 25, 20);
+        cv::HoughLinesP(contourImage, lines_raw, 2, CV_PI / 180, 30, 20, 20);
         // 在获得中点之后再搜索可用线段。
     }
 
@@ -330,7 +387,7 @@ public:
         getLines();
         linePreprocess();
         getIntersection();
-        towardCenter();
+        moveToPlace();
 
         cv::imshow("camera_node Feed", frame);
         cv::waitKey(10);
