@@ -32,15 +32,20 @@ private:
         laneLines;  // 车库底线，线段，长度，斜率 , 中点， 和下边界的交点
     vector<tuple<cv::Vec4i, float, float, cv::Vec2i, int>>
         bottomLines;  // 车库底线，线段，长度，斜率 , 中点， 和下边界的交点
-    Buffer<int> right_point;
-    Buffer<int> left_point;
-    Buffer<int> target_x;
-    Buffer<int> prev_angle;
-    bool second_stage = false;
-    int left_lane_found_times = 0;
-    int right_lane_found_times = 0;
+    tuple<cv::Vec4i, float, float, cv::Vec2i, int> rightLane;  // 右侧车道线
+    tuple<cv::Vec4i, float, float, cv::Vec2i, int> leftLane;   // 左侧车道线
+    Buffer<int> right_point;                                   // 储存右车道和下边缘的交点
+    Buffer<int> left_point;                                    // 储存左车道和下边缘的交点
+    Buffer<int> target_x;                                      // 储存目标标志牌的中线点x坐标
+    Buffer<int> prev_angle;                                    // 储存历史旋转角度
+    bool second_stage = false;       // 是否进入第二阶段（距离足够近，但未进入车库）
+    int left_lane_found_times = 0;   // 可以确定左侧车道线的次数
+    int right_lane_found_times = 0;  //可以确定右侧车道线的次数
     Interpolator interpolator;
-    bool bottom_line_found = true;
+    int bottom_line_found_times = 0;
+    int window_peroid = 0;
+    bool third_stage = false;
+    int times_before_end = 5;  // 默认是5实际上由，frame_rate和speed决定。
     int min_bottom_length = 100;
 
 public:
@@ -85,7 +90,14 @@ public:
     }
 
     void moveToPlace() {
-        if (not second_stage) {
+        if (third_stage) {
+            nh_.setParam("angle", 0);
+            if (times_before_end < 0) {
+                nh_.setParam("speed", 0);
+            }
+            times_before_end--;
+            ROS_INFO(TAG COLOR_YELLOW "Time before end: %d " COLOR_RESET, times_before_end);
+        } else if (not second_stage) {
             int x = target_center.x;
             int res = -(x - frame_width / 2) * 4;
             cv::circle(frame, cv::Point(frame_width / 2, frame_height - 10), 3, cv::Scalar(0, 255, 0),
@@ -224,26 +236,41 @@ public:
         // ROS_INFO(TAG "lines count: %d", (int) laneLines.size());
     }
 
+    /**
+     * @brief 检测底线是否经过识别区域下方，如果经过，则设置为第三阶段，后退固定时长然后停住。
+     * 
+     */
     void checkBottomLine() {
-        if (bottomLines.empty() or second_stage) {
+        if (bottomLines.empty() or not second_stage or third_stage) {
+            return;
+        }
+
+        if (window_peroid > 0) {
+            window_peroid--;
+            ROS_INFO(TAG COLOR_YELLOW "Window Peroid: %d " COLOR_RESET, window_peroid);
             return;
         }
 
         sort(bottomLines.begin(), bottomLines.end(),
              [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
         auto longestLine = bottomLines[0];
-        ROS_INFO(TAG "%f", get<1>(longestLine));
+        // ROS_INFO(TAG "%f", get<1>(longestLine));
         if (get<3>(longestLine)[1] > 445) {
             if ((get<1>(longestLine) > min_bottom_length and bottomLines.size() > 2)
                 or (get<1>(longestLine) > 130 and bottomLines.size() > 6)) {
-                bottom_line_found = true;
-                // ROS_INFO(TAG "%s", string(20, '-').c_str());
+                bottom_line_found_times += 1;
+                int frame_rate = 10;
+                nh_.getParam("camera_node/back/frame_rate", frame_rate);
+                window_peroid = frame_rate * 1;
+                if (bottom_line_found_times == 2) {
+                    third_stage = true;
+                    times_before_end = frame_rate * 5;  // 默认跑0.5s
+                    ROS_INFO(TAG COLOR_MAGENTA "Stage 3 started! " COLOR_RESET);
+                }
                 ROS_INFO(TAG COLOR_YELLOW "Bottom Line detected!" COLOR_RESET);
-                // ROS_INFO(TAG "%s", string(20, '-').c_str());
-                ROS_INFO(TAG "slope : %f length: %f", get<2>(longestLine), get<1>(longestLine));
-                ROS_INFO(TAG "center_x:  %d center_y: %d", get<3>(longestLine)[2], get<3>(longestLine)[1]);
-                ROS_INFO(TAG "bottomLines size:  %d ", static_cast<int>(bottomLines.size()));
-                // ROS_INFO(TAG "%s", string(20, '-').c_str());
+                ROS_INFO(TAG COLOR_YELLOW "Window Peroid: %d " COLOR_RESET, window_peroid);
+                // ROS_INFO(TAG "camera_node ");
+                // ROS_INFO(TAG "bottomLines size:  %d ", static_cast<int>(bottomLines.size()));
             }
         }
         // 长度大于特定最小值，并且处于屏幕下方
@@ -255,7 +282,7 @@ public:
              [c_x](auto const &a, auto const &b) { return abs(get<3>(a)[0] - c_x) < abs(get<3>(b)[0] - c_x); });
         bool right_lane_found = false;
         bool left_lane_found = false;
-        for (auto &Lane : laneLines) {
+        for (const auto &Lane : laneLines) {
             auto line = get<0>(Lane);
             auto length = get<1>(Lane);
             auto slope = get<2>(Lane);
@@ -266,6 +293,7 @@ public:
                 cv::Point end(line[2], line[3] + (upperHeight));
                 cv::line(frame, start, end, cv::Scalar(255, 0, 0), 2);
                 cv::circle(frame, get<3>(Lane), 5, cv::Scalar(0, 255, 0), -1);
+                rightLane = Lane;
                 right_lane_found = true;
                 right_lane_found_times++;
                 right_point.push(get<4>(Lane));
@@ -275,6 +303,7 @@ public:
                 cv::Point end(line[2], line[3] + (upperHeight));
                 cv::line(frame, start, end, cv::Scalar(0, 255, 0), 2);
                 cv::circle(frame, get<3>(Lane), 5, cv::Scalar(255, 0, 0), -1);
+                leftLane = Lane;
                 left_lane_found = true;
                 left_point.push(get<4>(Lane));
                 left_lane_found_times++;
@@ -283,7 +312,7 @@ public:
 
         if (left_lane_found_times >= 4 and right_lane_found_times >= 4 and not second_stage) {
             second_stage = true;
-            ROS_INFO(TAG COLOR_YELLOW "Stage 2 started! " COLOR_RESET);
+            ROS_INFO(TAG COLOR_MAGENTA "Stage 2 started! " COLOR_RESET);
         }
     }
 
@@ -419,12 +448,11 @@ public:
         // 流水线处理，顺序调整得检查依赖关系
         getContour();
         contourPreprocess();
-        getContourCenter();
-        // 在获得中点之后再搜索可用线段。
+        getContourCenter();  // 在获得中点之后再搜索可用线段。
         getLines();
         linePreprocess();
-        getIntersection();
-        checkBottomLine();
+        getIntersection();  // 依赖于getLines()和getContourCenter()
+        checkBottomLine();  // 依赖于getLines()
         moveToPlace();
 
         cv::imshow("camera_node Feed", frame);
