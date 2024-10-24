@@ -54,8 +54,8 @@ public:
         left_point = Buffer<int>(5);
         target_x = Buffer<int>(5);
         prev_angle = Buffer<int>(3);
-        left_lane_found_times = Buffer<float>(5, 0);
-        right_lane_found_times = Buffer<float>(5, 0);
+        left_lane_found_times = Buffer<float>(10, 0);
+        right_lane_found_times = Buffer<float>(10, 0);
         int point_nums = 11;
 
         VectorXf weights(3);
