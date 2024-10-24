@@ -1,5 +1,5 @@
-#include <iostream>
 #include <csignal>
+#include <iostream>
 #include <path/path.h>
 #include <queue>
 #include <ros/ros.h>
@@ -191,7 +191,11 @@ public:
     }
     void start() {
         signal(SIGINT, PathController::signalHandler);
+        ros::Rate rate(10);  // 每秒循环10次
         while (true) {
+            if (states_queue.empty()) {
+                break;
+            }
             STATE = states_queue.front();
             states_queue.pop_front();
             ROS_INFO(TAG "%s", string(20, '-').c_str());
@@ -229,6 +233,8 @@ public:
                 ROS_INFO(TAG "States equals TERMIANL, node exit");
                 break;
             }
+            ros::spinOnce();  // 执行一次ROS的回调
+            rate.sleep();     // 控制循环频率
         }
     }
 };
@@ -239,6 +245,5 @@ int main(int argc, char *argv[]) {
     ros::NodeHandle nh;
     PathController path_controller(nh);
     path_controller.start();
-    ros::spin();
     return 0;
 }
