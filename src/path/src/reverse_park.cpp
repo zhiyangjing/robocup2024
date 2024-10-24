@@ -45,7 +45,7 @@ private:
     int bottom_line_found_times = 0;
     int window_peroid = 0;
     bool third_stage = false;
-    int times_before_end = 5;  // 默认是5实际上由，frame_rate和speed决定。
+    float times_before_end = 5;  // 默认是0.5s实际上由，frame_rate和speed决定。
     int min_bottom_length = 100;
 
 public:
@@ -264,7 +264,7 @@ public:
                 window_peroid = frame_rate * 1;
                 if (bottom_line_found_times == 2) {
                     third_stage = true;
-                    times_before_end = frame_rate * 5;  // 默认跑0.5s
+                    times_before_end = frame_rate * 0.5;  // 默认跑0.5s
                     ROS_INFO(TAG COLOR_MAGENTA "Stage 3 started! " COLOR_RESET);
                 }
                 ROS_INFO(TAG COLOR_YELLOW "Bottom Line detected!" COLOR_RESET);
@@ -310,7 +310,7 @@ public:
             }
         }
 
-        if (left_lane_found_times >= 4 and right_lane_found_times >= 4 and not second_stage) {
+        if (left_lane_found_times >= 6 and right_lane_found_times >= 6 and not second_stage) {
             second_stage = true;
             ROS_INFO(TAG COLOR_MAGENTA "Stage 2 started! " COLOR_RESET);
         }
@@ -411,7 +411,7 @@ public:
 
         cv::erode(mask, mask, element);   // 腐蚀
         cv::dilate(mask, mask, element);  // 膨胀
-        cv::imshow("iamge", mask);
+        // cv::imshow("iamge", mask);
 
         std::vector<std::vector<cv::Point>> contours;
         cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);

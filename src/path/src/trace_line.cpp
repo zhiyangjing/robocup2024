@@ -83,8 +83,8 @@ void visualizeLineInfo(cv::Mat image) {
     int erosion_size = 1;   // 腐蚀结构元素的大小
     int dilation_size = 1;  // 膨胀结构元素的大小
 
-    cv::Mat element = cv::getStructuringElement(
-        cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1), cv::Point(erosion_size, erosion_size));
+    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
+                                                cv::Point(erosion_size, erosion_size));
 
     cv::erode(mask, mask, element);   // 腐蚀
     cv::dilate(mask, mask, element);  // 膨胀
@@ -224,11 +224,11 @@ void TraceLine::linePreprocess() {
 
             double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
             if (slope > 0) {
-                posLines.emplace_back(
-                    line, lineLength, slope, cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight));
+                posLines.emplace_back(line, lineLength, slope,
+                                      cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight));
             } else {
-                negLines.emplace_back(
-                    line, lineLength, slope, cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight));
+                negLines.emplace_back(line, lineLength, slope,
+                                      cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight));
             }
         }
     }
@@ -247,8 +247,8 @@ void TraceLine::linePreprocess() {
         }
 
         double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
-        blueLines.emplace_back(
-            line, lineLength, slope, cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight));
+        blueLines.emplace_back(line, lineLength, slope,
+                               cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight));
     }
 }
 
@@ -308,8 +308,8 @@ void TraceLine::getBlueLines() {
     int erosion_size = 1;   // 腐蚀结构元素的大小
     int dilation_size = 1;  // 膨胀结构元素的大小
 
-    cv::Mat element = cv::getStructuringElement(
-        cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1), cv::Point(erosion_size, erosion_size));
+    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
+                                                cv::Point(erosion_size, erosion_size));
 
     cv::erode(mask, mask, element);   // 腐蚀
     cv::dilate(mask, mask, element);  // 膨胀
@@ -403,8 +403,8 @@ void TraceLine::getLines() {
     int erosion_size = 1;   // 腐蚀结构元素的大小
     int dilation_size = 1;  // 膨胀结构元素的大小
 
-    cv::Mat element = cv::getStructuringElement(
-        cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1), cv::Point(erosion_size, erosion_size));
+    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
+                                                cv::Point(erosion_size, erosion_size));
 
     cv::erode(mask, mask, element);   // 腐蚀
     cv::dilate(mask, mask, element);  // 膨胀
@@ -536,10 +536,7 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
         linePreprocess();
         auto [neg_slope, pos_slope] = getLineSlope();
         auto center = getCenter();
-        cv::circle(frame,
-                   cv::Point(center, frame_height - 10),
-                   3,
-                   cv::Scalar(255, 0, 0),
+        cv::circle(frame, cv::Point(center, frame_height - 10), 3, cv::Scalar(255, 0, 0),
                    cv::FILLED);  // 使用 cv::FILLED 填充圆
 
         visualizeLines(lines_raw);
@@ -600,7 +597,7 @@ float TraceLine::findMinDistance(vector<float> ranges) {
 void TraceLine::run() {
     ROS_INFO(TAG "TraceLine started to run");
     is_running_ = true;
-    sub_ = nh_.subscribe("/image_topic", 1, &TraceLine::imageCallback, this);
+    sub_ = nh_.subscribe("/image_topic/front", 1, &TraceLine::imageCallback, this);
 
     ros::Rate handle_rate(handle_rate_);  // 处理频率
     while (ros::ok() && is_running_) {
