@@ -166,12 +166,27 @@ private:
     ros::NodeHandle &nh_;
     std::deque<int> states_queue;
     int STATE;
+    static PathController *instance;
 
 public:
     PathController(ros::NodeHandle nh) : nh_(nh) {
         // states_queue = std::deque<int>({LIGHT_DETECT,TRACE_LINE, ROAD_LEFT_TURN ,UTURN, TRACE_LINE, UTURN, TRACE_LINE, TERMINAL});
         states_queue = std::deque<int>(
             {TRACE_LINE, STRAIGHT, TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE, ROAD_RIGHT_TURN, REVERSE_PARK, TERMINAL});
+        instance = this;
+    }
+
+    static void signalHandler(int signum) {
+        if (instance) {
+            instance->handleShutdown();
+        }
+    }
+
+    void handleShutdown() {
+        ROS_INFO(TAG COLOR_RED "Ctrl + C detected. Cleaning up..." COLOR_RESET);
+        states_queue.clear();
+        STATE = TERMINAL;
+        ROS_INFO(TAG "State set to TERMINAL. Queue cleared.");
     }
     void start() {
         while (true) {
