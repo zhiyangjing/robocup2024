@@ -1,4 +1,5 @@
 #include <iostream>
+#include <csignal>
 #include <path/path.h>
 #include <queue>
 #include <ros/ros.h>
@@ -189,6 +190,7 @@ public:
         ROS_INFO(TAG "State set to TERMINAL. Queue cleared.");
     }
     void start() {
+        signal(SIGINT, PathController::signalHandler);
         while (true) {
             STATE = states_queue.front();
             states_queue.pop_front();
@@ -231,6 +233,7 @@ public:
     }
 };
 
+PathController *PathController::instance = nullptr;
 int main(int argc, char *argv[]) {
     ros::init(argc, argv, "path_controller");
     ros::NodeHandle nh;
