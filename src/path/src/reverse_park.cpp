@@ -428,9 +428,9 @@ public:
         // // 使用 Canny 边缘检测
         // cv::Mat edges;
         // cv::Canny(mask, edges, 50, 200, 3);
-        // // cv::imshow("mask",mask);
+        // cv::imshow("mask",mask);
 
-        cv::imshow("contour", contourImage);
+        // cv::imshow("contour", contourImage);
 
         // 使用 HoughLinesP 检测线段
         cv::HoughLinesP(contourImage, lines_raw, 2, CV_PI / 180, 30, 20, 20);
