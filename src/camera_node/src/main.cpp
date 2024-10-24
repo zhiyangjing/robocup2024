@@ -30,7 +30,7 @@ public:
         int camera_port = 0;
         nh.getParam("camera_node/camera_port", camera_port);
         ROS_INFO(TAG COLOR_GREEN "Node now using port: %d" COLOR_RESET, camera_port);
-        cap_.open(camera_port);  // 打开摄像头
+        cap_.open("/dev/camera" + to_string(camera_port));  // 打开摄像头
         ROS_INFO(TAG " Camera open succeeded");
 #endif
         if (!cap_.isOpened()) {
