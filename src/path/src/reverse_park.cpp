@@ -45,7 +45,7 @@ private:
     int bottom_line_found_times = 0;
     int window_peroid = 0;
     bool third_stage = false;
-    float times_before_end = 5;  // 默认是0.5s实际上由，frame_rate和speed决定。
+    int times_before_end = 5;  // 默认是0.5s实际上由，frame_rate和speed决定。
     int min_bottom_length = 100;
 
 public:
@@ -94,6 +94,7 @@ public:
             nh_.setParam("angle", 0);
             if (times_before_end < 0) {
                 nh_.setParam("speed", 0);
+                stop();
             }
             times_before_end--;
             ROS_INFO(TAG COLOR_YELLOW "Time before end: %d " COLOR_RESET, times_before_end);
