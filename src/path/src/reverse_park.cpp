@@ -38,9 +38,9 @@ private:
     Buffer<int> left_point;                                    // 储存左车道和下边缘的交点
     Buffer<int> target_x;                                      // 储存目标标志牌的中线点x坐标
     Buffer<int> prev_angle;                                    // 储存历史旋转角度
-    bool second_stage = false;       // 是否进入第二阶段（距离足够近，但未进入车库）
-    int left_lane_found_times = 0;   // 可以确定左侧车道线的次数
-    int right_lane_found_times = 0;  //可以确定右侧车道线的次数
+    bool second_stage = false;             // 是否进入第二阶段（距离足够近，但未进入车库）
+    Buffer<float> left_lane_found_times;   // 用来判断最近的n次中有几次是查找到左车道线的。
+    Buffer<float> right_lane_found_times;  // 用来判断最近的n次中有几次是查找到右车道线的。
     Interpolator interpolator;
     int bottom_line_found_times = 0;
     int window_peroid = 0;
@@ -54,7 +54,8 @@ public:
         left_point = Buffer<int>(5);
         target_x = Buffer<int>(5);
         prev_angle = Buffer<int>(3);
-
+        left_lane_found_times = Buffer<float>(5);
+        right_lane_found_times = Buffer<float>(5);
         int point_nums = 11;
 
         VectorXf weights(3);
@@ -295,7 +296,6 @@ public:
                 cv::circle(frame, get<3>(Lane), 5, cv::Scalar(0, 255, 0), -1);
                 rightLane = Lane;
                 right_lane_found = true;
-                right_lane_found_times++;
                 right_point.push(get<4>(Lane));
             } else if (not left_lane_found and length > 50 and (slope < 0 or slope > 20) and center_x < c_x
                        and intersection_pos > -200) {
@@ -306,11 +306,13 @@ public:
                 leftLane = Lane;
                 left_lane_found = true;
                 left_point.push(get<4>(Lane));
-                left_lane_found_times++;
             }
         }
 
-        if (left_lane_found_times >= 6 and right_lane_found_times >= 6 and not second_stage) {
+        left_lane_found_times.push(static_cast<float>(left_lane_found));
+        right_lane_found_times.push(static_cast<float>(right_lane_found));
+
+        if (left_lane_found_times.avg() >= 0.7 and right_lane_found_times.avg() >= 0.7 and not second_stage) {
             second_stage = true;
             ROS_INFO(TAG COLOR_MAGENTA "Stage 2 started! " COLOR_RESET);
         }
