@@ -46,7 +46,7 @@ private:
     int window_peroid = 0;
     bool third_stage = false;
     int times_before_end = 5;  // 默认是0.5s实际上由，frame_rate和speed决定。
-    int min_bottom_length = 100;
+    int min_bottom_length = 30;
 
 public:
     ReversePark(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
@@ -257,7 +257,7 @@ public:
         auto longestLine = bottomLines[0];
         // ROS_INFO(TAG "%f", get<1>(longestLine));
         if (get<3>(longestLine)[1] > 445) {
-            if ((get<1>(longestLine) > min_bottom_length and bottomLines.size() > 2)
+            if ((get<1>(longestLine) > min_bottom_length and bottomLines.size() > 1)
                 or (get<1>(longestLine) > 130 and bottomLines.size() > 6)) {
                 bottom_line_found_times += 1;
                 int frame_rate = 10;
