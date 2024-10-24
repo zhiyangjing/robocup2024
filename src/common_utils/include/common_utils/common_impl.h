@@ -11,17 +11,31 @@ template<typename T> Buffer<T>::Buffer() {
     printf("buffer location: %p\n", buffer);
 }
 
+/**
+ * @brief 创建Buffer但是不填充，其中的size开始为0，直到有pus进的元素
+ * 
+ * @tparam T 
+ * @param capacity 
+ */
 template<typename T> Buffer<T>::Buffer(size_t capacity) : capacity(capacity), size(0), head(0) {
     buffer = new T[capacity];
     memset(buffer, 0, sizeof(T) * capacity);
     printf("buffer location: %p\n", buffer);
 }
 
+/**
+ * @brief 创建Buffer同时会填充其中所有的位置，这个时候size一开始就是设置的大小（即已填满，会在计算avg的时候使用这个size）
+ * 
+ * @tparam T 
+ * @param capacity 
+ * @param default_value 
+ */
 template<typename T> Buffer<T>::Buffer(size_t capacity, T default_value) : capacity(capacity), size(0), head(0) {
     buffer = new T[capacity];
     for (size_t i = 0; i < capacity; i++) {
         buffer[i] = default_value;
     }
+    size = 5;
     printf("buffer location: %p\n", buffer);
 }
 
