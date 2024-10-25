@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
     }
     // cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);   // 设置宽度为720
     // cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);  // 设置高度为480
-    cap.set(cv::CAP_PROP_FPS, 20);
+    cap.set(cv::CAP_PROP_FPS, 25);
     cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
 
 

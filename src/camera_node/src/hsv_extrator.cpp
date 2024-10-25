@@ -127,6 +127,10 @@ int main(int argc, char **argv) {
     int camera_port = 0;
     nh.getParam("camera_port", camera_port);
     cv::VideoCapture cap("/dev/camera" + to_string(camera_port));  // 0 表示默认摄像头
+
+    cap.set(cv::CAP_PROP_FPS, 25);
+    cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+
     if (!cap.isOpened()) {
         ROS_ERROR("Failed to open the camera_node");
         return -1;
