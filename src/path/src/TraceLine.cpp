@@ -92,7 +92,7 @@ void visualizeLineInfo(cv::Mat image) {
     // 使用 Canny 边缘检测
     cv::Mat edges;
     cv::Canny(mask, edges, 50, 150, 3);
-    cv::imshow("canny", edges);
+    // cv::imshow("canny", edges);
 
     // 存储检测到的线段
     vector<cv::Vec4i> lines;
@@ -124,7 +124,7 @@ void visualizeLineInfo(cv::Mat image) {
         cv::putText(image, slopeText, midPoint, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 1);
     }
 
-    cv::imshow("detect line result", image);
+    // cv::imshow("detect line result", image);
 }
 
 TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, nh) {
@@ -189,6 +189,7 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
     interpolator = Interpolator(points, z, weights);
     nh_.setParam("speed", 2);
     ROS_INFO(TAG "TraceLine constructed succeeded! ");
+    nh_.getParam("video_feed_back", video_feed_back);
 }
 
 TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh, TraceLineInitParams params) : Ability(remain_time, nh) {
@@ -319,12 +320,12 @@ void TraceLine::getBlueLines() {
 
     cv::erode(mask, mask, element);   // 腐蚀
     cv::dilate(mask, mask, element);  // 膨胀
-    cv::imshow("mask:", mask);
+    // cv::imshow("mask:", mask);
 
     // 使用 Canny 边缘检测
     cv::Mat edges;
     cv::Canny(mask, edges, 50, 150, 3);
-    cv::imshow("edges:", edges);
+    // cv::imshow("edges:", edges);
 
     // 使用 HoughLinesP 检测线段，调大最后一个参数，识别到的直线更长
     cv::HoughLinesP(edges, blue_lines_raw, 2, CV_PI / 90, 40, 40, 40);
@@ -568,8 +569,10 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
             ROS_INFO(TAG "left slope: %lf right slope: %lf center: %d", neg_slope, pos_slope, center);
         }
 
-        cv::imshow("camera_node Feed", frame);
-        cv::waitKey(10);
+        if (video_feed_back) {
+            cv::imshow("camera_node Feed", frame);
+            cv::waitKey(10);
+        }
 
         ros::spinOnce();  // 处理 ROS 事件
     } catch (cv_bridge::Exception &e) { ROS_ERROR("Could not convert from '%s' to 'bgr8'.", msg->encoding.c_str()); }

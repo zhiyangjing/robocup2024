@@ -84,6 +84,7 @@ private:
     bool is_running_ = false;
     bool blue_line_found = false;
     bool is_avoid_obstacle = false;
+    bool video_feed_back = true;
     int frame_height = 480;
     int frame_width = 640;
     int countdownTimer = 1000;  //  单位毫秒，在识别到蓝色线条之后剩余的运行时间

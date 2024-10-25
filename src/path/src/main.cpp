@@ -218,6 +218,7 @@ public:
         instance = this;
 
         // 为了对其只好这么写了
+        // 应该要重新修改。改为640，480
         reverse_park_params = ParkInitParams(11, 3);
         reverse_park_params.ref_points.row(0) << 609, 627, 612, 889, 876, 370, 370, 588, 737, 743, 559;
         reverse_park_params.ref_points.row(1) << 363, 370, 360, 424, 444, 311, 303, 249, 470, 489, 270;
