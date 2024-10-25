@@ -51,7 +51,7 @@ float Interpolator::interpolate(VectorXf point) {
     VectorXf point_weight(n);// 每个点的权重，和维度的权重weights不同
     for (int i = 0; i < n; ++i) {
         auto distance = weights.cwiseProduct((points.row(i).transpose() - point)).norm();
-        point_weight(i) = 1 / (eps + pow(static_cast<float>(distance), 4));
+        point_weight(i) = 1 / (eps + pow(static_cast<float>(distance), 3));
     }
     point_weight = point_weight.normalized();
     float res = point_weight.dot(values);
