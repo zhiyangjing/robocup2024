@@ -165,6 +165,7 @@ public:
 class Park : public Ability {
 private:
     bool is_running_ = false;
+    bool video_feed_back = true;
     ros::Subscriber sub_;
     cv::Mat frame;
     int frame_height = 480;

@@ -188,8 +188,15 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
 
     interpolator = Interpolator(points, z, weights);
     nh_.setParam("speed", 2);
-    ROS_INFO(TAG "TraceLine constructed succeeded! ");
     nh_.getParam("video_feed_back", video_feed_back);
+
+    if (not video_feed_back) {
+        ROS_INFO(TAG COLOR_GREEN "Video feed back Disable" COLOR_RESET);
+    } else {
+        ROS_INFO(TAG COLOR_RED "Video feed back Enable" COLOR_RESET);
+    }
+
+    ROS_INFO(TAG "TraceLine constructed succeeded! ");
 }
 
 TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh, TraceLineInitParams params) : Ability(remain_time, nh) {
@@ -213,6 +220,14 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh, TraceLineInitParams p
 
     interpolator = Interpolator(points, params.ref_value, weights);
     nh_.setParam("speed", 2);
+    nh_.getParam("video_feed_back", video_feed_back);
+
+    if (not video_feed_back) {
+        ROS_INFO(TAG COLOR_GREEN "Video feed back Disable" COLOR_RESET);
+    } else {
+        ROS_INFO(TAG COLOR_RED "Video feed back Enable" COLOR_RESET);
+    }
+
     ROS_INFO(TAG "TraceLine constructed succeeded! ");
 }
 
