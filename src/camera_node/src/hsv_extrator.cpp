@@ -137,7 +137,6 @@ int main(int argc, char **argv) {
     cout << "Starting the video feed..." << endl;  // 开始视频流
 
     int targetFps = 20;                                // 目标帧率
-    int delay = 1000 / targetFps;                      // 计算每帧的延迟时间
     auto lastTime = std::chrono::steady_clock::now();  // 记录开始时间
     int frameCount = 0;                                // 统计帧数
     double currentFps = 0.0;
@@ -180,7 +179,7 @@ int main(int argc, char **argv) {
         cv::imshow("camera_node Feed", frame);
 
         // 使用 waitKey 控制帧率和响应键盘输入
-        int key = cv::waitKey(delay);
+        int key = cv::waitKey(1);
         if (key == 'q') {  // 按 'q' 键退出
             break;
         }
