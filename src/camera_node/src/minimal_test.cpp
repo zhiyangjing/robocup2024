@@ -29,6 +29,8 @@ int main(int argc, char **argv) {
         ROS_ERROR("Failed to open the camera_node");
         return -1;
     }
+    cap.set(cv::CAP_PROP_FRAME_WIDTH, 720);   // 设置宽度为720
+    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);  // 设置高度为480
 
     cv::Mat frame;
     while (ros::ok()) {
@@ -54,7 +56,7 @@ int main(int argc, char **argv) {
 
         cv::resize(frame, frame, cv::Size(frame_width, frame_height));
         cv::imshow("camera_node Feed", frame);
-        int key = cv::waitKey(30);
+        int key = cv::waitKey(1);
         if (key == 'q')
             break;
 
