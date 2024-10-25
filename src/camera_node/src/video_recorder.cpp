@@ -30,14 +30,21 @@ public:
         int camera_port = 0;
         nh.getParam("camera_port", camera_port);
         cap_.open("/dev/camera" + to_string(camera_port));  // 打开摄像头
+
+        cap_.set(cv::CAP_PROP_FRAME_WIDTH, 1920);   // 设置宽度为720
+        cap_.set(cv::CAP_PROP_FRAME_HEIGHT, 1080);  // 设置高度为480
+        cap_.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+
         nh_.param<string>("output_video_path", output_path_, "");
+
         ROS_INFO("%s video path: %s", TAG, output_path_.c_str());
         int codec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');
 
-        // int frame_width = static_cast<int>(cap_.get(cv::CAP_PROP_FRAME_WIDTH));
-        // int frame_height = static_cast<int>(cap_.get(cv::CAP_PROP_FRAME_HEIGHT));
-        // ROS_INFO(TAG "frame width: %d",frame_width);
-        // ROS_INFO(TAG "frame height: %d",frame_height);
+        int frame_width = static_cast<int>(cap_.get(cv::CAP_PROP_FRAME_WIDTH));
+        int frame_height = static_cast<int>(cap_.get(cv::CAP_PROP_FRAME_HEIGHT));
+
+        ROS_INFO(TAG "frame width: %d",frame_width);
+        ROS_INFO(TAG "frame height: %d",frame_height);
 
         int frame_width = 720;
         int frame_height = 480;
