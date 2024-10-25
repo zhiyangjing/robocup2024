@@ -27,7 +27,9 @@ private:
 
 public:
     CameraNode(ros::NodeHandle &nh) : nh_(nh) {
-        cap_.open(0);// 打开摄像头
+        int camera_port = 0;
+        nh.getParam("camera_port", camera_port);
+        cap_.open("/dev/camera" + to_string(camera_port));  // 打开摄像头
         nh_.param<string>("output_video_path", output_path_, "");
         ROS_INFO("%s video path: %s", TAG, output_path_.c_str());
         int codec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');
