@@ -1,5 +1,5 @@
 <launch>
-    <node pkg="camera_node" type="camera_node" name="camera_node" output="log" ns="camera_node/front">
+    <node pkg="camera_node" type="camera_node" name="camera_node" output="screen" ns="camera_node/front">
         <param name="frame_rate" value="10"></param>
         <param name="camera_port" value="0"></param>
         <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_short.mp4"> </param> --> <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_stages2.mp4"> </param> -->
