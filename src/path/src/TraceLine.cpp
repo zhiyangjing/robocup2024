@@ -141,7 +141,7 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
     VectorXf y(point_nums);
     VectorXf c(point_nums);
     VectorXf z(point_nums);
-    weights << 1, 1, 10;  // 斜率的权重是1，中心点的权重是1.5，weight的实现有点问题，总之越大越不重要
+    weights << 1, 1, 3;  // 斜率的权重是1，中心点的权重是1.5，weight的实现有点问题，总之越大越不重要
 
     x << -0.5,-0.776,-0.4,-0.46,-0.584,-0.70,-0.51,-0.48,-1.397,0,0,-1.25,0,-0.6,0;
     y << 0.620,0.43,0.84,0.753,0.575,0.496,0.51,0.578,0,1.4,1.2,0,0.67,0.5,0.52;
