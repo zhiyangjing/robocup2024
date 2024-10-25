@@ -53,7 +53,7 @@ target_link_libraries(
   ${OpenCV_LIBRARIES}
 )
 
-add_executable(path_node src/main.cpp src/light.cpp src/trace_line.cpp src/reverse_park.cpp)
+add_executable(path_node src/main.cpp src/light.cpp src/trace_line.cpp src/ReversePark.cpp)
 
 target_link_libraries(
   path_node
@@ -62,14 +62,14 @@ target_link_libraries(
   ${OpenCV_LIBRARIES}
 )
 
-# add_executable(reverse_park src/reverse_park.cpp)
+add_executable(reverse_park src/reverse_park.cpp src/ReversePark.cpp)
 
-# target_link_libraries(
-#   reverse_park
-#   common_utils
-#   ${catkin_LIBRARIES}
-#   ${OpenCV_LIBRARIES}
-# )
+target_link_libraries(
+  reverse_park
+  common_utils
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
 
 
 # add_executable(avoid src/avoid.cpp)
