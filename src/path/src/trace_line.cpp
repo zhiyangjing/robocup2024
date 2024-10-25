@@ -313,10 +313,12 @@ void TraceLine::getBlueLines() {
 
     cv::erode(mask, mask, element);   // 腐蚀
     cv::dilate(mask, mask, element);  // 膨胀
+    cv::imshow("mask:",mask);
 
     // 使用 Canny 边缘检测
     cv::Mat edges;
     cv::Canny(mask, edges, 50, 150, 3);
+    cv::imshow("edges:",edges);
 
     // 使用 HoughLinesP 检测线段，调大最后一个参数，识别到的直线更长
     cv::HoughLinesP(edges, blue_lines_raw, 2, CV_PI / 90, 40, 40, 40);
@@ -408,12 +410,10 @@ void TraceLine::getLines() {
 
     cv::erode(mask, mask, element);   // 腐蚀
     cv::dilate(mask, mask, element);  // 膨胀
-    cv::imshow("mask:",mask);
 
     // 使用 Canny 边缘检测
     cv::Mat edges;
     cv::Canny(mask, edges, 50, 150, 3);
-    cv::imshow("edges:",edges);
 
     // 使用 HoughLinesP 检测线段
     cv::HoughLinesP(edges, lines_raw, 2, CV_PI / 180, 50, 20, 10);
