@@ -7,7 +7,7 @@
 using namespace std;
 
 int frame_height = 480;
-int frame_width = 640;
+int frame_width = 720;
 int main(int argc, char **argv) {
     ros::init(argc, argv, "minimal_test");
     ros::NodeHandle nh;

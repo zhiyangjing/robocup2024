@@ -33,8 +33,10 @@ public:
         nh_.param<string>("output_video_path", output_path_, "");
         ROS_INFO("%s video path: %s", TAG, output_path_.c_str());
         int codec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');
-        int frame_width = static_cast<int>(cap_.get(cv::CAP_PROP_FRAME_WIDTH));
-        int frame_height = static_cast<int>(cap_.get(cv::CAP_PROP_FRAME_HEIGHT));
+        // int frame_width = static_cast<int>(cap_.get(cv::CAP_PROP_FRAME_WIDTH));
+        // int frame_height = static_cast<int>(cap_.get(cv::CAP_PROP_FRAME_HEIGHT));
+        int frame_width = 1920;
+        int frame_height = 1080;
         int fps = cap_.get(cv::CAP_PROP_FPS);
         ROS_INFO("%s capture frame rate: %d ", TAG, fps);
         cv::Size frame_size(frame_width, frame_height);
@@ -66,7 +68,8 @@ public:
 
                 // 也许会有更好的办法显示，现在就干正事吧
                 cv::Mat resized_frame;
-                cv::resize(frame, resized_frame, cv::Size(frame.cols / 2, frame.rows / 2)); // 将图像大小缩小为原来的一半
+                cv::resize(frame, resized_frame,
+                           cv::Size(frame.cols / 2, frame.rows / 2));  // 将图像大小缩小为原来的一半
                 cv::imshow("video writer", resized_frame);
                 video.write(frame);
                 total_frame++;
@@ -81,7 +84,7 @@ public:
         ROS_INFO("%s started runing ! ", TAG);
         cv::Mat frame;
         while (ros::ok()) {
-            cap_ >> frame;// 捕获图像
+            cap_ >> frame;  // 捕获图像
             if (frame.empty()) {
                 ROS_WARN("Empty frame received");
                 return;
@@ -105,7 +108,7 @@ public:
     void stop() {
         {
             lock_guard<std::mutex> lock(queue_mutex);
-            is_running = false;// 停止主线程的帧捕获
+            is_running = false;  // 停止主线程的帧捕获
         }
         ROS_INFO("%s Exting video recorder! ", TAG);
         frame_cv.notify_one();
