@@ -29,8 +29,12 @@ int main(int argc, char **argv) {
         ROS_ERROR("Failed to open the camera_node");
         return -1;
     }
-    cap.set(cv::CAP_PROP_FRAME_WIDTH, 720);   // 设置宽度为720
-    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);  // 设置高度为480
+    // cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);   // 设置宽度为720
+    // cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);  // 设置高度为480
+    cap.set(cv::CAP_PROP_FPS, 20);
+    cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+
+
 
     cv::Mat frame;
     while (ros::ok()) {

@@ -1,4 +1,5 @@
 <launch>
     <param name="camera_port" value="0"></param>
+    <param name="frame_rate" value="20"></param>
     <node pkg="camera_node" type="minimal_test" name="minimal_test" output="screen"/>
 </launch>
