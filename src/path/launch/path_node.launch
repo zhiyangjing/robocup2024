@@ -4,7 +4,7 @@
         <param name="camera_port" value="0"></param>
         <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_short.mp4"> </param> -->
         <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_stages2.mp4"> </param> -->
-        <param name="video_path" value="$(find camera_node)/../../data/src_videos/bottom.avi"> </param>
+        <param name="video_path" value="$(find camera_node)/../../data/src_videos/blue_lines.avi"> </param>
         <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_stages.avi"> </param> -->
         <remap from="/image_topic" to="/image_topic/front"/>
     </node>
