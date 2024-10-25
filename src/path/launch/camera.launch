@@ -1,10 +1,10 @@
 <launch>
-    <param name="light" value="1"></param>
-    <param name="speed" value="0"/>
-    <param name="angle" value="0"/>
-    <param name="direction" value="W"/>  <!-- 添加 direction 参数 -->
-    <param name="frame_rate" value="5"></param>
-    <param name="video_path" value="$(find camera_node)/../../data/src_videos/blue_lines.avi"/>
-    <param name="output_path" value="$(find camera_node)/../../data/runtime_images/"/>
-    <node pkg="camera_node" type="camera_node" name="camera_node" output="screen"/>
+    <node pkg="camera_node" type="camera_node" name="camera_node" output="log" ns="camera_node/front">
+        <param name="frame_rate" value="10"></param>
+        <param name="camera_port" value="0"></param>
+        <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_short.mp4"> </param> --> <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_stages2.mp4"> </param> -->
+        <param name="video_path" value="$(find camera_node)/../../data/src_videos/bottom.avi"> </param>
+        <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_stages.avi"> </param> -->
+        <remap from="/image_topic" to="/image_topic/front"/>
+    </node>
 </launch>

@@ -1,11 +1,3 @@
 <launch>
-    <param name="light" value="0"></param>
-    <param name="speed" value="0"/>
-    <param name="angle" value="0"/>
-    <param name="direction" value="W"/>  <!-- 添加 direction 参数 -->
-    <param name="frame_rate" value="10"></param>
-    <param name="video_path" value="$(find camera_node)/../../data/src_videos/blue_lines.avi"/>
-    <param name="output_path" value="$(find camera_node)/../../data/runtime_images/"/>
     <node pkg="path" type="path_node" name="path_node" output="screen"/>
-    <node pkg="camera_node" type="camera_node" name="camera_node" output="screen"/>
 </launch>
