@@ -85,7 +85,7 @@ private:
     bool blue_line_found = false;
     bool is_avoid_obstacle = false;
     int frame_height = 480;
-    int frame_width = 720;
+    int frame_width = 640;
     int countdownTimer = 1000;  //  单位毫秒，在识别到蓝色线条之后剩余的运行时间
     int min_blue_length = 200;
     int min_distance = 50;
@@ -93,7 +93,7 @@ private:
     int lowerHeight = static_cast<int>(frame_height * lowerFraction);
     int upperHeight = frame_height - lowerHeight;
     int line_pos = frame_width * 0.422;
-    int handle_rate_ = 20;
+    int handle_rate_ = 33; // 应该大于frame_rate
     double currentFps = 0;
     Buffer<float> prev_neg_slope;
     Buffer<float> prev_pos_slope;

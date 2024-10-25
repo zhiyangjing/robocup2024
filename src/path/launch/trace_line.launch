@@ -1,9 +1,12 @@
 <launch>
-    <param name="light" value="1"></param>
-    <param name="video_path" value="$(find camera_node)/../../data/src_videos/turning3.avi"/>
-    <param name="output_path" value="$(find camera_node)/../../data/runtime_images/"/>
-    <node pkg="camera_node" type="camera_node" name="camera_node" output="screen"/>
+    <node pkg="camera_node" type="camera_node" name="camera_node" output="log" ns="camera_node/front">
+        <param name="frame_rate" value="30"></param>
+        <param name="camera_port" value="0"></param>
+        <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_short.mp4"> </param> -->
+        <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_stages2.mp4"> </param> -->
+        <param name="video_path" value="$(find camera_node)/../../data/src_videos/trace_line_stages3.avi"> </param>
+        <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_stages.avi"> </param> -->
+        <remap from="/image_topic" to="/image_topic/front"/>
+    </node>
     <node pkg="path" type="trace_line" name="trace_line" output="log"/>
-    <param name="frame_rate" value="5"></param>
-    <node pkg=>
 </launch>
