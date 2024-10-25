@@ -194,7 +194,7 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
     interpolator = Interpolator(points, z, weights);
     nh_.setParam("speed", 2);
     int has_feed_back = 1;
-    nh_.getParam("path/video_feed_back", has_feed_back);
+    nh_.getParam("video_feed_back", has_feed_back);
     if (has_feed_back) {
         video_feed_back = true;
     } else {
