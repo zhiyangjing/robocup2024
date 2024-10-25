@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     ros::NodeHandle nh;
 
     // 创建窗口和滑动条
-    cv::namedWindow("Camera Feed", cv::WINDOW_AUTOSIZE);
+    cv::namedWindow("camera_node Feed", cv::WINDOW_AUTOSIZE);
     cv::namedWindow("Mask", cv::WINDOW_AUTOSIZE);
 
     // 创建滑动条，调节 HSV 值
