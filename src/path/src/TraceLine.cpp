@@ -529,7 +529,7 @@ void TraceLine::lineSlopeStrategy(float left_slope, float right_slope) {
 void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     try {
         frame = cv_bridge::toCvShare(msg, "bgr8")->image;
-        cv::resize(frame, frame, cv::Size(frame_width, frame_height));
+        // cv::resize(frame, frame, cv::Size(frame_width, frame_height));
         if (frame.empty()) {
             ROS_WARN("Empty frame received");
             return;
