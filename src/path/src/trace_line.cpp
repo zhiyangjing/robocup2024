@@ -570,17 +570,8 @@ void TraceLine::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     if (findMinDistance(msg->ranges) > min_distance) {
         return;
     } else if (findMinDistance(msg->ranges) <= min_distance) {
-        int speed = 2;  // 默认速度是2，所有参数，在调试的时候使用速度2来测试
-        nh_.getParam("speed", speed);
-        is_avoid_obstacle = true;
-        nh_.setParam("angle", -200);
-        usleep(1000000 * speed / 2);
-        nh_.setParam("angle", 200);
-        usleep(1000000 * 2.75 * speed / 2);
-        nh_.setParam("angle", -100);
-        usleep(1000000 * speed / 2);
-        nh_.setParam("angle", 0);
-        is_avoid_obstacle = false;
+        ROS_INFO(TAG COLOR_RED "TraceLine exit because of obstacle" COLOR_RESET);
+        stop();
     }
 }
 
@@ -598,6 +589,7 @@ void TraceLine::run() {
     ROS_INFO(TAG "TraceLine started to run");
     is_running_ = true;
     sub_ = nh_.subscribe("/image_topic/front", 1, &TraceLine::imageCallback, this);
+    laser_sub_ = nh_.subscribe("/scan", 1, &TraceLine::laserCallback, this);
 
     ros::Rate handle_rate(handle_rate_);  // 处理频率
     while (ros::ok() && is_running_) {
@@ -605,6 +597,7 @@ void TraceLine::run() {
         handle_rate.sleep();
     }
     sub_.shutdown();
+    laser_sub_.shutdown();
 }
 void TraceLine::stop() { is_running_ = false; }
 TraceLine::~TraceLine() {}

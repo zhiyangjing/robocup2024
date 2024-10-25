@@ -123,6 +123,46 @@ public:
     void stop() { is_running_ = false; }
 };
 
+class Avoid : Ability {
+private:
+public:
+    Avoid(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
+        ROS_INFO(TAG COLOR_YELLOW "Avoid Ability Constructed" COLOR_RESET);
+    }
+    void run() {
+        int speed = 2;  // 默认速度是2
+        int rate_num = 10;
+        ros::Rate loop_rate(rate_num);  // 设置循环频率为10Hz
+
+        ROS_INFO(TAG COLOR_BLUE "Going left" COLOR_RESET);
+        nh_.setParam("angle", -200);  // 向左拐
+        for (int i = 0; i < (4 * speed / 2) * rate_num; ++i) {
+            loop_rate.sleep();
+        }
+
+        ROS_INFO(TAG COLOR_BLUE "Going Straight" COLOR_RESET);
+        nh_.setParam("angle", 0);
+        for (int i = 0; i < (2 * speed / 2) * rate_num; ++i) {
+            loop_rate.sleep();
+        }
+
+        ROS_INFO(TAG COLOR_BLUE "Going Right" COLOR_RESET);
+        nh_.setParam("angle", 200);
+        for (int i = 0; i < (6 * speed / 2) * rate_num; ++i) {
+            loop_rate.sleep();
+        }
+
+        ROS_INFO(TAG COLOR_BLUE "Going Left" COLOR_RESET);
+        nh_.setParam("angle", -100);
+        for (int i = 0; i < (4 * speed / 2) * rate_num; ++i) {
+            loop_rate.sleep();
+        }
+
+        ROS_INFO(TAG COLOR_BLUE "Keep Straight" COLOR_RESET);
+        nh_.setParam("angle", 0);
+    }
+};
+
 class Uturn : Ability {
 public:
     Uturn(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) { ROS_INFO(TAG "Uturn Ability Constructed"); }
@@ -168,13 +208,21 @@ private:
     std::deque<int> states_queue;
     int STATE;
     static PathController *instance;
+    ParkInitParams reverse_park_params;
 
 public:
     PathController(ros::NodeHandle nh) : nh_(nh) {
         // states_queue = std::deque<int>({LIGHT_DETECT,TRACE_LINE, ROAD_LEFT_TURN ,UTURN, TRACE_LINE, UTURN, TRACE_LINE, TERMINAL});
-        states_queue = std::deque<int>(
-            {TRACE_LINE, STRAIGHT, TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE, ROAD_RIGHT_TURN, REVERSE_PARK, TERMINAL});
+        states_queue = std::deque<int>({TRACE_LINE, STRAIGHT, TRACE_LINE, AVOID, TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE,
+                                        ROAD_RIGHT_TURN, REVERSE_PARK, TERMINAL});
         instance = this;
+
+        // 为了对其只好这么写了
+        reverse_park_params.ref_points.row(0) << 609, 627, 612, 889, 876, 370, 370, 588, 737, 743, 559;
+        reverse_park_params.ref_points.row(1) << 363, 370, 360, 424, 444, 311, 303, 249, 470, 489, 270;
+        reverse_park_params.ref_points.row(2) << 124, 136, 113, 363, 369, -136, -128, 37, 200, 253, 30;
+        reverse_park_params.ref_value << 0, 0, 0, -200, -200, 200, 200, 100, -100, -150, 150;
+        reverse_park_params.weights << 1, 1, 1;
     }
 
     static void signalHandler(int signum) {
@@ -219,12 +267,10 @@ public:
             } else if (STATE == ROAD_RIGHT_TURN) {
                 auto road_right_turn = RoadRightTurn(-1, nh_);
                 road_right_turn.run();
-            }
-            //  else if (STATE == REVERSE_PARK) {
-            //     auto reverse = ReversePark(-1, nh_);
-            //     reverse.run();
-            // }
-            else if (STATE == BIG_LEFT_TURN) {
+            } else if (STATE == REVERSE_PARK) {
+                auto reverse = Park(-1, nh_, reverse_park_params);
+                reverse.run();
+            } else if (STATE == BIG_LEFT_TURN) {
                 auto motion_controller = BigLeftTurn(10000, nh_);
                 motion_controller.run();
             } else if (STATE == TERMINAL) {

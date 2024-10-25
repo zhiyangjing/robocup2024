@@ -1,0 +1,26 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.c": "c",
+			"*.m": "matlab",
+			"*.vue": "vue",
+			"*.json": "jsonc",
+			"*.toml": "toml",
+			"*.js": "javascript",
+			"*.ts": "typescript",
+			"*.css": "css",
+			"*.tcc": "cpp",
+			"fstream": "cpp",
+			"chrono": "cpp",
+			"cmath": "cpp",
+			"istream": "cpp",
+			"ostream": "cpp",
+			"typeinfo": "cpp"
+		}
+	}
+}

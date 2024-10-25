@@ -12,6 +12,7 @@ enum States {
     BIG_LEFT_TURN = 0,
     LIGHT_DETECT,
     TRACE_LINE,
+    AVOID,
     UTURN,
     ROAD_LEFT_TURN,
     ROAD_RIGHT_TURN,
@@ -37,9 +38,21 @@ struct TraceLineInitParams {
     VectorXf weights;
 };
 
+/**
+ * @brief Park类用于垂直的库，根据不同的param实现fowardPark，backwardPark
+ * 
+ */
+struct ParkInitParams {
+    MatrixXf ref_points;    // 参考点坐标
+    VectorXf ref_value;     // 参考点对应权重
+    VectorXf weights;       // 权重
+    int first_stage_param;  // 一阶段计算转动角度的参数，正数或者负数，合适的范围约为：[-4,4]
+};
+
 class TraceLine : public Ability {
 private:
-    ros::Subscriber sub_;
+    ros::Subscriber sub_;        // 图像的订阅者
+    ros::Subscriber laser_sub_;  // 雷达信息的订阅
     bool is_running_ = false;
     bool blue_line_found = false;
     bool is_avoid_obstacle = false;
@@ -118,4 +131,62 @@ public:
     void stop();
     void imageCallback(const sensor_msgs::ImageConstPtr &msg);
     void detectTrafficLights(cv::Mat &frame, ros::NodeHandle &nh);
+};
+
+class Park : public Ability {
+private:
+    bool is_running_ = false;
+    ros::Subscriber sub_;
+    cv::Mat frame;
+    int frame_height = 480;
+    int frame_width = 720;
+    int handle_rate_ = 20;
+    int target_index = 0;  // 0 代表左侧车库，1代表右侧车库
+    int first_stage_param = -2;
+    float offset_top_ratio = 0.1;
+    float offset_bottom_ratio = 0.1;
+    int offset_top = static_cast<int>(offset_top_ratio * frame_height);
+    int offset_bottom = static_cast<int>(offset_bottom_ratio * frame_height);
+    cv::Point target_center;
+    std::vector<std::vector<cv::Point>> contours;
+    std::vector<tuple<int, int, cv::Point2i>> blueContours;  // 边缘集合的下标、面积、中心点
+    float lowerFraction = 0.55;
+    int lowerHeight = static_cast<int>(frame_height * lowerFraction);
+    int upperHeight = frame_height - lowerHeight;
+    vector<cv::Vec4i> lines_raw;  // 存储检测到的白色车道线段
+    vector<tuple<cv::Vec4i, float, float, cv::Vec2i, int>>
+        laneLines;  // 车库底线，线段，长度，斜率 , 中点， 和下边界的交点
+    vector<tuple<cv::Vec4i, float, float, cv::Vec2i, int>>
+        bottomLines;  // 车库底线，线段，长度，斜率 , 中点， 和下边界的交点
+    tuple<cv::Vec4i, float, float, cv::Vec2i, int> rightLane;  // 右侧车道线
+    tuple<cv::Vec4i, float, float, cv::Vec2i, int> leftLane;   // 左侧车道线
+    Buffer<int> right_point;                                   // 储存右车道和下边缘的交点
+    Buffer<int> left_point;                                    // 储存左车道和下边缘的交点
+    Buffer<int> target_x;                                      // 储存目标标志牌的中线点x坐标
+    Buffer<int> prev_angle;                                    // 储存历史旋转角度
+    bool second_stage = false;             // 是否进入第二阶段（距离足够近，但未进入车库）
+    Buffer<float> left_lane_found_times;   // 用来判断最近的n次中有几次是查找到左车道线的。
+    Buffer<float> right_lane_found_times;  // 用来判断最近的n次中有几次是查找到右车道线的。
+    Interpolator interpolator;
+    int bottom_line_found_times = 0;
+    int window_peroid = 0;
+    bool third_stage = false;
+    int times_before_end = 5;  // 默认是0.5s实际上由，frame_rate和speed决定。
+    int min_bottom_length = 30;
+
+public:
+    Park(int remain_time, ros::NodeHandle nh);
+    Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params);
+    void moveToPlace();
+    void getContour();
+    void contourPreprocess();
+    float calculateSlope(const cv::Vec4i &line);
+    void linePreprocess();
+    void checkBottomLine();
+    void getIntersection();
+    void getContourCenter();
+    void getLines();
+    void imageCallback(const sensor_msgs::ImageConstPtr &msg);
+    void run();
+    void stop();
 };
