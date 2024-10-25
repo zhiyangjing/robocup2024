@@ -93,7 +93,7 @@ private:
     int lowerHeight = static_cast<int>(frame_height * lowerFraction);
     int upperHeight = frame_height - lowerHeight;
     int line_pos = frame_width * 0.422;
-    int handle_rate_ = 33; // 应该大于frame_rate
+    int handle_rate_ = 20; // 应该大于frame_rate
     double currentFps = 0;
     Buffer<float> prev_neg_slope;
     Buffer<float> prev_pos_slope;
