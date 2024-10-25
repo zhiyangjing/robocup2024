@@ -252,7 +252,7 @@ void Park::checkBottomLine() {
     // ROS_INFO(TAG "%f", get<1>(longestLine));
     if (get<3>(longestLine)[1] > 445) {
         if ((get<1>(longestLine) > min_bottom_length and bottomLines.size() > 1)
-            or (get<1>(longestLine) > 130 and bottomLines.size() > 6)) {
+            or (get<1>(longestLine) > 20 and bottomLines.size() > 4)) {
             bottom_line_found_times += 1;
             int frame_rate = 10;
             nh_.getParam("camera_node/back/frame_rate", frame_rate);
@@ -261,6 +261,8 @@ void Park::checkBottomLine() {
                 third_stage = true;
                 times_before_end = frame_rate * 1.5;  // 默认跑0.8s
                 ROS_INFO(TAG COLOR_MAGENTA "Stage 3 started! " COLOR_RESET);
+                ROS_INFO(TAG COLOR_YELLOW "Frame rate got: %d " COLOR_RESET, frame_rate);
+                ROS_INFO(TAG COLOR_YELLOW "Time before end: %d " COLOR_RESET, times_before_end);
             }
             ROS_INFO(TAG COLOR_YELLOW "Bottom Line detected!" COLOR_RESET);
             ROS_INFO(TAG COLOR_YELLOW "Window Peroid: %d " COLOR_RESET, window_peroid);
