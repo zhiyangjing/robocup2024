@@ -236,6 +236,8 @@ public:
         ROS_INFO(TAG COLOR_RED "Ctrl + C detected. Cleaning up..." COLOR_RESET);
         states_queue.clear();
         STATE = TERMINAL;
+        nh_.setParam("speed", 0);
+        nh_.setParam("angle", 0);
         ROS_INFO(TAG "State set to TERMINAL. Queue cleared.");
     }
     void start() {
