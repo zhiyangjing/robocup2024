@@ -531,7 +531,8 @@ void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int cente
     prev_angle.push(static_cast<int>(res));
     int angle_value = prev_angle.avg();
     nh_.setParam("angle", angle_value);
-    ROS_INFO(TAG "ANGLE: %d", angle_value);
+
+    ROS_INFO(TAG "left slope: %lf right slope: %lf center: %d angle: %d", left_slope, right_slope, center, angle_value);
 }
 
 /**
@@ -599,7 +600,6 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 
         if (not is_avoid_obstacle) {
             lineSlopeStrategy(neg_slope, pos_slope, center);
-            ROS_INFO(TAG "left slope: %lf right slope: %lf center: %d", neg_slope, pos_slope, center);
         }
 
         if (video_feed_back) {
