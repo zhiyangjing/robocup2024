@@ -38,7 +38,9 @@ public:
         int fps = cap_.get(cv::CAP_PROP_FPS);
         ROS_INFO("%s capture frame rate: %d ", TAG, fps);
         cv::Size frame_size(frame_width, frame_height);
+
         video = cv::VideoWriter(output_path_, codec, fps, frame_size, true);
+
         if (!cap_.isOpened()) {
             ROS_ERROR("Failed to open the camera");
             ros::shutdown();
