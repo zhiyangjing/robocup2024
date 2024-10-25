@@ -47,6 +47,34 @@ struct ParkInitParams {
     VectorXf ref_value;     // 参考点对应权重
     VectorXf weights;       // 权重
     int first_stage_param;  // 一阶段计算转动角度的参数，正数或者负数，合适的范围约为：[-4,4]
+    ParkInitParams() {};
+
+    /**
+     * @brief Construct a new Park Init Params object
+     * 
+     * @param num_points 参考点个数
+     * @param num_dimensions 参考点维度
+     */
+    ParkInitParams(int num_points, int num_dimensions) {
+        ref_points.resize(3, num_points);  // 3 行 num_points 列
+        ref_value.resize(num_points);      // num_points 大小
+        weights.resize(num_dimensions);    // num_weights 大小
+    }
+
+    ParkInitParams(const ParkInitParams &other)
+        : ref_points(other.ref_points), ref_value(other.ref_value), weights(other.weights),
+          first_stage_param(other.first_stage_param) {}
+
+    // 赋值运算符重载
+    ParkInitParams &operator=(const ParkInitParams &other) {
+        if (this != &other) {  // 自我赋值检查
+            ref_points = other.ref_points;
+            ref_value = other.ref_value;
+            weights = other.weights;
+            first_stage_param = other.first_stage_param;
+        }
+        return *this;  // 返回当前对象的引用
+    }
 };
 
 class TraceLine : public Ability {
