@@ -259,7 +259,7 @@ void Park::checkBottomLine() {
             window_peroid = frame_rate * 1;
             if (bottom_line_found_times == 2) {
                 third_stage = true;
-                times_before_end = frame_rate * 1.5;  // 默认跑0.8s
+                times_before_end = frame_rate * 1.8;  // 默认跑0.8s
                 ROS_INFO(TAG COLOR_MAGENTA "Stage 3 started! " COLOR_RESET);
                 ROS_INFO(TAG COLOR_YELLOW "Frame rate got: %d " COLOR_RESET, frame_rate);
                 ROS_INFO(TAG COLOR_YELLOW "Time before end: %d " COLOR_RESET, times_before_end);
