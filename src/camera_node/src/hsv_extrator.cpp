@@ -26,7 +26,7 @@ void on_trackbar(int, void *) {
 
     // 定义膨胀的结构元素
     cv::Mat dilation_element =
-        cv::getStructuringElement(cv::MORPH_ELLIPSE , cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1),
+        cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1),
                                   cv::Point(dilation_size, dilation_size));
 
     // 腐蚀操作
@@ -58,14 +58,14 @@ int main(int argc, char **argv) {
     cv::namedWindow("Mask", cv::WINDOW_AUTOSIZE);
 
     // 创建滑动条，调节 HSV 值
-    cv::createTrackbar("erosion", "Mask", &erosion_size, 10, on_trackbar);
-    cv::createTrackbar("dilation", "Mask", &dilation_size, 10, on_trackbar);
-    // cv::createTrackbar("H Min", "Mask", &h_min, 179, on_trackbar);
-    // cv::createTrackbar("H Max", "Mask", &h_max, 179, on_trackbar);
-    // cv::createTrackbar("S Min", "Mask", &s_min, 255, on_trackbar);
-    // cv::createTrackbar("S Max", "Mask", &s_max, 255, on_trackbar);
-    // cv::createTrackbar("V Min", "Mask", &v_min, 255, on_trackbar);
-    // cv::createTrackbar("V Max", "Mask", &v_max, 255, on_trackbar);
+    // cv::createTrackbar("erosion", "Mask", &erosion_size, 10, on_trackbar);
+    // cv::createTrackbar("dilation", "Mask", &dilation_size, 10, on_trackbar);
+    cv::createTrackbar("H Min", "Mask", &h_min, 179, on_trackbar);
+    cv::createTrackbar("H Max", "Mask", &h_max, 179, on_trackbar);
+    cv::createTrackbar("S Min", "Mask", &s_min, 255, on_trackbar);
+    cv::createTrackbar("S Max", "Mask", &s_max, 255, on_trackbar);
+    cv::createTrackbar("V Min", "Mask", &v_min, 255, on_trackbar);
+    cv::createTrackbar("V Max", "Mask", &v_max, 255, on_trackbar);
     ROS_INFO("%s HRERE", TAG);
 
 #ifdef USE_SIMULATION
@@ -125,7 +125,7 @@ int main(int argc, char **argv) {
 
     // 打开摄像头
     int camera_port = 0;
-    nh.getParam("camera_port",camera_port);
+    nh.getParam("camera_port", camera_port);
     cv::VideoCapture cap("/dev/camera" + to_string(camera_port));  // 0 表示默认摄像头
     if (!cap.isOpened()) {
         ROS_ERROR("Failed to open the camera_node");
@@ -141,7 +141,9 @@ int main(int argc, char **argv) {
     auto lastTime = std::chrono::steady_clock::now();  // 记录开始时间
     int frameCount = 0;                                // 统计帧数
     double currentFps = 0.0;
-    ros::Rate loop_rate(5);
+    int frame_rate = 5;
+    nh.getParam("frame_rate", frame_rate);
+    ros::Rate loop_rate(frame_rate);
 
     while (ros::ok()) {
         // 捕获帧

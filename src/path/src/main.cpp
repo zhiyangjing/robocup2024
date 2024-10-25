@@ -239,6 +239,7 @@ public:
         nh_.setParam("speed", 0);
         nh_.setParam("angle", 0);
         ROS_INFO(TAG "State set to TERMINAL. Queue cleared.");
+        exit(0);
     }
     void start() {
         signal(SIGINT, PathController::signalHandler);
