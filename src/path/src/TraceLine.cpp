@@ -626,7 +626,7 @@ void TraceLine::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
         return;
     } else if (findMinDistance(msg->ranges) <= min_distance) {
         ROS_INFO(TAG COLOR_RED "TraceLine exit because of obstacle" COLOR_RESET);
-        stop();
+        // stop();
     }
 }
 
