@@ -593,7 +593,7 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
                    cv::FILLED);  // 使用 cv::FILLED 填充圆
 
         visualizeLines(lines_raw);
-        visualizeLines(blue_lines_raw, 1);
+        visualizeLines(blue_lines_raw, 0);
         checkBlueLine();
 
         // if (blue_line_found) {
