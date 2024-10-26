@@ -638,6 +638,7 @@ float TraceLine::findFrontDistance(vector<float> ranges) {
     int nums = 0;
     for (int i = 0; i < 5; i++) {
         if (ranges[i] < 20) {
+            cout << "distance " << distance << endl;
             distance += ranges[i];
             nums++;
         }
@@ -645,12 +646,13 @@ float TraceLine::findFrontDistance(vector<float> ranges) {
     int length = ranges.size();
     for (int i = length--; i >= length - 5; i--) {
         if (ranges[i] < 20) {
+            cout << "distance " << distance << endl;
             distance += ranges[i];
             nums++;
         }
     }
     if (nums == 0 or distance == 0) {
-        return 30;
+        return 30.f;
     } else {
         return distance / static_cast<float>(nums);
     }
