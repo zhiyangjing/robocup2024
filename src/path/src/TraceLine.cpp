@@ -622,24 +622,37 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 }
 
 void TraceLine::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
-    if (findMinDistance(msg->ranges) > min_distance) {
+    float front_distance = findFrontDistance(msg->ranges);
+    if (front_distance > min_distance) {
         return;
-    } else if (findMinDistance(msg->ranges) <= min_distance) {
+    } else if (front_distance <= min_distance) {
+        ROS_INFO(TAG COLOR_RED "front distance:  %f" COLOR_RESET, front_distance);
         ROS_INFO(TAG COLOR_RED "TraceLine exit because of obstacle" COLOR_RESET);
         // stop();
     }
 }
 
-float TraceLine::findMinDistance(vector<float> ranges) {
-    float mindistance = ranges[175];
-    for (int i = 220; i < 230; i++) {
-        cout << ranges[i] << " ";
-        if (ranges[i] < mindistance) {
-            mindistance = ranges[i];
+float TraceLine::findFrontDistance(vector<float> ranges) {
+    float distance = 0;
+    int nums = 0;
+    for (int i = 0; i < 5; i++) {
+        if (ranges[i] < 20) {
+            distance += ranges[i];
+            nums++;
         }
     }
-    cout << endl;
-    return mindistance;
+    int length = ranges.size();
+    for (int i = length--; i >= length - 5; i--) {
+        if (ranges[i] < 20) {
+            distance += ranges[i];
+            nums++;
+        }
+    }
+    if (nums == 0) {
+        return 30;
+    } else {
+        return distance / nums;
+    }
 }
 
 void TraceLine::run() {
