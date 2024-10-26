@@ -633,10 +633,12 @@ void TraceLine::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 float TraceLine::findMinDistance(vector<float> ranges) {
     float mindistance = ranges[175];
     for (int i = 220; i < 230; i++) {
+        cout << ranges[i] << " ";
         if (ranges[i] < mindistance) {
             mindistance = ranges[i];
         }
     }
+    cout << endl;
     return mindistance;
 }
 
