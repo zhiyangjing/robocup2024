@@ -649,7 +649,7 @@ float TraceLine::findFrontDistance(vector<float> ranges) {
             nums++;
         }
     }
-    if (nums == 0) {
+    if (nums == 0 or distance == 0) {
         return 30;
     } else {
         return distance / nums;
