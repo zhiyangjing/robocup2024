@@ -89,7 +89,7 @@ private:
     int frame_width = 640;
     int countdownTimer = 1000;  //  单位毫秒，在识别到蓝色线条之后剩余的运行时间
     int min_blue_length = 200;
-    float min_distance = 0.8;
+    float min_distance = 0.6;
     float lowerFraction = 0.4;
     int lowerHeight = static_cast<int>(frame_height * lowerFraction);
     int upperHeight = frame_height - lowerHeight;
