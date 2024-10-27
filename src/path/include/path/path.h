@@ -104,6 +104,7 @@ private:
     Buffer<float> prev_pos_slope;
     Buffer<int> prev_angle;
     Buffer<int> prev_center;
+    Buffer<float> blue_horizontal_times;
     Interpolator interpolator;
     cv::Mat frame;
     vector<cv::Vec4i> lines_raw;                                  // 存储检测到的白色车道线段

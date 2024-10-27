@@ -437,12 +437,17 @@ void TraceLine::checkBlueLine() {
     if (get<3>(longestLine)[1] > 380) {
         if (get<1>(longestLine) > min_blue_length and blueLines.size() > 3) {
             if (get<2>(longestLine) < 0.05) {
-                vertical_blue_lock = true;
-                ROS_INFO(TAG COLOR_RED "Vertical Blue Line Locked" COLOR_RESET);
+                blue_horizontal_times.push(1.f);
+                if (blue_horizontal_times.avg() > 0.6) {
+                    vertical_blue_lock = true;
+                    ROS_INFO(TAG COLOR_RED "Vertical Blue Line Locked" COLOR_RESET);
+                }
             }
             ROS_INFO(TAG COLOR_CYAN "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_RESET,
                      get<2>(longestLine), get<1>(longestLine), get<3>(longestLine)[2], get<3>(longestLine)[1],
                      static_cast<int>(blueLines.size()));
+        } else {
+            blue_horizontal_times.push(0.f);
         }
     }
     // 长度大于特定最小值，并且处于屏幕下方
@@ -563,7 +568,7 @@ void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int cente
     prev_angle.push(static_cast<int>(res));
     int angle_value = prev_angle.avg();
 
-    if ( vertical_blue_lock) {
+    if (vertical_blue_lock) {
         angle_value *= 0.1;
     }
 
