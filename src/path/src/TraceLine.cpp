@@ -434,9 +434,9 @@ void TraceLine::checkBlueLine() {
         }
     }
 
-    if (get<3>(longestLine)[1] > 50) {
+    if (get<3>(longestLine)[1] > 380) {
         if (get<1>(longestLine) > min_blue_length and blueLines.size() > 3) {
-            if (get<2>(longestLine) < 0.01) {
+            if (get<2>(longestLine) < 0.05) {
                 vertical_blue_lock = true;
             }
             ROS_INFO(TAG COLOR_CYAN "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_RESET,
@@ -547,9 +547,6 @@ void TraceLine::lineSlopeStrategy_old(float left_slope, float right_slope) {
 }
 
 void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int center) {
-    if (not vertical_blue_lock) {
-        nh_.setParam("angle", 0);
-    }
     if (left_slope == 0 and right_slope == 0) {
         return;
     }
@@ -564,7 +561,12 @@ void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int cente
     float res = max(min(interpolator.interpolate(slopes_center), 200.f), -200.f);
     prev_angle.push(static_cast<int>(res));
     int angle_value = prev_angle.avg();
-    nh_.setParam("angle", angle_value);
+
+    if (not vertical_blue_lock) {
+        nh_.setParam("angle", angle_value);
+    } else {
+        nh_.setParam("angle", angle_value * 0.15);  // 识别车辆垂直于路口蓝线，只保留小幅度调整能力
+    }
 
     ROS_INFO(TAG "left slope: %lf right slope: %lf center: %d angle: %d", left_slope, right_slope, center, angle_value);
 }
