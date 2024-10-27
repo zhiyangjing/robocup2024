@@ -83,11 +83,12 @@ private:
     ros::Subscriber laser_sub_;  // 雷达信息的订阅
     bool is_running_ = false;
     bool blue_line_found = false;
-    bool exit_blue = true;  // 遇到蓝线时是否退出，测试时使用
-    bool exit_obstacle = true; // 遇到障碍物是否退出，测试使用
+    bool exit_blue = true;      // 遇到蓝线时是否退出，测试时使用
+    bool exit_obstacle = true;  // 遇到障碍物是否退出，测试使用
     bool is_avoid_obstacle = false;
     bool video_feed_back = true;
     bool visualize_lidar = true;
+    bool vertical_blue_lock = false;  // 蓝线垂直锁定，用于优化路口方向，检测到蓝线斜率接近0，则不再调整斜率
     int frame_height = 480;
     int frame_width = 640;
     int countdownTimer = 1000;  //  单位毫秒，在识别到蓝色线条之后剩余的运行时间

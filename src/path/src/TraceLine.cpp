@@ -212,20 +212,20 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
     int lidar_visualize = 1;
     nh_.getParam("lidar_visualize", lidar_visualize);
     visualize_lidar = (lidar_visualize == 1);
-    ROS_INFO(TAG COLOR_MAGENTA "Lidar visualize %s" COLOR_RESET, (visualize_lidar) ? "Enabled" : "Disabled");
+    ROS_INFO(TAG COLOR_MAGENTA "Lidar visualize %s" COLOR_RESET,
+             (visualize_lidar) ? (COLOR_RED "Enabled") : (COLOR_GREEN "Disabled"));
 
     int exit_blue_param = 1;
     nh_.getParam("exit_blue", exit_blue_param);
     exit_blue = (exit_blue_param == 1);
-    ROS_INFO(TAG COLOR_MAGENTA "Exit Blue %s" COLOR_RESET, (exit_blue) ? (COLOR_RED "Enabled") : (COLOR_GREEN "Disabled"));
-
+    ROS_INFO(TAG COLOR_MAGENTA "Exit Blue %s" COLOR_RESET,
+             (exit_blue) ? (COLOR_GREEN "Enabled") : (COLOR_RED "Disabled"));
 
     int exit_obstacle_param = 1;
     nh_.getParam("exit_obstacle", exit_obstacle_param);
     exit_obstacle = (exit_obstacle_param == 1);
-    ROS_INFO(TAG COLOR_MAGENTA "Exit Obstacle %s" COLOR_RESET, (exit_obstacle) ? (COLOR_RED "Enabled") : (COLOR_GREEN "Disabled"));
-
-
+    ROS_INFO(TAG COLOR_MAGENTA "Exit Obstacle %s" COLOR_RESET,
+             (exit_obstacle) ? (COLOR_GREEN "Enabled") : (COLOR_RED "Disabled"));
 
     ROS_INFO(TAG "TraceLine constructed succeeded! ");
 }
@@ -435,9 +435,14 @@ void TraceLine::checkBlueLine() {
     }
 
     if (get<3>(longestLine)[1] > 50) {
-            ROS_INFO(TAG COLOR_CYAN "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_RESET, get<2>(longestLine),
-                     get<1>(longestLine), get<3>(longestLine)[2], get<3>(longestLine)[1],
+        if (get<1>(longestLine) > min_blue_length and blueLines.size() > 3) {
+            if (get<2>(longestLine) < 0.01) {
+                vertical_blue_lock = true;
+            }
+            ROS_INFO(TAG COLOR_CYAN "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_RESET,
+                     get<2>(longestLine), get<1>(longestLine), get<3>(longestLine)[2], get<3>(longestLine)[1],
                      static_cast<int>(blueLines.size()));
+        }
     }
     // 长度大于特定最小值，并且处于屏幕下方
 }
@@ -542,6 +547,9 @@ void TraceLine::lineSlopeStrategy_old(float left_slope, float right_slope) {
 }
 
 void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int center) {
+    if (not vertical_blue_lock) {
+        nh_.setParam("angle", 0);
+    }
     if (left_slope == 0 and right_slope == 0) {
         return;
     }
@@ -675,7 +683,7 @@ void TraceLine::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     }
     if (front_distance > min_distance) {
         return;
-    } else if (exit_obstacle){
+    } else if (exit_obstacle) {
         ROS_INFO(TAG COLOR_RED "front distance:  %f" COLOR_RESET, front_distance);
         ROS_INFO(TAG COLOR_RED "TraceLine exit because of obstacle" COLOR_RESET);
         stop();
