@@ -92,6 +92,7 @@ private:
     int frame_height = 480;
     int frame_width = 640;
     int countdownTimer = 1000;  //  单位毫秒，在识别到蓝色线条之后剩余的运行时间
+    int workingTimer = 0; // 记录已经运行的时间，开始的一段时间内不识别蓝线，单位毫秒
     int min_blue_length = 200;
     float min_distance = 0.8;
     float lowerFraction = 0.4;
@@ -99,6 +100,7 @@ private:
     int upperHeight = frame_height - lowerHeight;
     int line_pos = frame_width * 0.422;
     int handle_rate_ = 20;  // 应该大于frame_rate
+    int frame_rate_ = 10; // 通过param获取的frame_rate
     double currentFps = 0;
     Buffer<float> prev_neg_slope;
     Buffer<float> prev_pos_slope;

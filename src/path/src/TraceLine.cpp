@@ -203,6 +203,8 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
     }
 
     interpolator = Interpolator(points, z, weights);
+
+    nh_.getParam("camera_node/front/frame_rate", frame_rate_);
     nh_.setParam("speed", 2);
     int video_feed_back_param = 1;
     nh_.getParam("video_feed_back", video_feed_back_param);
@@ -627,7 +629,10 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 
         visualizeLines(lines_raw);
         visualizeLines(blue_lines_raw, 0);
-        checkBlueLine();
+        workingTimer += 1000 / frame_rate_;
+        if (workingTimer > 700) {
+            checkBlueLine();
+        }
 
         if (blue_line_found and exit_blue) {
             // 控制权得尽早交出。
