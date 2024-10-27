@@ -661,7 +661,6 @@ void TraceLine::visualizeLidar(vector<float> distances) {
 void TraceLine::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     float front_distance = findFrontDistance(msg->ranges);
     if (visualize_lidar) {
-        cout << ":h" << endl;
         visualizeLidar(msg->ranges);
     }
     if (front_distance > min_distance) {
