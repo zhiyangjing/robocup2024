@@ -8,7 +8,6 @@
 
 #define TAG " [REVERSE] "
 
-
 Park::Park(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
     right_point = Buffer<int>(5);
     left_point = Buffer<int>(5);
@@ -469,10 +468,12 @@ void Park::run() {
         ros::spinOnce();
         handle_rate.sleep();
     }
-    sub_.shutdown();
 }
 
-void Park::stop() { is_running_ = false; }
+void Park::stop() {
+    is_running_ = false;
+    sub_.shutdown();
+}
 
 // /**
 //  * @brief 这里只是一个测试用的main函数，实际上真正使用这里的功能是在main.cpp

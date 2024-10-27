@@ -703,8 +703,10 @@ void TraceLine::run() {
         ros::spinOnce();
         handle_rate.sleep();
     }
+}
+void TraceLine::stop() {
+    is_running_ = false;
     sub_.shutdown();
     laser_sub_.shutdown();
 }
-void TraceLine::stop() { is_running_ = false; }
 TraceLine::~TraceLine() {}
