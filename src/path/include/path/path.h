@@ -83,6 +83,7 @@ private:
     ros::Subscriber laser_sub_;  // 雷达信息的订阅
     bool is_running_ = false;
     bool blue_line_found = false;
+    bool exit_blue = true;  // 遇到蓝线时是否退出，测试时使用
     bool is_avoid_obstacle = false;
     bool video_feed_back = true;
     bool visualize_lidar = true;
@@ -95,7 +96,7 @@ private:
     int lowerHeight = static_cast<int>(frame_height * lowerFraction);
     int upperHeight = frame_height - lowerHeight;
     int line_pos = frame_width * 0.422;
-    int handle_rate_ = 20; // 应该大于frame_rate
+    int handle_rate_ = 20;  // 应该大于frame_rate
     double currentFps = 0;
     Buffer<float> prev_neg_slope;
     Buffer<float> prev_pos_slope;

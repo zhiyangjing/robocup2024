@@ -203,29 +203,21 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
 
     interpolator = Interpolator(points, z, weights);
     nh_.setParam("speed", 2);
-    int has_feed_back = 1;
-    nh_.getParam("video_feed_back", has_feed_back);
-    if (has_feed_back) {
-        video_feed_back = true;
-    } else {
-        video_feed_back = false;
-    }
+    int video_feed_back_param = 1;
+    nh_.getParam("video_feed_back", video_feed_back_param);
+    video_feed_back = (video_feed_back_param == 1);
+    ROS_INFO(TAG COLOR_MAGENTA "Video feed back %s" COLOR_RESET,
+             video_feed_back ? (COLOR_RED "Enabled") : (COLOR_GREEN "Disable"));
 
     int lidar_visualize = 1;
     nh_.getParam("lidar_visualize", lidar_visualize);
-    if (lidar_visualize) {
-        visualize_lidar = true;
-    } else {
-        visualize_lidar = false;
-    }
-
-    if (not video_feed_back) {
-        ROS_INFO(TAG COLOR_GREEN "Video feed back Disable" COLOR_RESET);
-    } else {
-        ROS_INFO(TAG COLOR_RED "Video feed back Enable" COLOR_RESET);
-    }
-
+    visualize_lidar = (lidar_visualize == 1);
     ROS_INFO(TAG COLOR_MAGENTA "Lidar visualize %s" COLOR_RESET, (visualize_lidar) ? "Enabled" : "Disabled");
+
+    int exit_blue_param = 1;
+    nh_.getParam("exit_blue", exit_blue_param);
+    exit_blue = (exit_blue_param == 1);
+    ROS_INFO(TAG COLOR_MAGENTA "Exit Blue %s" COLOR_RESET, (exit_blue) ? "Enabled" : "Disabled");
 
     ROS_INFO(TAG "TraceLine constructed succeeded! ");
 }
@@ -252,9 +244,9 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh, TraceLineInitParams p
     interpolator = Interpolator(points, params.ref_value, weights);
     nh_.setParam("speed", 2);
 
-    int has_feed_back = 1;
-    nh_.getParam("path/video_feed_back", has_feed_back);
-    if (has_feed_back) {
+    int video_feed_back_param = 1;
+    nh_.getParam("path/video_feed_back", video_feed_back_param);
+    if (video_feed_back_param) {
         video_feed_back = true;
     } else {
         video_feed_back = false;
@@ -427,11 +419,17 @@ void TraceLine::checkBlueLine() {
             // ROS_INFO(TAG "%s", string(20, '-').c_str());
             ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
             // ROS_INFO(TAG "%s", string(20, '-').c_str());
-            ROS_INFO(TAG "slope : %f length: %f", get<2>(longestLine), get<1>(longestLine));
-            ROS_INFO(TAG "center_x:  %d center_y: %d", get<3>(longestLine)[2], get<3>(longestLine)[1]);
-            ROS_INFO(TAG "blueLines size:  %d ", static_cast<int>(blueLines.size()));
+            ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d ", get<2>(longestLine),
+                     get<1>(longestLine), get<3>(longestLine)[2], get<3>(longestLine)[1],
+                     static_cast<int>(blueLines.size()));
             // ROS_INFO(TAG "%s", string(20, '-').c_str());
         }
+    }
+
+    if (get<3>(longestLine)[1] > 50) {
+            ROS_INFO(TAG COLOR_CYAN "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_RESET, get<2>(longestLine),
+                     get<1>(longestLine), get<3>(longestLine)[2], get<3>(longestLine)[1],
+                     static_cast<int>(blueLines.size()));
     }
     // 长度大于特定最小值，并且处于屏幕下方
 }
@@ -606,7 +604,7 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
         visualizeLines(blue_lines_raw, 0);
         checkBlueLine();
 
-        if (blue_line_found) {
+        if (blue_line_found and exit_blue) {
             // 控制权得尽早交出。
             // 如果是循线+右转，这会导致交出过晚，右转拐弯半径不足。
             // 所以改为由各自下一步自行延时
