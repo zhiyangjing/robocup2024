@@ -220,6 +220,12 @@ public:
         //                                 ROAD_RIGHT_TURN, REVERSE_PARK, TERMINAL});
         states_queue = std::deque<int>(
             {TRACE_LINE, AVOID, TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE, ROAD_RIGHT_TURN, REVERSE_PARK, TERMINAL});
+        vector<int> order;
+
+        if (nh.getParam("order",order)) {
+            states_queue.assign(order.begin(), order.end());
+        }
+        
         instance = this;
 
         // 为了对其只好这么写了
