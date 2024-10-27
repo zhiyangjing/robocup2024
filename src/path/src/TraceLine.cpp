@@ -637,12 +637,14 @@ float TraceLine::findFrontDistance(vector<float> ranges) {
     float distance = 0.f;
     for (int i = 0; i < 5; i++) {
         if (ranges[i] > 0) {
+            ROS_INFO(TAG COLOR_BLUE "distance: %f" COLOR_RESET,distance);
             distance = min(distance,ranges[i]);
         }
     }
     int length = ranges.size();
     for (int i = length--; i >= length - 5; i--) {
         if (ranges[i] > 0) {
+            ROS_INFO(TAG COLOR_BLUE "distance: %f" COLOR_RESET,distance);
             distance = min(distance,ranges[i]);
         }
     }
