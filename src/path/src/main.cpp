@@ -73,9 +73,12 @@ class RoadLeftTurn : public Ability {
 private:
     bool is_running_ = false;
     int lasting_time = 10;
+    vector<float> stages_time;
 
 public:
-    RoadLeftTurn(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {}
+    RoadLeftTurn(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
+        nh_.getParam("road_left_turn_times", stages_time);
+    }
     void run() {
         is_running_ = true;
         int speed = 2;  // 默认速度是2
@@ -84,11 +87,18 @@ public:
         ROS_INFO(TAG "Turning Left");
         nh_.getParam("speed", speed);
 
-        nh_.setParam("angle", -130);  // 向左拐
+        nh_.setParam("angle", 0);
+        for (int i = 0; i < static_cast<int>((stages_time[0] * speed / 2) * rate_num); ++i) {
+            loop_rate.sleep();
+        }
 
-        ROS_INFO(TAG "Total Time: %ds , %d iteration", lasting_time, (lasting_time * speed / 2) * rate_num);
-        for (int i = 0; i < (lasting_time * speed / 2) * rate_num; ++i) {
-            ROS_INFO(TAG "Turning Left Iteration: %d", i);
+        nh_.setParam("angle", -200);
+        for (int i = 0; i < static_cast<int>((stages_time[1] * speed / 2) * rate_num); ++i) {
+            loop_rate.sleep();
+        }
+
+        nh_.setParam("angle", 0);
+        for (int i = 0; i < static_cast<int>((stages_time[2] * speed / 2) * rate_num); ++i) {
             loop_rate.sleep();
         }
         nh_.setParam("angle", 0);  // 回正
@@ -113,21 +123,10 @@ public:
 
         ROS_INFO(TAG "Turning Right");
         nh_.getParam("speed", speed);
-        nh_.setParam("angle", 200);  // 向左拐
 
-        ROS_INFO(TAG COLOR_BLUE "Going Straight" COLOR_RESET);
-        nh_.setParam("angle", 0);
-        for (int i = 0; i < static_cast<int>((stages_time[0] * speed / 2) * rate_num); ++i) {
-            loop_rate.sleep();
-        }
-
-        nh_.setParam("angle", -200);
-        for (int i = 0; i < static_cast<int>((stages_time[1] * speed / 2) * rate_num); ++i) {
-            loop_rate.sleep();
-        }
-
-        nh_.setParam("angle", 0);
-        for (int i = 0; i < static_cast<int>((stages_time[2] * speed / 2) * rate_num); ++i) {
+        ROS_INFO(TAG COLOR_BLUE "Going Right" COLOR_RESET);
+        nh_.setParam("angle", 200);
+        for (int i = 0; i < static_cast<int>((8 * speed / 2) * rate_num); ++i) {
             loop_rate.sleep();
         }
     }
