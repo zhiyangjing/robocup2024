@@ -660,7 +660,6 @@ void TraceLine::visualizeLidar(vector<float> distances) {
 
 void TraceLine::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     float front_distance = findFrontDistance(msg->ranges);
-    ROS_INFO(TAG COLOR_CYAN "front distance:  %f" COLOR_RESET, front_distance);
     if (visualize_lidar) {
         cout << ":h" << endl;
         visualizeLidar(msg->ranges);
@@ -678,14 +677,12 @@ float TraceLine::findFrontDistance(vector<float> ranges) {
     float distance = 50;
     for (int i = 0; i < 5; i++) {
         if (ranges[i] > 0.1f) {
-            ROS_INFO(TAG COLOR_BLUE "distance: %f" COLOR_RESET, distance);
             distance = min(distance, ranges[i]);
         }
     }
     int length = ranges.size();
     for (int i = length - 1; i >= length - 5; i--) {
         if (ranges[i] > 0.1f) {
-            ROS_INFO(TAG COLOR_BLUE "distance: %f" COLOR_RESET, distance);
             distance = min(distance, ranges[i]);
         }
     }
