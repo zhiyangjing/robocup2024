@@ -623,7 +623,7 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 
 void TraceLine::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     float front_distance = findFrontDistance(msg->ranges);
-    // ROS_INFO(TAG COLOR_CYAN "front distance:  %f" COLOR_RESET, front_distance);
+    ROS_INFO(TAG COLOR_CYAN "front distance:  %f" COLOR_RESET, front_distance);
     if (front_distance > min_distance) {
         return;
     } else {
