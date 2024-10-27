@@ -262,6 +262,9 @@ public:
             } else if (STATE == TRACE_LINE) {
                 auto trace_line_controller = TraceLine(-1, nh_);
                 trace_line_controller.run();
+            } else if (STATE == AVOID) {
+                auto avoid = Avoid(-1,nh_);
+                avoid.run();
             } else if (STATE == UTURN) {
                 auto uturn = Uturn(-1, nh_);
                 uturn.run();
