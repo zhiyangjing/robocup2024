@@ -634,7 +634,7 @@ void TraceLine::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 }
 
 float TraceLine::findFrontDistance(vector<float> ranges) {
-    float distance = 0.f;
+    float distance = 50;
     for (int i = 0; i < 5; i++) {
         if (ranges[i] > 0) {
             ROS_INFO(TAG COLOR_BLUE "distance: %f" COLOR_RESET,distance);
@@ -648,8 +648,8 @@ float TraceLine::findFrontDistance(vector<float> ranges) {
             distance = min(distance,ranges[i]);
         }
     }
-    if (distance == 0) {
-        return 30.f;
+    if (distance >= 50) {
+        return 50.f;
     } else {
         return distance;
     }
