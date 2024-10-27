@@ -33,7 +33,7 @@ public:
         cap_.open("/dev/camera" + to_string(camera_port));  // 打开摄像头
         cap_.set(cv::CAP_PROP_FRAME_WIDTH, 640);   // 设置宽度为640
         cap_.set(cv::CAP_PROP_FRAME_HEIGHT, 480);  // 设置高度为480
-        cap_.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+        // cap_.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
         ROS_INFO(TAG " Camera open succeeded");
 #endif
         if (!cap_.isOpened()) {
