@@ -636,14 +636,14 @@ void TraceLine::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
 float TraceLine::findFrontDistance(vector<float> ranges) {
     float distance = 50;
     for (int i = 0; i < 5; i++) {
-        if (ranges[i] > 0) {
+        if (ranges[i] > 0.1f) {
             ROS_INFO(TAG COLOR_BLUE "distance: %f" COLOR_RESET,distance);
             distance = min(distance,ranges[i]);
         }
     }
     int length = ranges.size();
-    for (int i = length--; i >= length - 5; i--) {
-        if (ranges[i] > 0) {
+    for (int i = length-1; i >= length - 5; i--) {
+        if (ranges[i] > 0.1f) {
             ROS_INFO(TAG COLOR_BLUE "distance: %f" COLOR_RESET,distance);
             distance = min(distance,ranges[i]);
         }
