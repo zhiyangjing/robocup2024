@@ -125,9 +125,12 @@ public:
 
 class Avoid : Ability {
 private:
+    vector<float> stages_time;
+
 public:
     Avoid(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
         ROS_INFO(TAG COLOR_YELLOW "Avoid Ability Constructed" COLOR_RESET);
+        nh_.getParam("avoid_times", stages_time);
     }
     void run() {
         int speed = 2;  // 默认速度是2
@@ -136,25 +139,25 @@ public:
 
         ROS_INFO(TAG COLOR_BLUE "Going left" COLOR_RESET);
         nh_.setParam("angle", -200);  // 向左拐
-        for (int i = 0; i < (4 * speed / 2) * rate_num; ++i) {
+        for (int i = 0; i < static_cast<int>((stages_time[0] * speed / 2) * rate_num); ++i) {
             loop_rate.sleep();
         }
 
         ROS_INFO(TAG COLOR_BLUE "Going Straight" COLOR_RESET);
         nh_.setParam("angle", 0);
-        for (int i = 0; i < (2 * speed / 2) * rate_num; ++i) {
+        for (int i = 0; i < static_cast<int>((stages_time[1] * speed / 2) * rate_num); ++i) {
             loop_rate.sleep();
         }
 
         ROS_INFO(TAG COLOR_BLUE "Going Right" COLOR_RESET);
         nh_.setParam("angle", 200);
-        for (int i = 0; i < (6 * speed / 2) * rate_num; ++i) {
+        for (int i = 0; i < static_cast<int>((stages_time[1] * speed / 2) * rate_num); ++i) {
             loop_rate.sleep();
         }
 
         ROS_INFO(TAG COLOR_BLUE "Going Left" COLOR_RESET);
         nh_.setParam("angle", -100);
-        for (int i = 0; i < (4 * speed / 2) * rate_num; ++i) {
+        for (int i = 0; i < static_cast<int>((stages_time[1] * speed / 2) * rate_num); ++i) {
             loop_rate.sleep();
         }
 
@@ -215,8 +218,8 @@ public:
         // states_queue = std::deque<int>({LIGHT_DETECT,TRACE_LINE, ROAD_LEFT_TURN ,UTURN, TRACE_LINE, UTURN, TRACE_LINE, TERMINAL});
         // states_queue = std::deque<int>({TRACE_LINE, STRAIGHT, TRACE_LINE, AVOID, TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE,
         //                                 ROAD_RIGHT_TURN, REVERSE_PARK, TERMINAL});
-        states_queue = std::deque<int>({TRACE_LINE, AVOID, TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE,
-                                        ROAD_RIGHT_TURN, REVERSE_PARK, TERMINAL});
+        states_queue = std::deque<int>(
+            {TRACE_LINE, AVOID, TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE, ROAD_RIGHT_TURN, REVERSE_PARK, TERMINAL});
         instance = this;
 
         // 为了对其只好这么写了
@@ -263,7 +266,7 @@ public:
                 auto trace_line_controller = TraceLine(-1, nh_);
                 trace_line_controller.run();
             } else if (STATE == AVOID) {
-                auto avoid = Avoid(-1,nh_);
+                auto avoid = Avoid(-1, nh_);
                 avoid.run();
             } else if (STATE == UTURN) {
                 auto uturn = Uturn(-1, nh_);
