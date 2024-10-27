@@ -563,12 +563,11 @@ void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int cente
     prev_angle.push(static_cast<int>(res));
     int angle_value = prev_angle.avg();
 
-    if (not vertical_blue_lock) {
-        nh_.setParam("angle", angle_value);
-    } else {
-        nh_.setParam("angle", angle_value * 0.15);  // 识别车辆垂直于路口蓝线，只保留小幅度调整能力
+    if ( vertical_blue_lock) {
+        angle_value *= 0.1;
     }
 
+    nh_.setParam("angle", angle_value);
     ROS_INFO(TAG "left slope: %lf right slope: %lf center: %d angle: %d", left_slope, right_slope, center, angle_value);
 }
 
