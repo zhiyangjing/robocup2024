@@ -438,6 +438,7 @@ void TraceLine::checkBlueLine() {
         if (get<1>(longestLine) > min_blue_length and blueLines.size() > 3) {
             if (get<2>(longestLine) < 0.05) {
                 vertical_blue_lock = true;
+                ROS_INFO(TAG COLOR_RED "Vertical Blue Line Locked" COLOR_RESET);
             }
             ROS_INFO(TAG COLOR_CYAN "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_RESET,
                      get<2>(longestLine), get<1>(longestLine), get<3>(longestLine)[2], get<3>(longestLine)[1],
