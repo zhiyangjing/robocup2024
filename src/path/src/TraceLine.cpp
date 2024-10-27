@@ -606,17 +606,17 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
         visualizeLines(blue_lines_raw, 0);
         checkBlueLine();
 
-        // if (blue_line_found) {
-        //     int speed, frame_rate = 10;
-        //     nh_.getParam("speed", speed);
-        //     nh_.getParam("frame_rate", frame_rate);
-        //     countdownTimer -= (1000 / frame_rate);
-        //     ROS_INFO(TAG "Blue line found");
-        //     ROS_INFO(TAG "time before exit: %d", countdownTimer);
-        //     if (countdownTimer <= 0) {
-        //         stop();
-        //     }
-        // }
+        if (blue_line_found) {
+            int speed, frame_rate = 10;
+            nh_.getParam("speed", speed);
+            nh_.getParam("frame_rate", frame_rate);
+            countdownTimer -= (1000 / frame_rate);
+            ROS_INFO(TAG "Blue line found");
+            ROS_INFO(TAG "time before exit: %d", countdownTimer);
+            if (countdownTimer <= 0) {
+                stop();
+            }
+        }
 
         if (not is_avoid_obstacle) {
             lineSlopeStrategy(neg_slope, pos_slope, center);
