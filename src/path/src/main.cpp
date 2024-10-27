@@ -88,16 +88,19 @@ public:
         nh_.getParam("speed", speed);
 
         nh_.setParam("angle", 0);
+        ROS_INFO(TAG "Time: %f", stages_time[0]);
         for (int i = 0; i < static_cast<int>((stages_time[0] * speed / 2) * rate_num); ++i) {
             loop_rate.sleep();
         }
 
         nh_.setParam("angle", -200);
+        ROS_INFO(TAG "Time: %f", stages_time[1]);
         for (int i = 0; i < static_cast<int>((stages_time[1] * speed / 2) * rate_num); ++i) {
             loop_rate.sleep();
         }
 
         nh_.setParam("angle", 0);
+        ROS_INFO(TAG "Time: %f", stages_time[2]);
         for (int i = 0; i < static_cast<int>((stages_time[2] * speed / 2) * rate_num); ++i) {
             loop_rate.sleep();
         }
