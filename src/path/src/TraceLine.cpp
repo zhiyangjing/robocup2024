@@ -211,11 +211,21 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
         video_feed_back = false;
     }
 
+    int lidar_visualize = 1;
+    nh_.getParam("lidar_visualize", lidar_visualize);
+    if (lidar_visualize) {
+        visualize_lidar = true;
+    } else {
+        visualize_lidar = false;
+    }
+
     if (not video_feed_back) {
         ROS_INFO(TAG COLOR_GREEN "Video feed back Disable" COLOR_RESET);
     } else {
         ROS_INFO(TAG COLOR_RED "Video feed back Enable" COLOR_RESET);
     }
+
+    ROS_INFO(TAG COLOR_MAGENTA "Lidar visualize %s" COLOR_RESET, (visualize_lidar) ? "Enabled" : "Disabled");
 
     ROS_INFO(TAG "TraceLine constructed succeeded! ");
 }
@@ -621,9 +631,40 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     } catch (cv_bridge::Exception &e) { ROS_ERROR("Could not convert from '%s' to 'bgr8'.", msg->encoding.c_str()); }
 }
 
+const int WIDTH = 600;
+const int HEIGHT = 600;
+void TraceLine::visualizeLidar(vector<float> distances) {
+    cv::Mat img = cv::Mat::zeros(HEIGHT, WIDTH, CV_8UC3);
+    cv::Point center(WIDTH / 2, HEIGHT / 2);
+    int scalar = 100;
+
+    // 计算每个距离点的坐标并绘制
+    for (size_t i = 0; i < distances.size(); ++i) {
+        float angle = (2 * M_PI / distances.size()) * i;  // 计算当前点的角度
+        float distance = distances[i] * scalar;
+
+        // 将距离转换为像素坐标
+        int x = static_cast<int>(center.x + distance * cos(angle));
+        int y = static_cast<int>(center.y + distance * sin(angle));
+
+        // 确保坐标在图像范围内
+        if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT) {
+            img.at<cv::Vec3b>(y, x) = cv::Vec3b(0, 255, 0);  // 使用绿色绘制点
+        }
+    }
+
+    // 显示图像
+    cv::imshow("Lidar Visualization", img);
+    cv::waitKey(1);
+}
+
 void TraceLine::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     float front_distance = findFrontDistance(msg->ranges);
     ROS_INFO(TAG COLOR_CYAN "front distance:  %f" COLOR_RESET, front_distance);
+    if (visualize_lidar) {
+        cout << ":h" << endl;
+        visualizeLidar(msg->ranges);
+    }
     if (front_distance > min_distance) {
         return;
     } else {
@@ -637,15 +678,15 @@ float TraceLine::findFrontDistance(vector<float> ranges) {
     float distance = 50;
     for (int i = 0; i < 5; i++) {
         if (ranges[i] > 0.1f) {
-            ROS_INFO(TAG COLOR_BLUE "distance: %f" COLOR_RESET,distance);
-            distance = min(distance,ranges[i]);
+            ROS_INFO(TAG COLOR_BLUE "distance: %f" COLOR_RESET, distance);
+            distance = min(distance, ranges[i]);
         }
     }
     int length = ranges.size();
-    for (int i = length-1; i >= length - 5; i--) {
+    for (int i = length - 1; i >= length - 5; i--) {
         if (ranges[i] > 0.1f) {
-            ROS_INFO(TAG COLOR_BLUE "distance: %f" COLOR_RESET,distance);
-            distance = min(distance,ranges[i]);
+            ROS_INFO(TAG COLOR_BLUE "distance: %f" COLOR_RESET, distance);
+            distance = min(distance, ranges[i]);
         }
     }
     if (distance >= 50) {

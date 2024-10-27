@@ -85,6 +85,7 @@ private:
     bool blue_line_found = false;
     bool is_avoid_obstacle = false;
     bool video_feed_back = true;
+    bool visualize_lidar = true;
     int frame_height = 480;
     int frame_width = 640;
     int countdownTimer = 1000;  //  单位毫秒，在识别到蓝色线条之后剩余的运行时间
@@ -124,6 +125,7 @@ public:
     void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg);
     float findFrontDistance(vector<float> ranges);
     void visualizeLines(const vector<cv::Vec4i> &lines, int level);
+    void visualizeLidar(vector<float> distances);
     void checkBlueLine();
     void run();
     void stop();
