@@ -217,7 +217,15 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
     int exit_blue_param = 1;
     nh_.getParam("exit_blue", exit_blue_param);
     exit_blue = (exit_blue_param == 1);
-    ROS_INFO(TAG COLOR_MAGENTA "Exit Blue %s" COLOR_RESET, (exit_blue) ? "Enabled" : "Disabled");
+    ROS_INFO(TAG COLOR_MAGENTA "Exit Blue %s" COLOR_RESET, (exit_blue) ? (COLOR_RED "Enabled") : (COLOR_GREEN "Disabled"));
+
+
+    int exit_obstacle_param = 1;
+    nh_.getParam("exit_obstacle", exit_obstacle_param);
+    exit_obstacle = (exit_obstacle_param == 1);
+    ROS_INFO(TAG COLOR_MAGENTA "Exit Obstacle %s" COLOR_RESET, (exit_obstacle) ? (COLOR_RED "Enabled") : (COLOR_GREEN "Disabled"));
+
+
 
     ROS_INFO(TAG "TraceLine constructed succeeded! ");
 }
@@ -667,7 +675,7 @@ void TraceLine::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     }
     if (front_distance > min_distance) {
         return;
-    } else {
+    } else if (exit_obstacle){
         ROS_INFO(TAG COLOR_RED "front distance:  %f" COLOR_RESET, front_distance);
         ROS_INFO(TAG COLOR_RED "TraceLine exit because of obstacle" COLOR_RESET);
         stop();

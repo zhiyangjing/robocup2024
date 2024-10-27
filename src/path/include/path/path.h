@@ -84,6 +84,7 @@ private:
     bool is_running_ = false;
     bool blue_line_found = false;
     bool exit_blue = true;  // 遇到蓝线时是否退出，测试时使用
+    bool exit_obstacle = true; // 遇到障碍物是否退出，测试使用
     bool is_avoid_obstacle = false;
     bool video_feed_back = true;
     bool visualize_lidar = true;
