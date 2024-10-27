@@ -9,3 +9,6 @@ road_left_turn_times:
   - 2
   - 6
   - 2
+
+straight_times:
+ - 8

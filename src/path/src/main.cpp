@@ -44,7 +44,9 @@ private:
     int lasting_time = 7;
 
 public:
-    Straight(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {}
+    Straight(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
+        nh_.getParam("straight_times", lasting_time);
+    }
     void run() {
         is_running_ = true;
         int speed = 2;  // 默认速度是2
