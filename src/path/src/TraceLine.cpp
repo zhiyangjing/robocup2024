@@ -607,15 +607,19 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
         checkBlueLine();
 
         if (blue_line_found) {
-            int speed, frame_rate = 10;
-            nh_.getParam("speed", speed);
-            nh_.getParam("frame_rate", frame_rate);
-            countdownTimer -= (1000 / frame_rate);
-            ROS_INFO(TAG "Blue line found");
-            ROS_INFO(TAG "time before exit: %d", countdownTimer);
-            if (countdownTimer <= 0) {
-                stop();
-            }
+            // 控制权得尽早交出。
+            // 如果是循线+右转，这会导致交出过晚，右转拐弯半径不足。
+            // 所以改为由各自下一步自行延时
+            stop();
+            // int speed, frame_rate = 10;
+            // nh_.getParam("speed", speed);
+            // nh_.getParam("frame_rate", frame_rate);
+            // countdownTimer -= (1000 / frame_rate);
+            // ROS_INFO(TAG "Blue line found");
+            // ROS_INFO(TAG "time before exit: %d", countdownTimer);
+            // if (countdownTimer <= 0) {
+            //     stop();
+            // }
         }
 
         if (not is_avoid_obstacle) {

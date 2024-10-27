@@ -99,10 +99,12 @@ public:
 class RoadRightTurn : public Ability {
 private:
     bool is_running_ = false;
-    int lasting_time = 8;
+    vector<float> stages_time;
 
 public:
-    RoadRightTurn(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {};
+    RoadRightTurn(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
+        nh_.getParam("road_left_turn_times", stages_time);
+    };
     void run() {
         is_running_ = true;
         int speed = 2;  // 默认速度是2
@@ -113,12 +115,21 @@ public:
         nh_.getParam("speed", speed);
         nh_.setParam("angle", 200);  // 向左拐
 
-        ROS_INFO(TAG "Total Time: %ds , %d iteration", lasting_time, (lasting_time * speed / 2) * rate_num);
-        for (int i = 0; i < (lasting_time * speed / 2) * rate_num; ++i) {
-            ROS_INFO(TAG "Turning Right Iteration: %d", i);
+        ROS_INFO(TAG COLOR_BLUE "Going Straight" COLOR_RESET);
+        nh_.setParam("angle", 0);
+        for (int i = 0; i < static_cast<int>((stages_time[0] * speed / 2) * rate_num); ++i) {
             loop_rate.sleep();
         }
-        nh_.setParam("angle", 0);  // 回正
+
+        nh_.setParam("angle", -200);
+        for (int i = 0; i < static_cast<int>((stages_time[1] * speed / 2) * rate_num); ++i) {
+            loop_rate.sleep();
+        }
+
+        nh_.setParam("angle", 0);
+        for (int i = 0; i < static_cast<int>((stages_time[2] * speed / 2) * rate_num); ++i) {
+            loop_rate.sleep();
+        }
     }
     void stop() { is_running_ = false; }
 };
@@ -222,10 +233,10 @@ public:
             {TRACE_LINE, AVOID, TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE, ROAD_RIGHT_TURN, REVERSE_PARK, TERMINAL});
         vector<int> order;
 
-        if (nh.getParam("order",order)) {
+        if (nh.getParam("order", order)) {
             states_queue.assign(order.begin(), order.end());
         }
-        
+
         instance = this;
 
         // 为了对其只好这么写了
