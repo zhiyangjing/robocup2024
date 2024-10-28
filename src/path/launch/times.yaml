@@ -1,8 +1,9 @@
 avoid_times:
-  - 3
-  - 2
-  - 7
-  - 3
+  - 3 # 左转
+  - 2 # 直行
+  - 7 # 右转
+  - 1 # 直行
+  - 3 # 左转
 
 
 road_left_turn_times:

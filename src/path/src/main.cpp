@@ -170,9 +170,15 @@ public:
             loop_rate.sleep();
         }
 
+        ROS_INFO(TAG COLOR_BLUE "Going Straight" COLOR_RESET);
+        nh_.setParam("angle", 0);
+        for (int i = 0; i < static_cast<int>((stages_time[3] * speed / 2) * rate_num); ++i) {
+            loop_rate.sleep();
+        }
+
         ROS_INFO(TAG COLOR_BLUE "Going Left" COLOR_RESET);
         nh_.setParam("angle", -200);
-        for (int i = 0; i < static_cast<int>((stages_time[3] * speed / 2) * rate_num); ++i) {
+        for (int i = 0; i < static_cast<int>((stages_time[4] * speed / 2) * rate_num); ++i) {
             loop_rate.sleep();
         }
 
