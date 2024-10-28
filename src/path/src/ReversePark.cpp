@@ -60,6 +60,14 @@ Park::Park(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
     exit_park = (exit_park_param == 1);
     ROS_INFO(TAG COLOR_MAGENTA "Exit Park %s" COLOR_RESET,
              (exit_park) ? (COLOR_GREEN "Enabled") : (COLOR_RED "Disabled"));
+
+    nh_.getParam("camera_node/back/frame_rate", frame_rate_);
+
+    float time_before_exit = 0.6;
+    nh_.getParam("time_before_exit", time_before_exit);
+    times_before_end = frame_rate_ * time_before_exit;
+
+    ROS_INFO(TAG COLOR_MAGENTA "Park node started" COLOR_RESET);
 }
 
 Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Ability(remain_time, nh) {
@@ -93,7 +101,21 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
     } else {
         target_index = 1;  // 1代表右侧车库
     }
+
     ROS_INFO(TAG "Target index: %d", target_index);
+
+    int exit_park_param = 1;
+    nh_.getParam("exit_park", exit_park_param);
+    exit_park = (exit_park_param == 1);
+    ROS_INFO(TAG COLOR_MAGENTA "Exit Park %s" COLOR_RESET,
+             (exit_park) ? (COLOR_GREEN "Enabled") : (COLOR_RED "Disabled"));
+
+    nh_.getParam("camera_node/back/frame_rate", frame_rate_);
+
+    float time_before_exit = 0.6;
+    nh_.getParam("time_before_exit", time_before_exit);
+    times_before_end = frame_rate_ * time_before_exit;
+
     ROS_INFO(TAG COLOR_MAGENTA "Park node started" COLOR_RESET);
 }
 
@@ -265,14 +287,12 @@ void Park::checkBottomLine() {
         if ((get<1>(longestLine) > min_bottom_length and bottomLines.size() > 1)
             or (get<1>(longestLine) > 20 and bottomLines.size() > 4)) {
             bottom_line_found_times += 1;
-            int frame_rate = 10;
-            nh_.getParam("camera_node/back/frame_rate", frame_rate);
-            window_peroid = frame_rate * 1;
+            window_peroid = frame_rate_ * 1;
             if (bottom_line_found_times == 2) {
                 third_stage = true;
-                times_before_end = frame_rate * 1.8;  // 默认跑0.8s
+                times_before_end = frame_rate_ * 1.8;  // 默认跑0.8s
                 ROS_INFO(TAG COLOR_MAGENTA "Stage 3 started! " COLOR_RESET);
-                ROS_INFO(TAG COLOR_YELLOW "Frame rate got: %d " COLOR_RESET, frame_rate);
+                ROS_INFO(TAG COLOR_YELLOW "Frame rate got: %d " COLOR_RESET, frame_rate_);
                 ROS_INFO(TAG COLOR_YELLOW "Time before end: %d " COLOR_RESET, times_before_end);
             }
             ROS_INFO(TAG COLOR_YELLOW "Bottom Line detected!" COLOR_RESET);

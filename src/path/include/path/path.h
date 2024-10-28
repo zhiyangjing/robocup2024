@@ -212,8 +212,9 @@ private:
     int bottom_line_found_times = 0;
     int window_peroid = 0;
     bool third_stage = false;
-    int times_before_end = 5;  // 默认是0.5s实际上由，frame_rate和speed决定。
+    int times_before_end = 6;  // 默认是0.5s实际上由，frame_rate和speed决定。
     int min_bottom_length = 30;
+    int frame_rate_ = 10;
 
 public:
     Park(int remain_time, ros::NodeHandle nh);
