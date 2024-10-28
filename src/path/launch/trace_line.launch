@@ -8,6 +8,17 @@
         <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_stages.avi"> </param> -->
         <remap from="/image_topic" to="/image_topic/front"/>
     </node>
+
+    <node pkg="camera_node" type="camera_node" name="camera_node" output="log" ns="camera_node/back">
+        <param name="frame_rate" value="10"></param>
+        <param name="camera_port" value="1"></param>
+        <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_short.mp4"> </param> -->
+        <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_stages2.mp4"> </param> -->
+        <param name="video_path" value="$(find camera_node)/../../data/src_videos/bottom.avi"> </param>
+        <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_stages.avi"> </param> -->
+        <remap from="/image_topic" to="/image_topic/back"/>
+    </node>
+
     <node pkg="path" type="trace_line" name="path" output="log"> 
     </node>
     <param name="angle" value="0"/>
