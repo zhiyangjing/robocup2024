@@ -118,7 +118,7 @@ private:
 
 public:
     RoadRightTurn(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
-        nh_.getParam("road_left_turn_times", stages_time);
+        nh_.getParam("road_right_turn_times", stages_time);
     };
     void run() {
         is_running_ = true;
@@ -129,9 +129,21 @@ public:
         ROS_INFO(TAG "Turning Right");
         nh_.getParam("speed", speed);
 
-        ROS_INFO(TAG COLOR_BLUE "Going Right" COLOR_RESET);
+        ROS_INFO(TAG COLOR_BLUE "Going Straight, Time: %f" COLOR_RESET, stages_time[0]);
+        nh_.setParam("angle", 0);
+        for (int i = 0; i < static_cast<int>((stages_time[0] * speed / 2) * rate_num); ++i) {
+            loop_rate.sleep();
+        }
+
+        ROS_INFO(TAG COLOR_BLUE "Going Right, Time: %f" COLOR_RESET, stages_time[1]);
         nh_.setParam("angle", 200);
-        for (int i = 0; i < static_cast<int>((8 * speed / 2) * rate_num); ++i) {
+        for (int i = 0; i < static_cast<int>((stages_time[1] * speed / 2) * rate_num); ++i) {
+            loop_rate.sleep();
+        }
+
+        ROS_INFO(TAG COLOR_BLUE "Going Straight, Time: %f" COLOR_RESET, stages_time[2]);
+        nh_.setParam("angle", 0);
+        for (int i = 0; i < static_cast<int>((stages_time[2] * speed / 2) * rate_num); ++i) {
             loop_rate.sleep();
         }
     }
