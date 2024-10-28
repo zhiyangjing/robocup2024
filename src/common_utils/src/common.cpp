@@ -48,12 +48,15 @@ float Interpolator::interpolate(VectorXf point) {
     }
     float eps = 0.00001;
     int n = points_rows;
-    VectorXf point_weight(n);// 每个点的权重，和维度的权重weights不同
+    VectorXf point_weight(n);  // 每个点的权重，和维度的权重weights不同
     for (int i = 0; i < n; ++i) {
         auto distance = weights.cwiseProduct((points.row(i).transpose() - point)).norm();
         point_weight(i) = 1 / (eps + pow(static_cast<float>(distance), 2));
     }
     point_weight = point_weight.normalized();
+    for (int i = 0; i < n; i++) {
+        cout << i << ":" << point_weight[i] << endl;
+    }
     float res = point_weight.dot(values);
     return res;
 }
@@ -65,8 +68,8 @@ Interpolator &Interpolator::operator=(const Interpolator &other) {
     weights = other.weights;
     points = other.points;
     values = other.values;
-    points_rows = other.points_rows;                  // 参考点个数
-    points_cols = other.points_cols;                  // 参考点维度
-    normalization_params = other.normalization_params;// 保存每一行的最小值和跨度
+    points_rows = other.points_rows;                    // 参考点个数
+    points_cols = other.points_cols;                    // 参考点维度
+    normalization_params = other.normalization_params;  // 保存每一行的最小值和跨度
     return *this;
 }
