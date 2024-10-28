@@ -1,13 +1,13 @@
 avoid_times:
-  - 3
+  - 4
   - 2
-  - 6
+  - 5
   - 3
 
 
 road_left_turn_times:
-  - 2
-  - 6
+  - 3
+  - 7
   - 2
 
 straight_times:
