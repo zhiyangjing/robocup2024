@@ -16,7 +16,7 @@ Park::Park(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
     left_lane_found_times = Buffer<float>(10, 0);
     right_lane_found_times = Buffer<float>(10, 0);
 
-    int point_nums = 11;
+    int point_nums = 16;
 
     VectorXf weights(3);
     VectorXf R(point_nums);
