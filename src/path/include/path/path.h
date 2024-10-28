@@ -95,7 +95,7 @@ private:
     int workingTimer = 0; // 记录已经运行的时间，开始的一段时间内不识别蓝线，单位毫秒
     int blue_negelect_time = 1200; // 不识别蓝线的时间
     int min_blue_length = 220;
-    float min_distance = 0.8;
+    float min_distance = 0.9;
     float lowerFraction = 0.4;
     int lowerHeight = static_cast<int>(frame_height * lowerFraction);
     int upperHeight = frame_height - lowerHeight;
