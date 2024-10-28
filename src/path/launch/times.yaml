@@ -7,7 +7,7 @@ avoid_times:
 
 
 road_left_turn_times:
-  - 3
+  - 3.5
   - 8
   - 2
 
