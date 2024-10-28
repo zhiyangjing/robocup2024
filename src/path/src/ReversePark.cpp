@@ -83,6 +83,7 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
         target_index = 1;  // 1代表右侧车库
     }
     ROS_INFO(TAG "Target index: %d", target_index);
+    ROS_INFO(TAG COLOR_MAGENTA "Park node started" COLOR_RESET);
 }
 
 void Park::moveToPlace() {
