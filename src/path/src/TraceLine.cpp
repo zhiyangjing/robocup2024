@@ -444,7 +444,7 @@ void TraceLine::checkBlueLine() {
     }
 
     if (get<3>(longestLine)[1] > 380) {
-        if ((get<1>(longestLine) > min_blue_length and blueLines.size() > 6)
+        if ((get<1>(longestLine) > min_blue_length and blueLines.size() > 5)
             or (get<1>(longestLine) > 130 and blueLines.size() > 8)) {
             if (get<2>(longestLine) < 0.05) {
                 blue_horizontal_times.push(1.f);
