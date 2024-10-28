@@ -390,7 +390,7 @@ void TraceLine::getBlueLines() {
     // cv::imshow("edges:", edges);
 
     // 使用 HoughLinesP 检测线段，调大最后一个参数，识别到的直线更长
-    cv::HoughLinesP(edges, blue_lines_raw, 2, CV_PI / 90, 40, 40, 40);
+    cv::HoughLinesP(edges, blue_lines_raw, 2, CV_PI / 90, 40, 40, 50);
 
     // vector<vector<cv::Point>> contours;
     // cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
@@ -431,7 +431,7 @@ void TraceLine::checkBlueLine() {
     auto longestLine = blueLines[0];
     if (get<3>(longestLine)[1] > 435) {
         if ((get<1>(longestLine) > min_blue_length and blueLines.size() > 3)
-            or (get<1>(longestLine) > 130 and blueLines.size() > 6)) {
+            or (get<1>(longestLine) > 130 and blueLines.size() > 8)) {
             blue_line_found = true;
             // ROS_INFO(TAG "%s", string(20, '-').c_str());
             ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
