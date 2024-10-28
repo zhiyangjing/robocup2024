@@ -93,6 +93,7 @@ private:
     int frame_width = 640;
     int countdownTimer = 200;  //  单位毫秒，在识别到蓝色线条之后剩余的运行时间
     int workingTimer = 0; // 记录已经运行的时间，开始的一段时间内不识别蓝线，单位毫秒
+    int blue_negelect_time = 1200; // 不识别蓝线的时间
     int min_blue_length = 200;
     float min_distance = 0.8;
     float lowerFraction = 0.4;

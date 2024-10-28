@@ -230,6 +230,11 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
     ROS_INFO(TAG COLOR_MAGENTA "Exit Obstacle %s" COLOR_RESET,
              (exit_obstacle) ? (COLOR_GREEN "Enabled") : (COLOR_RED "Disabled"));
 
+    float blue_negelect_time_param = 1.2;
+    nh_.getParam("blue_negelect_time", blue_negelect_time_param);
+    blue_negelect_time = 1000.f * blue_negelect_time_param;
+    ROS_INFO(TAG COLOR_MAGENTA "blue line negelect time: %d" COLOR_RESET, blue_negelect_time);
+
     ROS_INFO(TAG "TraceLine constructed succeeded! ");
 }
 
@@ -630,7 +635,7 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
         visualizeLines(lines_raw);
         visualizeLines(blue_lines_raw, 0);
         workingTimer += 1000 / frame_rate_;
-        if (workingTimer > 1000) {
+        if (workingTimer > blue_negelect_time) {
             checkBlueLine();
         }
 

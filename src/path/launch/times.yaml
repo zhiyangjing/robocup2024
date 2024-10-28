@@ -12,3 +12,6 @@ road_left_turn_times:
 
 straight_times:
   - 9
+
+blue_negelect_times:
+  - 1.2
