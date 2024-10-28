@@ -127,6 +127,8 @@ void Park::moveToPlace() {
             stop();
         }
         times_before_end--;
+        int angle_value = prev_angle.avg() * 0.3;
+        nh_.setParam("angle", angle_value);
         ROS_INFO(TAG COLOR_YELLOW "Time before end: %d " COLOR_RESET, times_before_end);
     } else if (not second_stage) {
         int x = target_center.x;
