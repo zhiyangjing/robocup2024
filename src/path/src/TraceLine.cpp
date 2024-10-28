@@ -429,15 +429,15 @@ void TraceLine::checkBlueLine() {
 
     sort(blueLines.begin(), blueLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
     auto longestLine = blueLines[0];
-    if (get<3>(longestLine)[1] > 435) {
-        if ((get<1>(longestLine) > min_blue_length and blueLines.size() > 3)
+    if (get<3>(longestLine)[1] > 435 and get<3>(longestLine)[0] > 50 and get<3>(longestLine)[0] < 590) {
+        if ((get<1>(longestLine) > min_blue_length and blueLines.size() > 6)
             or (get<1>(longestLine) > 130 and blueLines.size() > 8)) {
             blue_line_found = true;
             // ROS_INFO(TAG "%s", string(20, '-').c_str());
             ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
             // ROS_INFO(TAG "%s", string(20, '-').c_str());
             ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d ", get<2>(longestLine),
-                     get<1>(longestLine), get<3>(longestLine)[2], get<3>(longestLine)[1],
+                     get<1>(longestLine), get<3>(longestLine)[0], get<3>(longestLine)[1],
                      static_cast<int>(blueLines.size()));
             // ROS_INFO(TAG "%s", string(20, '-').c_str());
         }
@@ -453,7 +453,7 @@ void TraceLine::checkBlueLine() {
                 }
             }
             ROS_INFO(TAG COLOR_CYAN "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_RESET,
-                     get<2>(longestLine), get<1>(longestLine), get<3>(longestLine)[2], get<3>(longestLine)[1],
+                     get<2>(longestLine), get<1>(longestLine), get<3>(longestLine)[0], get<3>(longestLine)[1],
                      static_cast<int>(blueLines.size()));
         } else {
             blue_horizontal_times.push(0.f);
