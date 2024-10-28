@@ -12,5 +12,5 @@
         <param name="target" value="left"/>
     </node>
     <param name="exit_park" value="1"> </param>
-    <param name="time_before_exit" value="0.8"> </param>
+    <param name="time_before_exit" value="0.9"> </param>
 </launch>
