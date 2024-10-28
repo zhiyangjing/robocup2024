@@ -11,4 +11,5 @@
     <node pkg="path" type="reverse_park" name="reverse_park" output="screen">
         <param name="target" value="left"/>
     </node>
+    <param name="exit_park" value="0"> </param>
 </launch>
