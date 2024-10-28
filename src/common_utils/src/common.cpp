@@ -54,9 +54,9 @@ float Interpolator::interpolate(VectorXf point) {
         point_weight(i) = 1 / (eps + pow(static_cast<float>(distance), 2));
     }
     point_weight = point_weight.normalized();
-    for (int i = 0; i < n; i++) {
-        cout << i << ":" << point_weight[i] << endl;
-    }
+    // for (int i = 0; i < n; i++) {
+    //     cout << i << ":" << point_weight[i] << endl;
+    // }
     float res = point_weight.dot(values);
     return res;
 }
