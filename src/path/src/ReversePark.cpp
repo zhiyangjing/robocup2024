@@ -96,7 +96,7 @@ void Park::moveToPlace() {
         ROS_INFO(TAG COLOR_YELLOW "Time before end: %d " COLOR_RESET, times_before_end);
     } else if (not second_stage) {
         int x = target_center.x;
-        int res = -(x - frame_width / 2) * first_stage_param;
+        int res = (x - frame_width / 2) * first_stage_param;
         cv::circle(frame, cv::Point(frame_width / 2, frame_height - 10), 3, cv::Scalar(0, 255, 0),
                    cv::FILLED);  // 使用 cv::FILLED 填充圆
         cv::circle(frame, cv::Point(x, frame_height - 10), 3, cv::Scalar(0, 0, 255),
@@ -350,6 +350,7 @@ void Park::getContourCenter() {
             // cout << COLOR_RED "not valid: " << COLOR_RESET << ratio << endl;
         }
     }
+
     if (blueContours.size() >= 2 and valid) {
         auto first_x = get<2>(blueContours[0]).x;
         auto second_x = get<2>(blueContours[1]).x;
