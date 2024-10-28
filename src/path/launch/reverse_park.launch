@@ -13,4 +13,5 @@
     </node>
     <param name="exit_park" value="1"> </param>
     <param name="time_before_exit" value="1"> </param>
+    <!-- float -->
 </launch>
