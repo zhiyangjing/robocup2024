@@ -49,6 +49,12 @@ Park::Park(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
         target_index = 1;  // 1代表右侧车库
     }
     ROS_INFO(TAG "Target index: %d", target_index);
+
+    int exit_park_param = 1;
+    nh_.getParam("exit_park", exit_park_param);
+    exit_park = (exit_park_param == 1);
+    ROS_INFO(TAG COLOR_MAGENTA "Exit Park %s" COLOR_RESET,
+             (exit_park) ? (COLOR_GREEN "Enabled") : (COLOR_RED "Disabled"));
 }
 
 Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Ability(remain_time, nh) {
@@ -87,7 +93,7 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
 }
 
 void Park::moveToPlace() {
-    if (third_stage) {
+    if (third_stage and exit_park) {
         if (times_before_end < 0) {
             nh_.setParam("speed", 0);
             stop();

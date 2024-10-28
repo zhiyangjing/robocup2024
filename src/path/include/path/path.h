@@ -47,6 +47,7 @@ struct ParkInitParams {
     VectorXf ref_value;     // 参考点对应权重
     VectorXf weights;       // 权重
     int first_stage_param;  // 一阶段计算转动角度的参数，正数或者负数，合适的范围约为：[-4,4]
+
     ParkInitParams() {};
 
     /**
@@ -92,8 +93,8 @@ private:
     int frame_height = 480;
     int frame_width = 640;
     int countdownTimer = 200;  //  单位毫秒，在识别到蓝色线条之后剩余的运行时间
-    int workingTimer = 0; // 记录已经运行的时间，开始的一段时间内不识别蓝线，单位毫秒
-    int blue_negelect_time = 1200; // 不识别蓝线的时间
+    int workingTimer = 0;      // 记录已经运行的时间，开始的一段时间内不识别蓝线，单位毫秒
+    int blue_negelect_time = 1200;  // 不识别蓝线的时间
     int min_blue_length = 220;
     float min_distance = 0.9;
     float lowerFraction = 0.4;
@@ -101,7 +102,7 @@ private:
     int upperHeight = frame_height - lowerHeight;
     int line_pos = frame_width * 0.422;
     int handle_rate_ = 20;  // 应该大于frame_rate
-    int frame_rate_ = 10; // 通过param获取的frame_rate
+    int frame_rate_ = 10;   // 通过param获取的frame_rate
     double currentFps = 0;
     Buffer<float> prev_neg_slope;
     Buffer<float> prev_pos_slope;
@@ -175,6 +176,7 @@ class Park : public Ability {
 private:
     bool is_running_ = false;
     bool video_feed_back = true;
+    bool exit_park = true;  // 满足条件后是否退出，测试使用
     ros::Subscriber sub_;
     cv::Mat frame;
     int frame_height = 480;
