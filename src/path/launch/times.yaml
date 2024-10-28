@@ -13,7 +13,7 @@ road_left_turn_times:
 
 road_right_turn_times:
   - 0 # 直行
-  - 3 # 右转 
+  - 8 # 右转 
   - 0 # 直行
 
 
