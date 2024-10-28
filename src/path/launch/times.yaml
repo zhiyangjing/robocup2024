@@ -7,9 +7,9 @@ avoid_times:
 
 
 road_left_turn_times:
-  - 3.8
-  - 8
-  - 2
+  - 4 # 直行
+  - 8 # 左转
+  - 1 # 直行
 
 straight_times:
   - 9
