@@ -91,7 +91,7 @@ private:
     bool vertical_blue_lock = false;  // 蓝线垂直锁定，用于优化路口方向，检测到蓝线斜率接近0，则不再调整斜率
     int frame_height = 480;
     int frame_width = 640;
-    int countdownTimer = 1000;  //  单位毫秒，在识别到蓝色线条之后剩余的运行时间
+    int countdownTimer = 200;  //  单位毫秒，在识别到蓝色线条之后剩余的运行时间
     int workingTimer = 0; // 记录已经运行的时间，开始的一段时间内不识别蓝线，单位毫秒
     int min_blue_length = 200;
     float min_distance = 0.8;

@@ -630,7 +630,7 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
         visualizeLines(lines_raw);
         visualizeLines(blue_lines_raw, 0);
         workingTimer += 1000 / frame_rate_;
-        if (workingTimer > 700) {
+        if (workingTimer > 1000) {
             checkBlueLine();
         }
 
