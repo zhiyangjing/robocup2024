@@ -62,7 +62,7 @@ Park::Park(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
     ROS_INFO(TAG COLOR_MAGENTA "Exit Park %s" COLOR_RESET,
              (exit_park) ? (COLOR_GREEN "Enabled") : (COLOR_RED "Disabled"));
 
-    nh_.getParam("camera_node/back/frame_rate", frame_rate_);
+    nh_.getParam("camera_node/" + camera + "/frame_rate", frame_rate_);
 
     float time_before_exit = 0.6;
     nh_.getParam("time_before_exit", time_before_exit);
@@ -114,7 +114,7 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
     ROS_INFO(TAG COLOR_MAGENTA "Exit Park %s" COLOR_RESET,
              (exit_park) ? (COLOR_GREEN "Enabled") : (COLOR_RED "Disabled"));
 
-    nh_.getParam("camera_node/back/frame_rate", frame_rate_);
+    nh_.getParam("camera_node/" + camera + "/frame_rate", frame_rate_);
 
     float time_before_exit = 0.6;
     nh_.getParam("time_before_exit", time_before_exit);
