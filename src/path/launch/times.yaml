@@ -20,7 +20,7 @@ first_stage_param_reverse: -2.5 # 倒车第一阶段偏转角
 
 window_peroid_times: 1.2 # 倒车入库，识别到第一条横向之后等待的时间
 
-time_before_exit: 1.0 # 倒车入库，推出前运动多久
+time_before_exit: 1.8 # 倒车入库，推出前运动多久
 
 straight_times: 9
 
