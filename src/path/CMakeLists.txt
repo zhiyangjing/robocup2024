@@ -71,7 +71,7 @@ target_link_libraries(
   ${OpenCV_LIBRARIES}
 )
 
-add_executable(forward src/forward_park.cpp src/Park.cpp)
+add_executable(forward_park src/forward_park.cpp src/Park.cpp)
 
 target_link_libraries(
   forward_park
