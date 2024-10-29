@@ -19,8 +19,7 @@ road_right_turn_times:
 window_peroid_times:
   - 1.2 # 倒车入库，识别到第一条横向之后等待的时间
 
-straight_times:
-  - 9
+straight_times: 9
 
 blue_negelect_times:
-  - 1.2
+  - 1.2 # 没有使用
