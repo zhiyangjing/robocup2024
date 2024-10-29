@@ -741,6 +741,7 @@ void TraceLine::run() {
     sub_ = nh_.subscribe("/image_topic/front", 1, &TraceLine::imageCallback, this);
     laser_sub_ = nh_.subscribe("/scan", 1, &TraceLine::laserCallback, this);
 
+    nh_.setParam("direction", std::string(1, 'W'));
     ros::Rate handle_rate(handle_rate_);  // 处理频率
     while (ros::ok() && is_running_) {
         ros::spinOnce();
