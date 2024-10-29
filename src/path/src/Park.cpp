@@ -47,13 +47,8 @@ Park::Park(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
 
     interpolator = Interpolator(points, A, weights);
 
-    string target;
-    nh_.getParam("reverse_park/target", target);
-    if (target == "left") {
-        target_index = 0;  // 0 代表左侧车库
-    } else {
-        target_index = 1;  // 1代表右侧车库
-    }
+    target_index = 0;  // 0 代表左侧车库, 这个初始化函数本身就是给倒车用的，
+
     ROS_INFO(TAG "Target index: %d", target_index);
 
     int exit_park_param = 1;
@@ -98,9 +93,7 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
 
     interpolator = Interpolator(points, params.ref_value, params.weights);
 
-    string target;
-    nh_.getParam("reverse_park/target", target);
-    if (target == "left") {
+    if (camera == "back") {
         target_index = 0;  // 0 代表左侧车库
     } else {
         target_index = 1;  // 1代表右侧车库

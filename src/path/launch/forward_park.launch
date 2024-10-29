@@ -8,9 +8,7 @@
         <!-- <param name="video_path" value="$(find camera_node)/../../data/src_videos/reverse_stages.avi"> </param> -->
         <remap from="/image_topic" to="/image_topic/front"/>
     </node>
-    <node pkg="path" type="forward_park" name="fordward_park" output="screen">
-        <param name="target" value="left"/>
-    </node>
+    <node pkg="path" type="forward_park" name="fordward_park" output="screen"> </node>
     <param name="exit_park" value="1"> </param>
     <rosparam file="$(find path)/launch/times.yaml"></rosparam>
     <!-- float -->
