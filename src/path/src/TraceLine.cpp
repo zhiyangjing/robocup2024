@@ -434,7 +434,7 @@ void TraceLine::checkBlueLine() {
 
     sort(blueLines.begin(), blueLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
     auto longestLine = blueLines[0];
-    if (get<3>(longestLine)[1] > 435 and get<3>(longestLine)[0] > 50 and get<3>(longestLine)[0] < 590) {
+    if (get<3>(longestLine)[1] > 425 and get<3>(longestLine)[0] > 50 and get<3>(longestLine)[0] < 590) {
         if ((get<1>(longestLine) > min_blue_length and blueLines.size() > 6)
             or (get<1>(longestLine) > 130 and blueLines.size() > 8)) {
             blue_line_found = true;
@@ -640,7 +640,7 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 
         visualizeLines(lines_raw);
         visualizeLines(blue_lines_raw, 0);
-        workingTimer += 1000 / frame_rate_;
+        workingTimer += 1200 / frame_rate_;
         if (workingTimer > blue_negelect_time) {
             checkBlueLine();
         }
