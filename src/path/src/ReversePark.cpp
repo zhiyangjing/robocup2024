@@ -506,6 +506,7 @@ void Park::run() {
     sub_ = nh_.subscribe("/image_topic/back", 1, &Park::imageCallback, this);
 
     nh_.setParam("direction", std::string(1, 'S'));
+    nh_.setParam("angle", 0);
     ros::Rate handle_rate(handle_rate_);  // 处理频率
     while (ros::ok() && is_running_) {
         ros::spinOnce();
