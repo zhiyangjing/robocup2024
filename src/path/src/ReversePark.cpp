@@ -6,7 +6,7 @@
 #include <sensor_msgs/LaserScan.h>
 #include <stack>
 
-#define TAG " [REVERSE] "
+#define TAG " [PARK] "
 
 Park::Park(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
     right_point = Buffer<int>(5);
@@ -24,6 +24,8 @@ Park::Park(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
     VectorXf L(point_nums);
     VectorXf A(point_nums);
     weights << 1, 1, 1;
+
+    first_stage_param = -2;
 
     // 默认的一套参数，出于开发历史原因，这套参数适用于倒车时的情形
     R << 650, 650, 685, 685, 600, 560, 550, 760, 778, 760, 600, 670, 750, 710, 650, 670;
@@ -138,7 +140,7 @@ void Park::moveToPlace() {
         nh_.setParam("angle", angle_value);
         ROS_INFO(TAG COLOR_YELLOW "Time before end: %d " COLOR_RESET, times_before_end);
     } else if (not second_stage) {
-        int x = target_center.x;
+        int x = target_x.avg();
         int res = (x - frame_width / 2) * first_stage_param;
         cv::circle(frame, cv::Point(frame_width / 2, frame_height - 10), 3, cv::Scalar(0, 255, 0),
                    cv::FILLED);  // 使用 cv::FILLED 填充圆
@@ -502,7 +504,7 @@ void Park::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 }
 
 void Park::run() {
-    ROS_INFO(TAG "Reverse started to run");
+    ROS_INFO(TAG COLOR_GREEN "Park started to run" COLOR_RESET);
     is_running_ = true;
     sub_ = nh_.subscribe("/image_topic/back", 1, &Park::imageCallback, this);
 
