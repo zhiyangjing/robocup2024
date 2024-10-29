@@ -278,6 +278,7 @@ public:
         reverse_park_params.ref_points.row(2) << 42, 48, 31, 26, -43, -70, -54, 95, 135, 154, -50, 33, 150, 40, 44, 30;
         reverse_park_params.ref_value << 0, 0, 0, 0, 200, 150, 100, -200, -150, -100, 100, 60, 30, -100, -60, -30;
         reverse_park_params.weights << 1, 1, 1;
+        reverse_park_params.first_stage_param = -2;
 
         //     reverse_park_params.ref_points.row(0) << 609, 627, 612, 889, 876, 370, 370, 588, 737, 743, 559;
         //     reverse_park_params.ref_points.row(1) << 363, 370, 360, 424, 444, 311, 303, 249, 470, 489, 270;
