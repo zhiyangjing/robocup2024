@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
     nh.getParam("serial_port", serial_port);
     // 设置串口参数
     ser.setBaudrate(115200);
-    ser.setPort("/dev/ttyUSB" + to_string(serial_port));
+    ser.setPort("/dev/sym_ttyUSB" + to_string(serial_port));
     serial::Timeout to = serial::Timeout::simpleTimeout(3000);
     ser.setTimeout(to);
 
