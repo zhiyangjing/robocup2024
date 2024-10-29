@@ -89,21 +89,21 @@ public:
         ROS_INFO(TAG "Turning Left");
         nh_.getParam("speed", speed);
 
-        nh_.setParam("angle", 0);
         ROS_INFO(TAG "Time: %f", stages_time[0]);
         for (int i = 0; i < static_cast<int>((stages_time[0] * speed / 2) * rate_num); ++i) {
+            nh_.setParam("angle", 0);
             loop_rate.sleep();
         }
 
-        nh_.setParam("angle", -200);
         ROS_INFO(TAG "Time: %f", stages_time[1]);
         for (int i = 0; i < static_cast<int>((stages_time[1] * speed / 2) * rate_num); ++i) {
+            nh_.setParam("angle", -200);
             loop_rate.sleep();
         }
 
-        nh_.setParam("angle", 0);
         ROS_INFO(TAG "Time: %f", stages_time[2]);
         for (int i = 0; i < static_cast<int>((stages_time[2] * speed / 2) * rate_num); ++i) {
+            nh_.setParam("angle", 0);
             loop_rate.sleep();
         }
         nh_.setParam("angle", 0);  // 回正
@@ -130,20 +130,20 @@ public:
         nh_.getParam("speed", speed);
 
         ROS_INFO(TAG COLOR_BLUE "Going Straight, Time: %f" COLOR_RESET, stages_time[0]);
-        nh_.setParam("angle", 0);
         for (int i = 0; i < static_cast<int>((stages_time[0] * speed / 2) * rate_num); ++i) {
+            nh_.setParam("angle", 0);
             loop_rate.sleep();
         }
 
         ROS_INFO(TAG COLOR_BLUE "Going Right, Time: %f" COLOR_RESET, stages_time[1]);
-        nh_.setParam("angle", 200);
         for (int i = 0; i < static_cast<int>((stages_time[1] * speed / 2) * rate_num); ++i) {
+            nh_.setParam("angle", 200);
             loop_rate.sleep();
         }
 
         ROS_INFO(TAG COLOR_BLUE "Going Straight, Time: %f" COLOR_RESET, stages_time[2]);
-        nh_.setParam("angle", 0);
         for (int i = 0; i < static_cast<int>((stages_time[2] * speed / 2) * rate_num); ++i) {
+            nh_.setParam("angle", 0);
             loop_rate.sleep();
         }
     }
