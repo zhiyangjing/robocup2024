@@ -571,10 +571,10 @@ void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int cente
     if (left_slope == 0 and right_slope == 0) {
         return;
     }
-    if (fabs(left_slope) > 2.5) {
+    if (fabs(left_slope) > 4) {
         left_slope = 0;
     }
-    if (fabs(right_slope) > 2.5) {
+    if (fabs(right_slope) > 4) {
         right_slope = 0;
     }
     VectorXf slopes_center(3);
