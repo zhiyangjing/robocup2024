@@ -17,6 +17,7 @@ Park::Park(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
     right_lane_found_times = Buffer<float>(10, 0);
 
     int point_nums = 16;
+    first_stage_param = -2;
 
     VectorXf weights(3);
     VectorXf R(point_nums);
@@ -24,8 +25,6 @@ Park::Park(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
     VectorXf L(point_nums);
     VectorXf A(point_nums);
     weights << 1, 1, 1;
-
-    first_stage_param = -2;
 
     // 默认的一套参数，出于开发历史原因，这套参数适用于倒车时的情形
     R << 650, 650, 685, 685, 600, 560, 550, 760, 778, 760, 600, 670, 750, 710, 650, 670;
@@ -88,8 +87,6 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
     int point_nums = params.ref_points.rows();
     first_stage_param = params.first_stage_param;
 
-    VectorXf weights = params.weights;
-
     // 创建点矩阵
     MatrixXf points(point_nums, 3);
     for (int i = 0; i < point_nums; ++i) {
@@ -98,7 +95,8 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
         points(i, 2) = params.ref_points.row(2)[i];  // 第三列为 leftpoint
     }
 
-    interpolator = Interpolator(points, params.ref_value, weights);
+    cout <<"size:" << params.weights.size() << endl;
+    interpolator = Interpolator(points, params.ref_value, params.weights);
 
     string target;
     nh_.getParam("reverse_park/target", target);
