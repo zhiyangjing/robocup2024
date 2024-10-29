@@ -296,7 +296,7 @@ void Park::checkBottomLine() {
 
     // ROS_INFO(TAG "%f", get<1>(longestLine));
     if (pos_y.avg() > 445) {
-        if ((get<1>(longestLine) > min_bottom_length and bottomLines.size() > 1)
+        if ((get<1>(longestLine) > min_bottom_length and bottomLines.size() > 2)
             or (get<1>(longestLine) > 20 and bottomLines.size() > 4)) {
             bottom_line_found_times += 1;
             window_peroid = window_peroid_times * frame_rate_;
@@ -480,7 +480,8 @@ void Park::getLines() {
     cv::imshow("contour", contourImage);
 
     // 使用 HoughLinesP 检测线段
-    cv::HoughLinesP(contourImage, lines_raw, 2, CV_PI / 180, 30, 30, 25);
+    cv::HoughLinesP(contourImage, lines_raw, 2, CV_PI / 180, 30, 32, 25);
+    // cv::HoughLinesP(contourImage, lines_raw, 2, CV_PI / 180, 30, 20, 20);
     // 在获得中点之后再搜索可用线段。
 }
 
