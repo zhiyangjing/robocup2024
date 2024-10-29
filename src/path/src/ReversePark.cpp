@@ -68,6 +68,9 @@ Park::Park(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
     times_before_end = frame_rate_ * time_before_exit;
     ROS_INFO(TAG COLOR_MAGENTA "Times before exit: %d" COLOR_RESET, times_before_end);
 
+    nh_.getParam("window_peroid_times", window_peroid_times);
+    ROS_INFO(TAG COLOR_MAGENTA "Window Peroid Time %f" COLOR_RESET, window_peroid_times);
+
     ROS_INFO(TAG COLOR_MAGENTA "Park node started" COLOR_RESET);
 }
 
@@ -116,6 +119,10 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
     float time_before_exit = 0.6;
     nh_.getParam("time_before_exit", time_before_exit);
     times_before_end = frame_rate_ * time_before_exit;
+    ROS_INFO(TAG COLOR_MAGENTA "Times before exit: %d" COLOR_RESET, times_before_end);
+
+    nh_.getParam("window_peroid_times", window_peroid_times);
+    ROS_INFO(TAG COLOR_MAGENTA "Window Peroid Time %f" COLOR_RESET, window_peroid_times);
 
     ROS_INFO(TAG COLOR_MAGENTA "Park node started" COLOR_RESET);
 }
@@ -290,7 +297,7 @@ void Park::checkBottomLine() {
         if ((get<1>(longestLine) > min_bottom_length and bottomLines.size() > 1)
             or (get<1>(longestLine) > 20 and bottomLines.size() > 4)) {
             bottom_line_found_times += 1;
-            window_peroid = frame_rate_ * 1;
+            window_peroid = window_peroid_times * frame_rate_;
             if (bottom_line_found_times == 2) {
                 third_stage = true;
                 times_before_end = frame_rate_ * 1.8;  // 默认跑0.8s

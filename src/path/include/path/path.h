@@ -211,6 +211,7 @@ private:
     Interpolator interpolator;
     int bottom_line_found_times = 0;
     int window_peroid = 0;
+    float window_peroid_times = 1.2;
     bool third_stage = false;
     int times_before_end = 6;  // 默认是0.5s实际上由，frame_rate和speed决定。
     int min_bottom_length = 30;
