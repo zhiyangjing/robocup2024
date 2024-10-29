@@ -85,6 +85,7 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
 
     // 控制点个数
     int point_nums = params.ref_points.cols();
+    first_stage_param = params.first_stage_param;
 
     // 创建点矩阵
     MatrixXf points(point_nums, 3);
@@ -118,9 +119,6 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
     nh_.getParam("time_before_exit", time_before_exit);
     times_before_end = frame_rate_ * time_before_exit;
     ROS_INFO(TAG COLOR_MAGENTA "Times before exit: %d" COLOR_RESET, times_before_end);
-
-    nh_.getParam("first_stage_param", first_stage_param);
-    ROS_INFO(TAG COLOR_MAGENTA "First stage param" COLOR_RESET, first_stage_param);
 
     nh_.getParam("window_peroid_times", window_peroid_times);
     ROS_INFO(TAG COLOR_MAGENTA "Window Peroid Time %f" COLOR_RESET, window_peroid_times);

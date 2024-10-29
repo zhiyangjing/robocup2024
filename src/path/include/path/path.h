@@ -43,9 +43,10 @@ struct TraceLineInitParams {
  * 
  */
 struct ParkInitParams {
-    MatrixXf ref_points;  // 参考点坐标
-    VectorXf ref_value;   // 参考点对应权重
-    VectorXf weights;     // 权重
+    MatrixXf ref_points;    // 参考点坐标
+    VectorXf ref_value;     // 参考点对应权重
+    VectorXf weights;       // 权重
+    float first_stage_param;  // 一阶段计算转动角度的参数，正数或者负数，合适的范围约为：[-4,4]
 
     ParkInitParams() {};
 
@@ -57,12 +58,13 @@ struct ParkInitParams {
      */
     ParkInitParams(int num_points, int num_dimensions) {
         ref_points.resize(num_dimensions, num_points);  // 3 行 num_points 列
-        ref_value.resize(num_points);                   // num_points 大小
-        weights.resize(num_dimensions);                 // num_weights 大小
+        ref_value.resize(num_points);      // num_points 大小
+        weights.resize(num_dimensions);    // num_weights 大小
     }
 
     ParkInitParams(const ParkInitParams &other)
-        : ref_points(other.ref_points), ref_value(other.ref_value), weights(other.weights) {}
+        : ref_points(other.ref_points), ref_value(other.ref_value), weights(other.weights),
+          first_stage_param(other.first_stage_param) {}
 
     // 赋值运算符重载
     ParkInitParams &operator=(const ParkInitParams &other) {
@@ -70,6 +72,7 @@ struct ParkInitParams {
             ref_points = other.ref_points;
             ref_value = other.ref_value;
             weights = other.weights;
+            first_stage_param = other.first_stage_param;
         }
         return *this;  // 返回当前对象的引用
     }
@@ -180,7 +183,7 @@ private:
     int frame_width = 720;
     int handle_rate_ = 20;
     int target_index = 0;  // 0 代表左侧车库，1代表右侧车库
-    float first_stage_param = -2;
+    int first_stage_param = -2;
     float offset_top_ratio = 0.1;
     float offset_bottom_ratio = 0.1;
     int offset_top = static_cast<int>(offset_top_ratio * frame_height);
