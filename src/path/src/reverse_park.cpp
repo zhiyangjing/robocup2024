@@ -27,10 +27,12 @@ int main(int argc, char **argv) {
     reverse_park_params.ref_points.row(2) << 42, 48, 31, 26, -43, -70, -54, 95, 135, 154, -50, 33, 150, 40, 44, 30;
     reverse_park_params.ref_value << 0, 0, 0, 0, 200, 150, 100, -200, -150, -100, 100, 60, 30, -100, -60, -30;
     reverse_park_params.weights << 1, 1, 1;
-    reverse_park_params.first_stage_param = -2;
+
     // 测试节点
     ros::init(argc, argv, "trace_line");
     ros::NodeHandle nh;
+    reverse_park_params.first_stage_param = -2;
+    nh.getParam("first_stage_param_reverse", reverse_park_params.first_stage_param);
     cv::namedWindow("camera_node Feed", cv::WINDOW_AUTOSIZE);
     auto reverse_park = Park(-1, nh, reverse_park_params);
     reverse_park.run();
