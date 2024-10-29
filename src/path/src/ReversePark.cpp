@@ -84,7 +84,7 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
     right_lane_found_times = Buffer<float>(10, 0);
 
     // 控制点个数
-    int point_nums = params.ref_points.rows();
+    int point_nums = params.ref_points.cols();
     first_stage_param = params.first_stage_param;
 
     // 创建点矩阵
@@ -95,7 +95,6 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
         points(i, 2) = params.ref_points.row(2)[i];  // 第三列为 leftpoint
     }
 
-    cout <<"size:" << params.weights.size() << endl;
     interpolator = Interpolator(points, params.ref_value, params.weights);
 
     string target;
