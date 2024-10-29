@@ -27,6 +27,7 @@ int main(int argc, char **argv) {
     reverse_park_params.ref_points.row(2) << 42, 48, 31, 26, -43, -70, -54, 95, 135, 154, -50, 33, 150, 40, 44, 30;
     reverse_park_params.ref_value << 0, 0, 0, 0, 200, 150, 100, -200, -150, -100, 100, 60, 30, -100, -60, -30;
     reverse_park_params.weights << 1, 1, 1;
+    reverse_park_params.camera = "back";
 
     // 测试节点
     ros::init(argc, argv, "trace_line");

@@ -86,6 +86,7 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
     // 控制点个数
     int point_nums = params.ref_points.cols();
     first_stage_param = params.first_stage_param;
+    camera = params.camera;
 
     // 创建点矩阵
     MatrixXf points(point_nums, 3);
@@ -513,9 +514,13 @@ void Park::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 void Park::run() {
     ROS_INFO(TAG COLOR_GREEN "Park started to run" COLOR_RESET);
     is_running_ = true;
-    sub_ = nh_.subscribe("/image_topic/back", 1, &Park::imageCallback, this);
+    sub_ = nh_.subscribe("/image_topic/" + camera, 1, &Park::imageCallback, this);
 
-    nh_.setParam("direction", std::string(1, 'S'));
+    if (camera == "back") {
+        nh_.setParam("direction", std::string(1, 'S'));
+    } else {
+        nh_.setParam("direction", std::string(1, 'W'));
+    }
     nh_.setParam("angle", 0);
     ros::Rate handle_rate(handle_rate_);  // 处理频率
     while (ros::ok() && is_running_) {

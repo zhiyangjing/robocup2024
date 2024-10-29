@@ -6,6 +6,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/LaserScan.h>
+#include <string>
 
 using namespace std;
 enum States {
@@ -17,6 +18,7 @@ enum States {
     ROAD_LEFT_TURN,
     ROAD_RIGHT_TURN,
     REVERSE_PARK,
+    FORWARD_PARK,
     STRAIGHT,
     SMALL_LEFT_TURN,
     TERMINAL
@@ -43,10 +45,11 @@ struct TraceLineInitParams {
  * 
  */
 struct ParkInitParams {
-    MatrixXf ref_points;    // 参考点坐标
-    VectorXf ref_value;     // 参考点对应权重
-    VectorXf weights;       // 权重
+    MatrixXf ref_points;      // 参考点坐标
+    VectorXf ref_value;       // 参考点对应权重
+    VectorXf weights;         // 权重
     float first_stage_param;  // 一阶段计算转动角度的参数，正数或者负数，合适的范围约为：[-4,4]
+    string camera;
 
     ParkInitParams() {};
 
@@ -58,13 +61,13 @@ struct ParkInitParams {
      */
     ParkInitParams(int num_points, int num_dimensions) {
         ref_points.resize(num_dimensions, num_points);  // 3 行 num_points 列
-        ref_value.resize(num_points);      // num_points 大小
-        weights.resize(num_dimensions);    // num_weights 大小
+        ref_value.resize(num_points);                   // num_points 大小
+        weights.resize(num_dimensions);                 // num_weights 大小
     }
 
     ParkInitParams(const ParkInitParams &other)
         : ref_points(other.ref_points), ref_value(other.ref_value), weights(other.weights),
-          first_stage_param(other.first_stage_param) {}
+          first_stage_param(other.first_stage_param), camera(other.camera) {}
 
     // 赋值运算符重载
     ParkInitParams &operator=(const ParkInitParams &other) {
@@ -73,6 +76,7 @@ struct ParkInitParams {
             ref_value = other.ref_value;
             weights = other.weights;
             first_stage_param = other.first_stage_param;
+            camera = other.camera;
         }
         return *this;  // 返回当前对象的引用
     }
@@ -179,6 +183,7 @@ private:
     bool exit_park = true;  // 满足条件后是否退出，测试使用
     ros::Subscriber sub_;
     cv::Mat frame;
+    string camera = "back";  // 视频流的方向
     int frame_height = 480;
     int frame_width = 720;
     int handle_rate_ = 20;
@@ -197,7 +202,8 @@ private:
     vector<cv::Vec4i> lines_raw;  // 存储检测到的白色车道线段
     vector<tuple<cv::Vec4i, float, float, cv::Vec2i, int>>
         laneLines;  // 车库底线，线段，长度，斜率 , 中点， 和下边界的交点
-    vector<tuple<cv::Vec4i, float, float, cv::Vec2i, int>> bottomLines;  // 车库底线，线段，长度，斜率 , 中点， 和下边界的交点
+    vector<tuple<cv::Vec4i, float, float, cv::Vec2i, int>>
+        bottomLines;  // 车库底线，线段，长度，斜率 , 中点， 和下边界的交点
     tuple<cv::Vec4i, float, float, cv::Vec2i, int> rightLane;  // 右侧车道线
     tuple<cv::Vec4i, float, float, cv::Vec2i, int> leftLane;   // 左侧车道线
     Buffer<int> right_point;                                   // 储存右车道和下边缘的交点

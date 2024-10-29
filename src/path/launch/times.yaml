@@ -17,6 +17,7 @@ road_right_turn_times:
   - 0 # 直行
 
 first_stage_param_reverse: -2.5 # 倒车第一阶段偏转角
+first_stage_param_forward: 2.5 # 倒车第一阶段偏转角
 
 window_peroid_times: 1.2 # 倒车入库，识别到第一条横向之后等待的时间
 
