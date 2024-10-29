@@ -291,13 +291,19 @@ void Park::checkBottomLine() {
 
     sort(bottomLines.begin(), bottomLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
     auto longestLine = bottomLines[0];
+    Buffer<int> pos_y(4);
+    for (int i = 0; i < min(static_cast<int>(bottomLines.size()), 4); i++) {
+        pos_y.push(get<3>(bottomLines[i])[1]);
+    }
+
     // ROS_INFO(TAG "%f", get<1>(longestLine));
-    if (get<3>(longestLine)[1] > 450) {
+    if (pos_y.avg() > 445) {
         if ((get<1>(longestLine) > min_bottom_length and bottomLines.size() > 1)
             or (get<1>(longestLine) > 20 and bottomLines.size() > 4)) {
             bottom_line_found_times += 1;
             window_peroid = window_peroid_times * frame_rate_;
             if (bottom_line_found_times == 2) {
+                times_before_end *= (fabs(get<2>(longestLine)) + 1);
                 third_stage = true;
                 ROS_INFO(TAG COLOR_MAGENTA "Stage 3 started! " COLOR_RESET);
                 ROS_INFO(TAG COLOR_YELLOW "Frame rate got: %d " COLOR_RESET, frame_rate_);

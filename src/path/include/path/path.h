@@ -197,8 +197,7 @@ private:
     vector<cv::Vec4i> lines_raw;  // 存储检测到的白色车道线段
     vector<tuple<cv::Vec4i, float, float, cv::Vec2i, int>>
         laneLines;  // 车库底线，线段，长度，斜率 , 中点， 和下边界的交点
-    vector<tuple<cv::Vec4i, float, float, cv::Vec2i, int>>
-        bottomLines;  // 车库底线，线段，长度，斜率 , 中点， 和下边界的交点
+    vector<tuple<cv::Vec4i, float, float, cv::Vec2i, int>> bottomLines;  // 车库底线，线段，长度，斜率 , 中点， 和下边界的交点
     tuple<cv::Vec4i, float, float, cv::Vec2i, int> rightLane;  // 右侧车道线
     tuple<cv::Vec4i, float, float, cv::Vec2i, int> leftLane;   // 左侧车道线
     Buffer<int> right_point;                                   // 储存右车道和下边缘的交点
