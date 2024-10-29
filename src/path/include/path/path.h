@@ -57,7 +57,7 @@ struct ParkInitParams {
      * @param num_dimensions 参考点维度
      */
     ParkInitParams(int num_points, int num_dimensions) {
-        ref_points.resize(3, num_points);  // 3 行 num_points 列
+        ref_points.resize(num_dimensions, num_points);  // 3 行 num_points 列
         ref_value.resize(num_points);      // num_points 大小
         weights.resize(num_dimensions);    // num_weights 大小
     }
