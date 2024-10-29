@@ -309,7 +309,7 @@ void Park::checkBottomLine() {
             ROS_INFO(TAG COLOR_YELLOW "Bottom Line detected!" COLOR_RESET);
             ROS_INFO(TAG COLOR_YELLOW "Window Peroid: %d " COLOR_RESET, window_peroid);
 
-            ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d ", get<2>(longestLine),
+            ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d bottomLine size:  %d ", get<2>(longestLine),
                      get<1>(longestLine), get<3>(longestLine)[0], get<3>(longestLine)[1],
                      static_cast<int>(bottomLines.size()));
 
@@ -479,7 +479,7 @@ void Park::getLines() {
     // cv::imshow("contour", contourImage);
 
     // 使用 HoughLinesP 检测线段
-    cv::HoughLinesP(contourImage, lines_raw, 2, CV_PI / 180, 30, 20, 20);
+    cv::HoughLinesP(contourImage, lines_raw, 2, CV_PI / 180, 30, 22, 25);
     // 在获得中点之后再搜索可用线段。
 }
 
