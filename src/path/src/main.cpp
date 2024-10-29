@@ -274,6 +274,7 @@ public:
         reverse_park_params.weights << 1, 1, 1;
         reverse_park_params.first_stage_param = -2;
         reverse_park_params.camera = "back";
+        reverse_park_params.lowerFraction = 0.55;
         nh_.getParam("first_stage_param_reverse", reverse_park_params.first_stage_param);
 
         forward_park_params = ParkInitParams(16, 3);
@@ -286,6 +287,7 @@ public:
         forward_park_params.weights << 1, 1, 1;
         forward_park_params.first_stage_param = 2;
         forward_park_params.camera = "front";
+        forward_park_params.lowerFraction = 0.4;
         nh_.getParam("first_stage_param_forward", forward_park_params.first_stage_param);
 
         //     reverse_park_params.ref_points.row(0) << 609, 627, 612, 889, 876, 370, 370, 588, 737, 743, 559;

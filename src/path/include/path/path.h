@@ -50,6 +50,7 @@ struct ParkInitParams {
     VectorXf weights;         // 权重
     float first_stage_param;  // 一阶段计算转动角度的参数，正数或者负数，合适的范围约为：[-4,4]
     string camera;
+    float lowerFraction;
 
     ParkInitParams() {};
 
@@ -67,7 +68,7 @@ struct ParkInitParams {
 
     ParkInitParams(const ParkInitParams &other)
         : ref_points(other.ref_points), ref_value(other.ref_value), weights(other.weights),
-          first_stage_param(other.first_stage_param), camera(other.camera) {}
+          first_stage_param(other.first_stage_param), camera(other.camera), lowerFraction(other.lowerFraction) {}
 
     // 赋值运算符重载
     ParkInitParams &operator=(const ParkInitParams &other) {
@@ -77,6 +78,7 @@ struct ParkInitParams {
             weights = other.weights;
             first_stage_param = other.first_stage_param;
             camera = other.camera;
+            lowerFraction = other.lowerFraction;
         }
         return *this;  // 返回当前对象的引用
     }
@@ -196,9 +198,11 @@ private:
     cv::Point target_center;
     std::vector<std::vector<cv::Point>> contours;
     std::vector<tuple<int, int, cv::Point2i>> blueContours;  // 边缘集合的下标、面积、中心点
+
     float lowerFraction = 0.55;
     int lowerHeight = static_cast<int>(frame_height * lowerFraction);
     int upperHeight = frame_height - lowerHeight;
+
     vector<cv::Vec4i> lines_raw;  // 存储检测到的白色车道线段
     vector<tuple<cv::Vec4i, float, float, cv::Vec2i, int>>
         laneLines;  // 车库底线，线段，长度，斜率 , 中点， 和下边界的交点

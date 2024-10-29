@@ -82,6 +82,9 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
     int point_nums = params.ref_points.cols();
     first_stage_param = params.first_stage_param;
     camera = params.camera;
+    lowerFraction = params.lowerFraction;
+    lowerHeight = static_cast<int>(frame_height * lowerFraction);
+    upperHeight = frame_height - lowerHeight;
 
     // 创建点矩阵
     MatrixXf points(point_nums, 3);
@@ -329,7 +332,7 @@ void Park::getIntersection() {
         auto slope = get<2>(Lane);
         auto center_x = get<3>(Lane)[0];
         auto intersection_pos = get<4>(Lane);
-        if (not right_lane_found and (slope > 0 or slope < -30) and center_x > c_x and intersection_pos < 920) {
+        if (not right_lane_found and (slope > 0 or slope < -20) and center_x > c_x and intersection_pos < 920) {
             cv::Point start(line[0], line[1] + (upperHeight));
             cv::Point end(line[2], line[3] + (upperHeight));
             cv::line(frame, start, end, cv::Scalar(255, 0, 0), 2);
