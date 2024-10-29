@@ -247,6 +247,7 @@ void Park::linePreprocess() {
                 cv::Point end(line[2], line[3] + (upperHeight));
                 cv::line(frame, start, end, cv::Scalar(255, 255, 0), 2);
             }
+
             double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
             if (fabs(slope) < 0.2) {
                 bottomLines.emplace_back(line, lineLength, slope,
@@ -441,7 +442,7 @@ void Park::getLines() {
     cv::cvtColor(lowerPart, hsv_frame, cv::COLOR_BGR2HSV);
 
     // 定义白色的HSV范围
-    cv::Scalar lowerWhite(0, 0, 160);     // 白色下限
+    cv::Scalar lowerWhite(0, 0, 165);     // 白色下限
     cv::Scalar upperWhite(180, 35, 255);  // 白色上限
 
     // 创建白色区域的掩码
@@ -479,7 +480,7 @@ void Park::getLines() {
     cv::imshow("contour", contourImage);
 
     // 使用 HoughLinesP 检测线段
-    cv::HoughLinesP(contourImage, lines_raw, 2, CV_PI / 180, 30, 22, 25);
+    cv::HoughLinesP(contourImage, lines_raw, 2, CV_PI / 180, 30, 30, 25);
     // 在获得中点之后再搜索可用线段。
 }
 
