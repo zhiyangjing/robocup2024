@@ -85,7 +85,6 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
 
     // 控制点个数
     int point_nums = params.ref_points.cols();
-    first_stage_param = params.first_stage_param;
 
     // 创建点矩阵
     MatrixXf points(point_nums, 3);
@@ -119,6 +118,9 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
     nh_.getParam("time_before_exit", time_before_exit);
     times_before_end = frame_rate_ * time_before_exit;
     ROS_INFO(TAG COLOR_MAGENTA "Times before exit: %d" COLOR_RESET, times_before_end);
+
+    nh_.getParam("first_stage_param", first_stage_param);
+    ROS_INFO(TAG COLOR_MAGENTA "First stage param" COLOR_RESET, first_stage_param);
 
     nh_.getParam("window_peroid_times", window_peroid_times);
     ROS_INFO(TAG COLOR_MAGENTA "Window Peroid Time %f" COLOR_RESET, window_peroid_times);
@@ -292,7 +294,7 @@ void Park::checkBottomLine() {
     sort(bottomLines.begin(), bottomLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
     auto longestLine = bottomLines[0];
     // ROS_INFO(TAG "%f", get<1>(longestLine));
-    if (get<3>(longestLine)[1] > 445) {
+    if (get<3>(longestLine)[1] > 450) {
         if ((get<1>(longestLine) > min_bottom_length and bottomLines.size() > 1)
             or (get<1>(longestLine) > 20 and bottomLines.size() > 4)) {
             bottom_line_found_times += 1;
