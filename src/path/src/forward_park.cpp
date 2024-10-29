@@ -23,6 +23,7 @@ int main(int argc, char **argv) {
     forward_park_params.weights << 1, 1, 1;
     forward_park_params.first_stage_param = 2;
     forward_park_params.camera = "front";
+    forward_park_params.lowerFraction = 0.4;
 
     // 测试节点
     ros::init(argc, argv, "trace_line");
