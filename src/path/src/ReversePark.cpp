@@ -305,6 +305,11 @@ void Park::checkBottomLine() {
             }
             ROS_INFO(TAG COLOR_YELLOW "Bottom Line detected!" COLOR_RESET);
             ROS_INFO(TAG COLOR_YELLOW "Window Peroid: %d " COLOR_RESET, window_peroid);
+
+            ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d ", get<2>(longestLine),
+                     get<1>(longestLine), get<3>(longestLine)[0], get<3>(longestLine)[1],
+                     static_cast<int>(bottomLines.size()));
+
             // ROS_INFO(TAG "camera_node ");
             // ROS_INFO(TAG "bottomLines size:  %d ", static_cast<int>(bottomLines.size()));
         }
