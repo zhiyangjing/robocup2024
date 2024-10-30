@@ -264,7 +264,7 @@ void Park::linePreprocess() {
                 ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d line size:  %d ", slope, lineLength,
                          (line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight,
                          static_cast<int>(lines_raw.size()));
-                continue;                     // 去除横向线段，以及过于垂直的线段
+                continue;  // 去除横向线段，以及过于垂直的线段
             }
 
             int x0 = line[0], y0 = line[1], x1 = line[2], y1 = line[3];
@@ -300,15 +300,15 @@ void Park::checkBottomLine() {
 
     sort(bottomLines.begin(), bottomLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
     auto longestLine = bottomLines[0];
-    Buffer<int> pos_y(4);
-    Buffer<int> pos_x(4);
-    for (int i = 0; i < min(static_cast<int>(bottomLines.size()), 4); i++) {
-        pos_y.push(get<3>(bottomLines[i])[1]);
-        pos_x.push(get<3>(bottomLines[i])[0]);
-    }
+    // Buffer<int> pos_y(4);
+    // Buffer<int> pos_x(4);
+    // for (int i = 0; i < min(static_cast<int>(bottomLines.size()), 4); i++) {
+    int pos_y = get<3>(longestLine)[1];
+    int pos_x = get<3>(longestLine)[0];
+    // }
 
     // ROS_INFO(TAG "%f", get<1>(longestLine));
-    if (pos_y.avg() > 445 and (pos_x.avg() < (frame_width - 80) and pos_x.avg() < 80)) {
+    if (pos_y > 445 and pos_x < (frame_width - 80) and pos_x < 80) {
         if ((get<1>(longestLine) > min_bottom_length and bottomLines.size() > 2)
             or (get<1>(longestLine) > 20 and bottomLines.size() > 4)) {
             bottom_line_found_times += 1;
