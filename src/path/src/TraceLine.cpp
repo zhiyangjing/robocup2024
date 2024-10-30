@@ -247,8 +247,8 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
     ROS_INFO(TAG COLOR_MAGENTA "blue line negelect time: %d" COLOR_RESET, blue_negelect_time);
 
     int enable_blue_lock_param = 1;
-    nh_.getParam("enable_blue_lock ", enable_blue_lock_param);
-    enable_blue_lock = (enable_blue_lock == 1);
+    nh_.getParam("enable_blue_lock", enable_blue_lock_param);
+    enable_blue_lock = (enable_blue_lock_param == 1);
     ROS_INFO(TAG COLOR_MAGENTA "Enable blue lock %s" COLOR_RESET,
              (enable_blue_lock) ? (COLOR_GREEN "Enabled") : (COLOR_RED "Disabled"));
 
