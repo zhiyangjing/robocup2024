@@ -222,7 +222,7 @@ private:
     float window_peroid_times = 1.2;
     bool third_stage = false;
     int times_before_end = 6;  // 默认是0.5s实际上由，frame_rate和speed决定。
-    int min_bottom_length = 40;
+    int min_bottom_length = 60;
     int frame_rate_ = 10;
 
 public:
