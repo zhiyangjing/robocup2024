@@ -105,7 +105,7 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
     }
 
     if (camera == "front") {
-        offset_x = 40;
+        offset_x = 30;
     } else {
         offset_x = 0;
     }
