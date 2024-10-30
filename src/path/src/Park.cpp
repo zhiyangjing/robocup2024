@@ -60,7 +60,7 @@ Park::Park(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
     nh_.getParam("camera_node/" + camera + "/frame_rate", frame_rate_);
 
     float time_before_exit = 0.6;
-    nh_.getParam("time_before_exit", time_before_exit);
+    nh_.getParam("time_before_exit_" + camera, time_before_exit);
     times_before_end = frame_rate_ * time_before_exit;
     ROS_INFO(TAG COLOR_MAGENTA "Times before exit: %d" COLOR_RESET, times_before_end);
 
