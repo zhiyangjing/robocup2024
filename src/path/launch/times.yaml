@@ -14,11 +14,11 @@
 #   - 2 # 左转
 
 avoid_times: 
-  - 4
+  - 3
   - 0
-  - 6
+  - 8
   - 1
-  - 2
+  - 3
 
 
 road_left_turn_times:
