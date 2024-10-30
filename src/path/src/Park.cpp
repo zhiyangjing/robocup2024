@@ -290,6 +290,7 @@ void Park::linePreprocess() {
      * 
      */
 void Park::checkBottomLine() {
+
     if (bottomLines.empty() or not second_stage or third_stage) {
         return;
     }
