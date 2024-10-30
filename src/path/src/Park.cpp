@@ -317,8 +317,8 @@ void Park::checkBottomLine() {
             bottom_line_found_times += 1;
             window_peroid = window_peroid_times * frame_rate_;
             if (bottom_line_found_times == 2) {
-                times_before_end *= (fabs(get<2>(longestLine)) + 1);
-                third_stage = true;
+                times_before_end *= (fabs(get<2>(longestLine)) * 2 + 1);  // 倾斜情况下运行时间更长
+                third_stage_begin = true;
                 ROS_INFO(TAG COLOR_MAGENTA "Stage 3 started! " COLOR_RESET);
                 ROS_INFO(TAG COLOR_YELLOW "Frame rate got: %d " COLOR_RESET, frame_rate_);
                 ROS_INFO(TAG COLOR_YELLOW "Time before end: %d " COLOR_RESET, times_before_end);
@@ -333,6 +333,13 @@ void Park::checkBottomLine() {
 
             // ROS_INFO(TAG "camera_node ");
             // ROS_INFO(TAG "bottomLines size:  %d ", static_cast<int>(bottomLines.size()));
+        }
+    } else if (third_stage_begin) {
+        // 希望刚刚查找到底线全部走上面的逻辑
+        // 查找一次之后如果
+        third_stage_begin_times++;
+        if (third_stage_begin_times > 2) {
+            third_stage = true;
         }
     }
     // 长度大于特定最小值，并且处于屏幕下方

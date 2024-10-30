@@ -183,6 +183,8 @@ private:
     bool is_running_ = false;
     bool video_feed_back = true;
     bool exit_park = true;  // 满足条件后是否退出，测试使用
+    bool third_stage_begin = false;
+    int third_stage_begin_times = 0;  // 一个用于统计第多少次没有找到车库后边缘线的变量
     ros::Subscriber sub_;
     cv::Mat frame;
     string camera = "back";  // 视频流的方向
