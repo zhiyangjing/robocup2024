@@ -206,6 +206,8 @@ public:
         int speed = 2;  // 默认速度是2
         int rate_num = 10;
         ros::Rate loop_rate(rate_num);  // 设置循环频率为10Hz
+        
+        nh_.setParam("speed",2);
 
         ROS_INFO(TAG "Turning right");
         nh_.getParam("speed", speed);
