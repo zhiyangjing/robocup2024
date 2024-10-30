@@ -444,7 +444,7 @@ void TraceLine::checkBlueLine() {
             ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d ", get<2>(longestLine),
                      get<1>(longestLine), get<3>(longestLine)[0], get<3>(longestLine)[1],
                      static_cast<int>(blueLines.size()));
-            // ROS_INFO(TAG "%s", string(20, '-').c_str());
+            ROS_INFO(TAG "%s", string(20, '-').c_str());
         }
     }
 

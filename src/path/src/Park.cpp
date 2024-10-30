@@ -261,9 +261,9 @@ void Park::linePreprocess() {
                 bottomLines.emplace_back(line, lineLength, slope,
                                          cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight),
                                          0);  // 不填充于底边的交点（无用）
-                ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d line size:  %d ", slope, lineLength,
-                         (line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight,
-                         static_cast<int>(lines_raw.size()));
+                // ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d line size:  %d ", slope, lineLength,
+                //          (line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight,
+                //          static_cast<int>(lines_raw.size()));
                 continue;  // 去除横向线段，以及过于垂直的线段
             }
 
