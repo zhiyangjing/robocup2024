@@ -254,7 +254,6 @@ void Park::linePreprocess() {
                 cv::Point start(line[0], line[1] + (upperHeight));
                 cv::Point end(line[2], line[3] + (upperHeight));
                 cv::line(frame, start, end, cv::Scalar(255, 255, 0), 2);
-                ROS_INFO(TAG "Line Drawed");
             }
 
             double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
@@ -271,6 +270,9 @@ void Park::linePreprocess() {
             laneLines.emplace_back(line, lineLength, slope,
                                    cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight),
                                    intersection_pos);
+
+            ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d line size:  %d ", slope, lineLength,
+                     (line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight, static_cast<int>(lines_raw.size()));
 
             cv::Point start(line[0], line[1] + (upperHeight));
             cv::Point end(line[2], line[3] + (upperHeight));
