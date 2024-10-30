@@ -536,6 +536,7 @@ void Park::run() {
     } else {
         nh_.setParam("direction", std::string(1, 'W'));
     }
+    nh_.setParam("speed", 1);
     nh_.setParam("angle", 0);
     ros::Rate handle_rate(handle_rate_);  // 处理频率
     while (ros::ok() && is_running_) {
