@@ -246,7 +246,7 @@ void Park::linePreprocess() {
                 cv::Point start(line[0], line[1] + (upperHeight));
                 cv::Point end(line[2], line[3] + (upperHeight));
                 cv::line(frame, start, end, cv::Scalar(255, 255, 0), 2);
-                ROS_INFO(TAG,"Line Drawed");
+                ROS_INFO(TAG "Line Drawed");
             }
 
             double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
@@ -484,7 +484,7 @@ void Park::getLines() {
 
     // 使用 HoughLinesP 检测线段
     cv::dilate(contourImage, contourImage, element);  // 膨胀
-    cv::HoughLinesP(contourImage, lines_raw, 1, CV_PI / 180, 30, 30, 25);
+    cv::HoughLinesP(contourImage, lines_raw, 1, CV_PI / 180, 50, 30, 25);
     // cv::HoughLinesP(contourImage, lines_raw, 2, CV_PI / 180, 30, 20, 20);
     // 在获得中点之后再搜索可用线段。
 }
