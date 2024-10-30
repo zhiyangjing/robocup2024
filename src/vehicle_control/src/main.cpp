@@ -17,11 +17,11 @@ int main(int argc, char **argv) {
     // 创建 NodeHandle，用来与 ROS 通信
     ros::NodeHandle nh;
 
-    int serial_port = 1;
-    nh.getParam("serial_port", serial_port);
+    int serial_port_vctrl = 1;
+    nh.getParam("serial_port_vctrl", serial_port_vctrl);
     // 设置串口参数
     ser.setBaudrate(115200);
-    ser.setPort("/dev/sym_ttyUSB" + to_string(serial_port));
+    ser.setPort("/dev/sym_ttyUSB" + to_string(serial_port_vctrl));
     serial::Timeout to = serial::Timeout::simpleTimeout(3000);
     ser.setTimeout(to);
 

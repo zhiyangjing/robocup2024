@@ -434,7 +434,7 @@ void TraceLine::checkBlueLine() {
 
     sort(blueLines.begin(), blueLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
     auto longestLine = blueLines[0];
-    if (get<3>(longestLine)[1] > 425 and get<3>(longestLine)[0] > 50 and get<3>(longestLine)[0] < 590) {
+    if (get<3>(longestLine)[1] > 425 and get<3>(longestLine)[0] > 80 and get<3>(longestLine)[0] < (frame_width - 80)) {
         if ((get<1>(longestLine) > min_blue_length and blueLines.size() > 6)
             or (get<1>(longestLine) > 130 and blueLines.size() > 8)) {
             blue_line_found = true;

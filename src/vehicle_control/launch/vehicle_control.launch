@@ -2,6 +2,6 @@
     <param name="speed" value="0"/>
     <param name="angle" value="0"/>
     <param name="direction" value="W"/>  <!-- 添加 direction 参数 -->
-    <param name="serial_port" value="1"/>
+    <param name="serial_port_vctrl" value="1"/>
     <node pkg="vehicle_control" name="vehicle_control" type="vehicle_control" output="screen"/>
 </launch>
