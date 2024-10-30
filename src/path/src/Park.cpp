@@ -271,8 +271,11 @@ void Park::linePreprocess() {
                                    cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight),
                                    intersection_pos);
 
-            ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d line size:  %d ", slope, lineLength,
-                     (line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight, static_cast<int>(lines_raw.size()));
+            if (fabs(slope) < 0.2) {
+                ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d line size:  %d ", slope, lineLength,
+                         (line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight,
+                         static_cast<int>(lines_raw.size()));
+            }
 
             cv::Point start(line[0], line[1] + (upperHeight));
             cv::Point end(line[2], line[3] + (upperHeight));
