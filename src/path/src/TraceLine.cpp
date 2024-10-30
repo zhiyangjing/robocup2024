@@ -753,7 +753,10 @@ void TraceLine::run() {
     sub_ = nh_.subscribe("/image_topic/front", 1, &TraceLine::imageCallback, this);
     laser_sub_ = nh_.subscribe("/scan", 1, &TraceLine::laserCallback, this);
 
-    nh_.setParam("angle",0);
+    int angle_value = 0;
+    nh_.getParam("angle",angle_value);
+    prev_angle.push(angle_value * 0.1);
+    nh_.setParam("angle",prev_angle.avg());
     nh_.setParam("speed",2);
     nh_.setParam("direction", std::string(1, 'W'));
     ros::Rate handle_rate(handle_rate_);  // 处理频率
