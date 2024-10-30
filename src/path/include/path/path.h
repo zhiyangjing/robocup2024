@@ -191,6 +191,7 @@ private:
     int handle_rate_ = 20;
     int target_index = 0;  // 0 代表左侧车库，1代表右侧车库
     int first_stage_param = -2;
+    int offset_x = 0;  // 用于矫正前后摄像头中心
     float offset_top_ratio = 0.1;
     float offset_bottom_ratio = 0.1;
     int offset_top = static_cast<int>(offset_top_ratio * frame_height);
@@ -198,11 +199,9 @@ private:
     cv::Point target_center;
     std::vector<std::vector<cv::Point>> contours;
     std::vector<tuple<int, int, cv::Point2i>> blueContours;  // 边缘集合的下标、面积、中心点
-
     float lowerFraction = 0.55;
     int lowerHeight = static_cast<int>(frame_height * lowerFraction);
     int upperHeight = frame_height - lowerHeight;
-
     vector<cv::Vec4i> lines_raw;  // 存储检测到的白色车道线段
     vector<tuple<cv::Vec4i, float, float, cv::Vec2i, int>>
         laneLines;  // 车库底线，线段，长度，斜率 , 中点， 和下边界的交点

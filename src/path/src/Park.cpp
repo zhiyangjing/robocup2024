@@ -96,10 +96,18 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
 
     interpolator = Interpolator(points, params.ref_value, params.weights);
 
-    if (camera == "back") {
+    string target = "left";
+    nh_.getParam("target", target);
+    if (target == "left") {
         target_index = 0;  // 0 代表左侧车库
     } else {
         target_index = 1;  // 1代表右侧车库
+    }
+
+    if (camera == "front") {
+        offset_x = 40;
+    } else {
+        offset_x = 0;
     }
 
     ROS_INFO(TAG "Target index: %d", target_index);
@@ -135,8 +143,8 @@ void Park::moveToPlace() {
         ROS_INFO(TAG COLOR_YELLOW "Time before end: %d " COLOR_RESET, times_before_end);
     } else if (not second_stage) {
         int x = target_x.avg();
-        int res = (x - frame_width / 2) * first_stage_param;
-        cv::circle(frame, cv::Point(frame_width / 2, frame_height - 10), 3, cv::Scalar(0, 255, 0),
+        int res = (x - (frame_width / 2 + offset_x)) * first_stage_param;
+        cv::circle(frame, cv::Point(frame_width / 2 + offset_x, frame_height - 10), 3, cv::Scalar(0, 255, 0),
                    cv::FILLED);  // 使用 cv::FILLED 填充圆
         cv::circle(frame, cv::Point(x, frame_height - 10), 3, cv::Scalar(0, 0, 255),
                    cv::FILLED);  // 使用 cv::FILLED 填充圆
@@ -311,10 +319,9 @@ void Park::checkBottomLine() {
             ROS_INFO(TAG COLOR_YELLOW "Bottom Line detected!" COLOR_RESET);
             ROS_INFO(TAG COLOR_YELLOW "Window Peroid: %d " COLOR_RESET, window_peroid);
 
-            for (const auto& line : bottomLines) {
-                ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d bottomLine size:  %d ",
-                         get<2>(line), get<1>(line), get<3>(line)[0], get<3>(line)[1],
-                         static_cast<int>(bottomLines.size()));
+            for (const auto &line : bottomLines) {
+                ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d bottomLine size:  %d ", get<2>(line),
+                         get<1>(line), get<3>(line)[0], get<3>(line)[1], static_cast<int>(bottomLines.size()));
             }
 
             // ROS_INFO(TAG "camera_node ");
@@ -431,7 +438,7 @@ void Park::getContourCenter() {
             cv::circle(frame, cv::Point(x, y + offset_top), 5, cv::Scalar(0, 255, 0), -1);
         }
     } else {
-        target_center = cv::Point(frame_width / 2, frame_height / 2);
+        target_center = cv::Point(frame_width / 2 + offset_x, frame_height / 2);
     }
     target_x.push(target_center.x);
 }

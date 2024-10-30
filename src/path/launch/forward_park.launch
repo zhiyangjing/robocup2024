@@ -10,6 +10,7 @@
     </node>
     <node pkg="path" type="forward_park" name="fordward_park" output="screen"> </node>
     <param name="exit_park" value="1"> </param>
+    <param name="target" value="right"></param>
     <rosparam file="$(find path)/launch/times.yaml"></rosparam>
     <!-- float -->
 </launch>
