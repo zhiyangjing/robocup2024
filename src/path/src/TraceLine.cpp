@@ -135,7 +135,7 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
     blue_horizontal_times = Buffer<float>(4, 0);
 
     // 控制点个数
-    int point_nums = 18;
+    int point_nums = 19;
 
     VectorXf weights(3);
     VectorXf x(point_nums);
