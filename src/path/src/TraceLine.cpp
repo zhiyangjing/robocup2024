@@ -246,6 +246,12 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
     blue_negelect_time = 1000.f * blue_negelect_time_param;
     ROS_INFO(TAG COLOR_MAGENTA "blue line negelect time: %d" COLOR_RESET, blue_negelect_time);
 
+    int enable_blue_lock_param = 1;
+    nh_.getParam("enable_blue_lock ", enable_blue_lock_param);
+    enable_blue_lock = (enable_blue_lock == 1);
+    ROS_INFO(TAG COLOR_MAGENTA "Enable blue lock %s" COLOR_RESET,
+             (enable_blue_lock) ? (COLOR_GREEN "Enabled") : (COLOR_RED "Disabled"));
+
     ROS_INFO(TAG "TraceLine constructed succeeded! ");
 }
 
@@ -459,7 +465,7 @@ void TraceLine::checkBlueLine() {
             or (get<1>(longestLine) > 138 and blueLines.size() > 8)) {
             if (get<2>(longestLine) < 0.05) {
                 blue_horizontal_times.push(1.f);
-                if (blue_horizontal_times.avg() > 0.6) {
+                if (blue_horizontal_times.avg() > 0.6 and enable_blue_lock) {
                     vertical_blue_lock = true;
                     ROS_INFO(TAG COLOR_RED "Vertical Blue Line Locked" COLOR_RESET);
                 }

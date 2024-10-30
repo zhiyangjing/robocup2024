@@ -96,6 +96,7 @@ private:
     bool video_feed_back = true;
     bool visualize_lidar = true;
     bool vertical_blue_lock = false;  // 蓝线垂直锁定，用于优化路口方向，检测到蓝线斜率接近0，则不再调整斜率
+    bool enable_blue_lock = true;
     int frame_height = 480;
     int frame_width = 640;
     int countdownTimer = 200;  //  单位毫秒，在识别到蓝色线条之后剩余的运行时间
