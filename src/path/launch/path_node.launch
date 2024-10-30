@@ -53,6 +53,7 @@
     <param name="exit_obstacle" value="1"> </param>
     <param name="exit_park" value="1"> </param>
     <param name="target" value="right"></param>
+    <param name="enable_blue_lock " value="1"> </param>
     <rosparam file="$(find path)/launch/times.yaml"></rosparam>
     <rosparam file="$(find path)/launch/order.yaml"></rosparam>
 </launch>

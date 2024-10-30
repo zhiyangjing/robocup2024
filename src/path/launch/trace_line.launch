@@ -26,6 +26,7 @@
     <param name="lidar_visualize" value="0"> </param>
     <param name="exit_blue" value="0"> </param>
     <param name="exit_obstacle" value="0"> </param>
+    <param name="enable_blue_lock " value="0"> </param>
     <rosparam file="$(find path)/launch/times.yaml"></rosparam>
     <rosparam file="$(find path)/launch/order.yaml"></rosparam>
 
