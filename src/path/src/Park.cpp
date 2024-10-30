@@ -198,7 +198,6 @@ void Park::getContour() {
 
     // 膨胀操作
     cv::dilate(mask, mask, dilation_element);
-    // 查找轮廓
     contours.clear();
     cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
     // ROS_INFO(TAG "Contour lenght: %d", static_cast<int>(contours.size()));
@@ -219,7 +218,9 @@ void Park::contourPreprocess() {
             contour_center = cv::Point2i(static_cast<int>(m.m10 / m.m00), static_cast<int>(m.m01 / m.m00));
         }
         blueContours.emplace_back(i, cv::contourArea(contour), contour_center);
-        // double area = cv::contourArea(contour);
+        double area = cv::contourArea(contour);
+        ROS_INFO(TAG "cnt: %d", (int) contours.size());
+        ROS_INFO(TAG "area: %lf", area);
         // double perimeter = cv::arcLength(contour, true);
         // double diff_rate = fabs((pow((perimeter / 4), 2) - area) / area);
         // // cout << diff_rate << " " << area << " " << perimeter << endl;
@@ -228,6 +229,7 @@ void Park::contourPreprocess() {
         //     // 用周长和面积的关系排除掉不接近正方形的物体，测试发现这个不太准确，主要是矩形膨胀导致的
         // }
     }
+
     // ROS_INFO(TAG "blueContours length: %d", static_cast<int>(blueContours.size()));
 }
 
