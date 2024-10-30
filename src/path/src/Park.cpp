@@ -233,11 +233,11 @@ float Park::calculateSlope(const cv::Vec4i &line) {
 }
 
 void Park::linePreprocess() {
+    laneLines.clear();
+    bottomLines.clear();
     if (lines_raw.empty()) {
         ROS_WARN(TAG "No line to preprocess");
     } else {
-        laneLines.clear();
-        bottomLines.clear();
         // ROS_INFO(TAG "lines count %d", (int) lines_raw.size());
         for (const auto &line : lines_raw) {
             float slope = calculateSlope(line);
@@ -310,9 +310,11 @@ void Park::checkBottomLine() {
             ROS_INFO(TAG COLOR_YELLOW "Bottom Line detected!" COLOR_RESET);
             ROS_INFO(TAG COLOR_YELLOW "Window Peroid: %d " COLOR_RESET, window_peroid);
 
-            ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d bottomLine size:  %d ", get<2>(longestLine),
-                     get<1>(longestLine), get<3>(longestLine)[0], get<3>(longestLine)[1],
-                     static_cast<int>(bottomLines.size()));
+            for (const auto& line : bottomLines) {
+                ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d bottomLine size:  %d ",
+                         get<2>(line), get<1>(line), get<3>(line)[0], get<3>(line)[1],
+                         static_cast<int>(bottomLines.size()));
+            }
 
             // ROS_INFO(TAG "camera_node ");
             // ROS_INFO(TAG "bottomLines size:  %d ", static_cast<int>(bottomLines.size()));
