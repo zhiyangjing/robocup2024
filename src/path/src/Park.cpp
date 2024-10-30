@@ -246,6 +246,7 @@ void Park::linePreprocess() {
                 cv::Point start(line[0], line[1] + (upperHeight));
                 cv::Point end(line[2], line[3] + (upperHeight));
                 cv::line(frame, start, end, cv::Scalar(255, 255, 0), 2);
+                ROS_INFO(TAG,"Line Drawed");
             }
 
             double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
