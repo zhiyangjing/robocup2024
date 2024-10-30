@@ -179,7 +179,7 @@ public:
         }
 
         ROS_INFO(TAG COLOR_BLUE "Going Right" COLOR_RESET);
-        nh_.setParam("angle", 200);
+        nh_.setParam("angle", 150);
         for (int i = 0; i < static_cast<int>((stages_time[2] * speed / 2) * rate_num); ++i) {
             loop_rate.sleep();
         }
