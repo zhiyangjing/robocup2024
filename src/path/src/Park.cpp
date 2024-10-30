@@ -484,7 +484,7 @@ void Park::getLines() {
 
     // 使用 HoughLinesP 检测线段
     cv::dilate(contourImage, contourImage, element);  // 膨胀
-    cv::HoughLinesP(contourImage, lines_raw, 1, CV_PI / 180, 50, 30, 25);
+    cv::HoughLinesP(contourImage, lines_raw, 1, CV_PI / 180, 50, 35, 25);
     // cv::HoughLinesP(contourImage, lines_raw, 2, CV_PI / 180, 30, 20, 20);
     // 在获得中点之后再搜索可用线段。
 }
