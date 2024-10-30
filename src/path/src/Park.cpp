@@ -309,6 +309,7 @@ void Park::checkBottomLine() {
 
     // ROS_INFO(TAG "%f", get<1>(longestLine));
     if (pos_y > 445 and pos_x < (frame_width - 80) and pos_x > 80) {
+        ROS_INFO(TAG "?");
         if ((get<1>(longestLine) > min_bottom_length and bottomLines.size() > 2)
             or (get<1>(longestLine) > 20 and bottomLines.size() > 4)) {
             bottom_line_found_times += 1;
