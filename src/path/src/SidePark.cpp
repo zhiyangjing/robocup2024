@@ -10,6 +10,9 @@
 
 #define TAG "[Trace Line]"
 
+const int WIDTH = 600;
+const int HEIGHT = 600;
+
 using namespace std;
 
 SidePark::SidePark(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, nh) {
@@ -493,8 +496,6 @@ void SidePark::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     } catch (cv_bridge::Exception &e) { ROS_ERROR("Could not convert from '%s' to 'bgr8'.", msg->encoding.c_str()); }
 }
 
-const int WIDTH = 600;
-const int HEIGHT = 600;
 
 void SidePark::get_lidar_line(std::vector<float> distances) {
     cv::Mat img = cv::Mat::zeros(HEIGHT, WIDTH, CV_8UC3);
