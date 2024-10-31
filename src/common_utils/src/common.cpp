@@ -1,6 +1,5 @@
 #include <common_utils/common.h>
 #include <iostream>
-#include <opencv2/opencv.hpp>
 using namespace std;
 
 Interpolator::Interpolator() {}
