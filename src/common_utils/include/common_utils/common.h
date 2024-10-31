@@ -21,6 +21,15 @@ enum TrafficLight {
 #define COLOR_MAGENTA "\033[35m"
 #define COLOR_CYAN "\033[36m"
 #define COLOR_WHITE "\033[37m"
+#define BCOLOR_BLACK "\033[40m"
+#define BCOLOR_RED "\033[41m"
+#define BCOLOR_GREEN "\033[42m"
+#define BCOLOR_YELLOW "\033[43m"
+#define BCOLOR_BLUE "\033[44m"
+#define BCOLOR_MAGENTA "\033[45m"
+#define BCOLOR_CYAN "\033[46m"
+#define BCOLOR_WHITE "\033[47m"
+
 
 template<typename T> class Buffer {
 public:

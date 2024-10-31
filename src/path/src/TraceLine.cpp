@@ -603,39 +603,44 @@ void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int cente
             nh_.setParam("direction", std::string(1, 'W'));
             nh_.setParam("speed", 2);
             nh_.setParam("angle", 0);
+
+            ROS_INFO(TAG COLOR_GREEN "blue slope: %d angle: %d", slope, 0);
             dir_adjust_finish = true;
         } else if (slope > 0) {
             nh_.setParam("direction", std::string(1, 'S'));
             nh_.setParam("angle", -150);
+            ROS_INFO(TAG BCOLOR_YELLOW "blue slope: %d angle: %d" COLOR_RESET, slope, -150);
             nh_.setParam("speed", 1);
         } else if (slope < 0) {
             nh_.setParam("direction", std::string(1, 'S'));
             nh_.setParam("angle", 150);
+            ROS_INFO(TAG BCOLOR_YELLOW "blue slope: %d angle: %d" COLOR_RESET, slope, 150);
             nh_.setParam("speed", 1);
         }
-    }
+    } else {
+        if (left_slope == 0 and right_slope == 0) {
+            return;
+        }
+        if (fabs(left_slope) > 4) {
+            left_slope = 0;
+        }
+        if (fabs(right_slope) > 4) {
+            right_slope = 0;
+        }
+        VectorXf slopes_center(3);
+        slopes_center << left_slope, right_slope, center;
+        float res = max(min(interpolator.interpolate(slopes_center), 200.f), -200.f);
+        prev_angle.push(static_cast<int>(res));
+        int angle_value = prev_angle.avg();
 
-    if (left_slope == 0 and right_slope == 0) {
-        return;
-    }
-    if (fabs(left_slope) > 4) {
-        left_slope = 0;
-    }
-    if (fabs(right_slope) > 4) {
-        right_slope = 0;
-    }
-    VectorXf slopes_center(3);
-    slopes_center << left_slope, right_slope, center;
-    float res = max(min(interpolator.interpolate(slopes_center), 200.f), -200.f);
-    prev_angle.push(static_cast<int>(res));
-    int angle_value = prev_angle.avg();
+        // if (vertical_blue_lock) {
+        //     angle_value *= 0.1;
+        // }
 
-    // if (vertical_blue_lock) {
-    //     angle_value *= 0.1;
-    // }
-
-    nh_.setParam("angle", angle_value);
-    ROS_INFO(TAG "left slope: %lf right slope: %lf center: %d angle: %d", left_slope, right_slope, center, angle_value);
+        nh_.setParam("angle", angle_value);
+        ROS_INFO(TAG "left slope: %lf right slope: %lf center: %d angle: %d", left_slope, right_slope, center,
+                 angle_value);
+    }
 }
 
 /**
