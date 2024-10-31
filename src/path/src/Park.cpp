@@ -137,6 +137,9 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
     ROS_INFO(TAG COLOR_MAGENTA "Lidar visualize %s" COLOR_RESET,
              (visualize_lidar) ? (COLOR_RED "Enabled") : (COLOR_GREEN "Disabled"));
 
+    nh_.getParam("min_distance_park", min_distance);
+    ROS_INFO(TAG COLOR_MAGENTA "Park distance %f" COLOR_RESET, min_distance);
+
     nh_.getParam("window_peroid_times", window_peroid_times);
     ROS_INFO(TAG COLOR_MAGENTA "Window Peroid Time %f" COLOR_RESET, window_peroid_times);
 
@@ -522,7 +525,7 @@ void Park::getLines() {
     // 在获得中点之后再搜索可用线段。
 }
 
-float Park::findFrontDistance(vector<float> ranges) {
+float Park::findBackDistance(vector<float> ranges) {
     float distance = 50;
     int half = ranges.size() / 2;
     for (int i = half; i < half + 7; i++) {
@@ -570,14 +573,15 @@ void Park::visualizeLidar(vector<float> distances) {
 }
 
 void Park::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
-    float front_distance = findFrontDistance(msg->ranges);
+    float back_distance = findBackDistance(msg->ranges);
     if (visualize_lidar) {
         visualizeLidar(msg->ranges);
     }
-    if (front_distance > min_distance) {
+    if (back_distance > min_distance) {
         return;
-    } else if (exit_obstacle) {
-        ROS_INFO(TAG COLOR_RED "front distance:  %f" COLOR_RESET, front_distance);
+    } else if (exit_park) {
+        nh_.setParam("speed", 0);
+        ROS_INFO(TAG COLOR_RED "front distance:  %f" COLOR_RESET, back_distance);
         ROS_INFO(TAG COLOR_RED "TraceLine exit because of obstacle" COLOR_RESET);
         stop();
     }
