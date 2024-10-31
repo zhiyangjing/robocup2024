@@ -34,8 +34,6 @@ int main(int argc, char **argv) {
     cap.set(cv::CAP_PROP_FPS, 25);
     cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
 
-
-
     cv::Mat frame;
     while (ros::ok()) {
         cap >> frame;
@@ -57,14 +55,14 @@ int main(int argc, char **argv) {
         cv::putText(frame, "FPS: " + std::to_string(static_cast<int>(currentFps)), cv::Point(10, 30),
                     cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0), 2);
 
-
         cv::resize(frame, frame, cv::Size(frame_width, frame_height));
         cv::imshow("camera_node Feed", frame);
+        cv::line(frame, cv::Point(0, frame.rows / 3), cv::Point(frame.cols, frame.rows / 3), cv::Scalar(255, 0, 0), 2);
         int key = cv::waitKey(1);
         if (key == 'q')
             break;
 
-        ros::spinOnce();// 处理 ROS 事件
+        ros::spinOnce();  // 处理 ROS 事件
         loop_rate.sleep();
     }
 
