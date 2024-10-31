@@ -30,7 +30,6 @@ enum TrafficLight {
 #define BCOLOR_CYAN "\033[46m"
 #define BCOLOR_WHITE "\033[47m"
 
-
 template<typename T> class Buffer {
 public:
     explicit Buffer();
@@ -40,7 +39,9 @@ public:
     Buffer<T> &operator=(const Buffer<T> &other);  // 赋值运算符重载
     Buffer(const Buffer<T> &other);
 
-    void push(const T &value);    // 从头部添加元素
+    void push(const T &value);  // 从头部添加元素
+
+    void push(const T &value, size_t times);
     T &operator[](size_t index);  // 重载下标运算符
     T avg();
     size_t getSize() const;    // 获取当前缓冲区的大小

@@ -99,6 +99,12 @@ template<typename T> void Buffer<T>::push(const T &value) {
     }
 }
 
+template<typename T> void Buffer<T>::push(const T &value, size_t times) {
+    for (size_t i = 0; i < times; i++) {
+        this->push(value);
+    }
+}
+
 // 重载下标运算符
 template<typename T> T &Buffer<T>::operator[](size_t index) {
     // 不需要越界检测，假设使用者会注意
