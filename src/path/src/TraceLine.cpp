@@ -325,12 +325,12 @@ void TraceLine::linePreprocess() {
         }
     }
 
+    blueLines.clear();
     if (blue_lines_raw.empty()) {
         ROS_INFO("No blue line to preprocess");
         return;
     }
 
-    blueLines.clear();
     for (const auto &line : blue_lines_raw) {
         float slope = calculateSlope(line);
 
