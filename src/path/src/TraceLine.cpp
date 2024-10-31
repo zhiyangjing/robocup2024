@@ -801,7 +801,7 @@ void TraceLine::run() {
 
     int angle_value = 0;
     nh_.getParam("angle", angle_value);
-    prev_angle.push(angle_value * 0.1);
+    prev_angle.push(angle_value * 0.5);
     nh_.setParam("angle", prev_angle.avg());
     nh_.setParam("speed", 2);
     nh_.setParam("direction", std::string(1, 'W'));
