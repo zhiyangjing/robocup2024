@@ -84,14 +84,14 @@ struct ParkInitParams {
     }
 };
 
-class TraceLine : public Ability {
+class SidePark : public Ability {
 private:
     ros::Subscriber sub_;        // 图像的订阅者
     ros::Subscriber laser_sub_;  // 雷达信息的订阅
     bool is_running_ = false;
-    bool blue_line_found = false; // 只有在足够靠近智能车才会被设置为true
-    bool exit_blue = true;      // 遇到蓝线时是否退出，测试时使用
-    bool exit_obstacle = true;  // 遇到障碍物是否退出，测试使用
+    bool blue_line_found = false;  // 只有在足够靠近智能车才会被设置为true
+    bool exit_blue = true;         // 遇到蓝线时是否退出，测试时使用
+    bool exit_obstacle = true;     // 遇到障碍物是否退出，测试使用
     bool is_avoid_obstacle = false;
     bool video_feed_back = true;
     bool visualize_lidar = true;
@@ -118,7 +118,72 @@ private:
     Buffer<int> prev_angle;
     Buffer<int> prev_center;
     Buffer<float> blue_horizontal_times;
-    Buffer<float> blue_line_slopes; // 不会检查高度，斜率满足小于0.5，只是最长
+    Buffer<float> blue_line_slopes;  // 不会检查高度，斜率满足小于0.5，只是最长
+    Interpolator interpolator;
+    cv::Mat frame;
+    vector<cv::Vec4i> lines_raw;                                  // 存储检测到的白色车道线段
+    vector<cv::Vec4i> blue_lines_raw;                             // 存储检测到的蓝色线段
+    vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> posLines;   // 线段，长度，斜率 , 中点
+    vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> negLines;   // 线段，长度，斜率 , 中点
+    vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> blueLines;  // 线段，长度，斜率 , 中点
+
+public:
+    SidePark(int remain_time, ros::NodeHandle &nh);
+    void linePreprocess();
+    void getLines();
+    void getBlueLines();
+    int getCenter();
+    pair<float, float> calculateAverageSlopes(int topN);
+    pair<float, float> getLineSlope();
+    void lineSlopeStrategy_old(float left_slope, float right_slope);
+    void lineSlopeStrategy(float left_slope, float right_slope, int center);
+    void lineSlopeStrategy(float left_slope, float right_slope);
+    void imageCallback(const sensor_msgs::ImageConstPtr &msg);
+    void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg);
+    float findFrontDistance(vector<float> ranges);
+    void visualizeLines(const vector<cv::Vec4i> &lines, int level);
+    void visualizeLidar(vector<float> distances);
+    void checkBlueLine();
+    void run();
+    void stop();
+    ~SidePark();
+};
+
+class TraceLine : public Ability {
+private:
+    ros::Subscriber sub_;        // 图像的订阅者
+    ros::Subscriber laser_sub_;  // 雷达信息的订阅
+    bool is_running_ = false;
+    bool blue_line_found = false;  // 只有在足够靠近智能车才会被设置为true
+    bool exit_blue = true;         // 遇到蓝线时是否退出，测试时使用
+    bool exit_obstacle = true;     // 遇到障碍物是否退出，测试使用
+    bool is_avoid_obstacle = false;
+    bool video_feed_back = true;
+    bool visualize_lidar = true;
+    bool vertical_blue_lock = false;  // 蓝线垂直锁定，用于优化路口方向，检测到蓝线斜率接近0，则不再调整斜率
+    bool enable_blue_lock = true;
+    bool dir_adjust_finish = false;
+    bool blue_line_visible = false;
+    int frame_height = 480;
+    int frame_width = 640;
+    int countdownTimer = 200;  //  单位毫秒，在识别到蓝色线条之后剩余的运行时间
+    int workingTimer = 0;      // 记录已经运行的时间，开始的一段时间内不识别蓝线，单位毫秒
+    int blue_negelect_time = 1200;  // 不识别蓝线的时间
+    int min_blue_length = 220;
+    float min_distance = 0.9;
+    float lowerFraction = 0.4;
+    int lowerHeight = static_cast<int>(frame_height * lowerFraction);
+    int upperHeight = frame_height - lowerHeight;
+    int line_pos = frame_width * 0.422;
+    int handle_rate_ = 20;  // 应该大于frame_rate
+    int frame_rate_ = 10;   // 通过param获取的frame_rate
+    double currentFps = 0;
+    Buffer<float> prev_neg_slope;
+    Buffer<float> prev_pos_slope;
+    Buffer<int> prev_angle;
+    Buffer<int> prev_center;
+    Buffer<float> blue_horizontal_times;
+    Buffer<float> blue_line_slopes;  // 不会检查高度，斜率满足小于0.5，只是最长
     Interpolator interpolator;
     cv::Mat frame;
     vector<cv::Vec4i> lines_raw;                                  // 存储检测到的白色车道线段

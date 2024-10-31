@@ -43,6 +43,15 @@ target_link_libraries(
   ${OpenCV_LIBRARIES}
 )
 
+add_executable(side_park src/trace_line.cpp src/SidePark.cpp)
+
+target_link_libraries(
+  side_park
+  common_utils
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
+
 # target_include_directories(trace_line PRIVATE ${EIGEN3_INCLUDE_DIR})
 
 add_executable(visualize_line src/visualize_line.cpp)
