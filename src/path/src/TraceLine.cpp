@@ -459,15 +459,19 @@ void TraceLine::checkBlueLine() {
 
     blue_line_slopes.push(line_slope);
 
+    ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
+    // ROS_INFO(TAG "%s", string(20, '-').c_str());
+    ROS_INFO(TAG COLOR_BLUE "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_RESET, line_slope, line_length,
+             line_x, line_y, static_cast<int>(blueLines.size()));
+
     if (line_y > 435 and line_x > 80 and line_x < (frame_width - 80)) {
         if ((line_length > min_blue_length and blueLines.size() > 6) or (line_length > 130 and blueLines.size() > 8)) {
             blue_line_found = true;
             // ROS_INFO(TAG "%s", string(20, '-').c_str());
             ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
             // ROS_INFO(TAG "%s", string(20, '-').c_str());
-            ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d ", line_slope,
+            ROS_INFO(TAG COLOR_BLUE "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_BLUE, line_slope,
                      line_length, line_x, line_y, static_cast<int>(blueLines.size()));
-            ROS_INFO(TAG "%s", string(20, '-').c_str());
         }
     }
 
@@ -697,7 +701,7 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
             // ROS_INFO(TAG "Blue line found");
             // ROS_INFO(TAG "time before exit: %d", countdownTimer);
             // if (countdownTimer <= 0) {
-                stop();
+            stop();
             // }
         }
 
