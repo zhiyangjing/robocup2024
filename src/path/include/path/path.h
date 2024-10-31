@@ -187,7 +187,7 @@ private:
     bool third_stage_begin = false;
     bool visualize_lidar;
     int third_stage_begin_times = 0;  // 一个用于统计第多少次没有找到车库后边缘线的变量
-    int min_distance = 0.24;
+    float min_distance = 0.24;
     ros::Subscriber sub_;
     cv::Mat frame;
     string camera = "back";  // 视频流的方向
