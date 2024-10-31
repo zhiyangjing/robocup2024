@@ -133,7 +133,7 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
     prev_angle = Buffer<int>(3);
     prev_center = Buffer<int>(6);
     blue_horizontal_times = Buffer<float>(4, 0);
-    blue_line_slopes = Buffer<float>(2);
+    blue_line_slopes = Buffer<float>(3);
 
     // 控制点个数
     int point_nums = 20;
@@ -462,7 +462,6 @@ void TraceLine::checkBlueLine() {
 
     blue_line_slopes.push(line_slope);
 
-    ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
     // ROS_INFO(TAG "%s", string(20, '-').c_str());
     ROS_INFO(TAG COLOR_BLUE "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_RESET,
              line_slope, line_length, line_x, line_y, static_cast<int>(blueLines.size()));
@@ -471,7 +470,7 @@ void TraceLine::checkBlueLine() {
         if ((line_length > min_blue_length and blueLines.size() > 6) or (line_length > 130 and blueLines.size() > 8)) {
             blue_line_found = true;
             // ROS_INFO(TAG "%s", string(20, '-').c_str());
-            ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
+            ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected! <-- ready to adjust" COLOR_RESET);
             // ROS_INFO(TAG "%s", string(20, '-').c_str());
             ROS_INFO(TAG COLOR_BLUE "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_BLUE,
                      line_slope, line_length, line_x, line_y, static_cast<int>(blueLines.size()));
