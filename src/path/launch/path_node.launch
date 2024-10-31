@@ -6,8 +6,8 @@
     <param name="interface_selection" value="serial"/>                                #接口选择:net 为网口,serial 为串口。
     <param name="frame_id" value="laser"/>                                       #激光坐标
     <param name="scan_topic" value="scan"/>                                           #设置激光数据topic名称
-    <param name="min_range" value="0.15"/>                                             #雷达接收距离最小值
-    <param name="max_range" value="3"/>                                           #雷达接收距离最大值
+    <param name="min_range" value="0.10"/>                                             #雷达接收距离最小值
+    <param name="max_range" value="2"/>                                           #雷达接收距离最大值
     <param name="use_gps_ts" value="false"/>                                          #雷达是否使用GPS授时
     <param name="compensation" value="false"/>                                        #雷达是否使用角度补偿功能
     <param name="pubScan" value="true"/>                                              #雷达是否发布scan话题
