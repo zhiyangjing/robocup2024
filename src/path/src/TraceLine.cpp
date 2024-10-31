@@ -35,14 +35,6 @@ void detectWhite(const cv::Mat &frame) {
     cv::drawContours(frame, contours, -1, cv::Scalar(0, 0, 255), 2);  // 红色，线宽2
 }
 
-float TraceLine::calculateSlope(const cv::Vec4i &line) {
-    float dx = line[2] - line[0];
-    float dy = line[3] - line[1];
-    if (dx == 0) {
-        return numeric_limits<float>::infinity();  // 处理垂直线
-    }
-    return dy / dx;  // 计算斜率
-}
 
 /**
  * @brief 这是一个辅助函数，用于可视化图像

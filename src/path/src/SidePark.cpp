@@ -13,14 +13,6 @@
 using namespace std;
 
 
-float SidePark::calculateSlope(const cv::Vec4i &line) {
-    float dx = line[2] - line[0];
-    float dy = line[3] - line[1];
-    if (dx == 0) {
-        return numeric_limits<float>::infinity();  // 处理垂直线
-    }
-    return dy / dx;  // 计算斜率
-}
 
 SidePark::SidePark(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, nh) {
     prev_neg_slope = Buffer<float>(5);

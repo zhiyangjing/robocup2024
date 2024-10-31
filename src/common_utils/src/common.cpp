@@ -1,5 +1,6 @@
 #include <common_utils/common.h>
 #include <iostream>
+#include <opencv2/opencv.hpp>
 using namespace std;
 
 Interpolator::Interpolator() {}
@@ -72,4 +73,13 @@ Interpolator &Interpolator::operator=(const Interpolator &other) {
     points_cols = other.points_cols;                    // 参考点维度
     normalization_params = other.normalization_params;  // 保存每一行的最小值和跨度
     return *this;
+}
+
+float calculateSlope(const cv::Vec4i &line) {
+    float dx = line[2] - line[0];
+    float dy = line[3] - line[1];
+    if (dx == 0) {
+        return numeric_limits<float>::infinity();  // 处理垂直线
+    }
+    return dy / dx;  // 计算斜率
 }

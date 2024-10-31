@@ -2,6 +2,7 @@
 #define TRAFFIC_LIGHT_H
 #include <Eigen/Dense>
 #include <vector>
+#include <opencv2/opencv.hpp>
 
 using Eigen::MatrixXf;
 using Eigen::Vector2f;
@@ -69,6 +70,8 @@ public:
     Interpolator &operator=(const Interpolator &other);
     float interpolate(const VectorXf point);
 };
+
+float calculateSlope(const cv::Vec4i &line);
 
 #include "common_impl.h"
 #endif  // TRAFFIC_LIGHT_H

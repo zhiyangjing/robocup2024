@@ -260,14 +260,6 @@ void Park::contourPreprocess() {
     // ROS_INFO(TAG "blueContours length: %d", static_cast<int>(blueContours.size()));
 }
 
-float Park::calculateSlope(const cv::Vec4i &line) {
-    float dx = line[2] - line[0];
-    float dy = line[3] - line[1];
-    if (dx == 0) {
-        return numeric_limits<float>::infinity();  // 处理垂直线
-    }
-    return dy / dx;  // 计算斜率
-}
 
 void Park::linePreprocess() {
     laneLines.clear();
