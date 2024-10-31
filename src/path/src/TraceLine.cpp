@@ -603,6 +603,7 @@ void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int cente
             nh_.setParam("direction", std::string(1, 'W'));
             nh_.setParam("speed", 2);
             nh_.setParam("angle", 0);
+
             ROS_INFO(TAG COLOR_GREEN "blue slope: %f angle: %d", slope, 0);
             dir_adjust_finish = true;
         } else if (slope > 0) {
