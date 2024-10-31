@@ -407,9 +407,7 @@ void SidePark::find_target(float left_slope, float right_slope, int center) {
             }
         }
     }
-    if (is_straight) {
-
-    }
+    if (is_straight) {}
 }
 
 // 图像处理函数
@@ -500,7 +498,8 @@ void SidePark::get_lidar_line(std::vector<float> distances) {
         cv::Point p1(line[0], line[1]);
         cv::Point p2(line[2], line[3]);
         // 计算线段的斜率
-        float slope = static_cast<float>(p2.y - p1.y) / (p2.x - p1.x);;
+        float slope = static_cast<float>(p2.y - p1.y) / (p2.x - p1.x);
+        ;
         // 根据斜率选择颜色
         cv::Scalar color = (std::abs(slope) < 0.1) ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 0, 0);  // 红色或蓝色
         cv::line(img, p1, p2, color, 2);                                                             // 绘制线段
