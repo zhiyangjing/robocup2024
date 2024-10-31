@@ -692,7 +692,7 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 
         if (video_feed_back) {
             visualizeLines(lines_raw);
-            visualizeLines(blue_lines_raw, 0);
+            visualizeLines(blue_lines_raw, 0, 1);
         }
         workingTimer += 1200 / frame_rate_;
         if (workingTimer > blue_negelect_time) {
