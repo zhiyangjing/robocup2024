@@ -607,13 +607,13 @@ void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int cente
             dir_adjust_finish = true;
         } else if (slope > 0) {
             nh_.setParam("direction", std::string(1, 'S'));
-            nh_.setParam("angle", -150);
-            ROS_INFO(TAG BCOLOR_YELLOW "blue slope: %f angle: %d" COLOR_RESET, slope, -150);
+            nh_.setParam("angle", -170);
+            ROS_INFO(TAG BCOLOR_YELLOW "blue slope: %f angle: %d" COLOR_RESET, slope, -170);
             nh_.setParam("speed", 1);
         } else if (slope < 0) {
             nh_.setParam("direction", std::string(1, 'S'));
-            nh_.setParam("angle", 150);
-            ROS_INFO(TAG BCOLOR_YELLOW "blue slope: %f angle: %d" COLOR_RESET, slope, 150);
+            nh_.setParam("angle", 170);
+            ROS_INFO(TAG BCOLOR_YELLOW "blue slope: %f angle: %d" COLOR_RESET, slope, 170);
             nh_.setParam("speed", 1);
         }
     } else {
