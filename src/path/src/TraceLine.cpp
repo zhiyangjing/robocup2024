@@ -133,7 +133,7 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
     prev_angle = Buffer<int>(3);
     prev_center = Buffer<int>(6);
     blue_horizontal_times = Buffer<float>(4, 0);
-    blue_line_slopes = Buffer<float>(3);
+    blue_line_slopes = Buffer<float>(2);
 
     // 控制点个数
     int point_nums = 20;
