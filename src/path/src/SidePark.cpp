@@ -452,60 +452,39 @@ void SidePark::lineSlopeStrategy_old(float left_slope, float right_slope) {
 }
 
 void SidePark::lineSlopeStrategy(float left_slope, float right_slope, int center) {
-    if (blue_line_found and blue_line_visible) {
-        auto slope = blue_line_slopes.avg();
-        if (fabs(slope) < 0.01) {
-            nh_.setParam("direction", std::string(1, 'W'));
-            nh_.setParam("speed", 2);
-            nh_.setParam("angle", 0);
-            ROS_INFO(TAG COLOR_GREEN "blue slope: %f angle: %d", slope, 0);
-            dir_adjust_finish = true;
-        } else if (slope > 0) {
-            nh_.setParam("direction", std::string(1, 'S'));
-            nh_.setParam("angle", -170);
-            ROS_INFO(TAG BCOLOR_YELLOW "blue slope: %f angle: %d" COLOR_RESET, slope, -170);
-            nh_.setParam("speed", 1);
-        } else if (slope < 0) {
-            nh_.setParam("direction", std::string(1, 'S'));
-            nh_.setParam("angle", 170);
-            ROS_INFO(TAG BCOLOR_YELLOW "blue slope: %f angle: %d" COLOR_RESET, slope, 170);
-            nh_.setParam("speed", 1);
-        }
-    } else {
-        if (left_slope == 0 and right_slope == 0) {
-            return;
-        }
-        if (fabs(left_slope) > 4) {
-            left_slope = 0;
-        }
-        if (fabs(right_slope) > 4) {
-            right_slope = 0;
-        }
-        VectorXf slopes_center(3);
-        slopes_center << left_slope, right_slope, center;
-        float res = max(min(interpolator.interpolate(slopes_center), 200.f), -200.f);
-        prev_angle.push(static_cast<int>(res));
-        int angle_value = prev_angle.avg();
-
-        // if (vertical_blue_lock) {
-        //     angle_value *= 0.1;
-        // }
-
-        prev_angle_long_term.push(angle_value);
-        if (not turning_stage and prev_angle_long_term.avg() > 160) {
-            turning_stage = true;
-            ROS_INFO(TAG BCOLOR_MAGENTA "Now in Turning Stage" COLOR_RESET);
-        }
-        if (not straight_stage and turning_stage and prev_angle_long_term.avg() < 50) {
-            straight_stage = true;
-            ROS_INFO(TAG BCOLOR_MAGENTA "Now in Straight Stage" COLOR_RESET);
-        }
-
-        nh_.setParam("angle", angle_value);
-        if (angle_value)
-            ROS_INFO(TAG "left slope: %lf right slope: %lf center: %d angle: %d", left_slope, right_slope, center,
-                     angle_value);
+    if (left_slope == 0 and right_slope == 0) {
+        return;
     }
+    if (fabs(left_slope) > 4) {
+        left_slope = 0;
+    }
+    if (fabs(right_slope) > 4) {
+        right_slope = 0;
+    }
+    VectorXf slopes_center(3);
+    slopes_center << left_slope, right_slope, center;
+    float res = max(min(interpolator.interpolate(slopes_center), 200.f), -200.f);
+    prev_angle.push(static_cast<int>(res));
+    int angle_value = prev_angle.avg();
+
+    // if (vertical_blue_lock) {
+    //     angle_value *= 0.1;
+    // }
+
+    prev_angle_long_term.push(angle_value);
+    if (not turning_stage and prev_angle_long_term.avg() > 160) {
+        turning_stage = true;
+        ROS_INFO(TAG BCOLOR_MAGENTA "Now in Turning Stage" COLOR_RESET);
+    }
+    if (not straight_stage and turning_stage and prev_angle_long_term.avg() < 50) {
+        straight_stage = true;
+        ROS_INFO(TAG BCOLOR_MAGENTA "Now in Straight Stage" COLOR_RESET);
+    }
+
+    nh_.setParam("angle", angle_value);
+    if (angle_value)
+        ROS_INFO(TAG "left slope: %lf right slope: %lf center: %d angle: %d", left_slope, right_slope, center,
+                 angle_value);
 }
 
 /**
@@ -531,6 +510,10 @@ void SidePark::lineSlopeStrategy(float left_slope, float right_slope) {
     int angle_value = prev_angle.avg();
     nh_.setParam("angle", angle_value);
     ROS_INFO(TAG "ANGLE: %d", angle_value);
+}
+
+void SidePark::find_target(float left_slope, float right_slope, int center) {
+
 }
 
 // 图像处理函数
@@ -578,8 +561,8 @@ void SidePark::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
             // }
         }
 
-        if (not is_avoid_obstacle) {
-            lineSlopeStrategy(neg_slope, pos_slope, center);
+        if (straight_stage) {
+            find_target(float left_slope, float right_slope, int center);
         }
 
         if (video_feed_back) {
@@ -594,7 +577,7 @@ void SidePark::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 const int WIDTH = 600;
 const int HEIGHT = 600;
 
-void SidePark::visualizeLidar(std::vector<float> distances) {
+void SidePark::lidar_preprocess(std::vector<float> distances) {
     cv::Mat img = cv::Mat::zeros(HEIGHT, WIDTH, CV_8UC3);
     cv::Point center(WIDTH / 2, HEIGHT / 2);
     int scalar = 100;
@@ -618,7 +601,7 @@ void SidePark::visualizeLidar(std::vector<float> distances) {
     cv::dilate(dilated, dilated, kernel);                        // 膨胀操作
     // Hough变换识别线段
     std::vector<cv::Vec4i> lines;
-    cv::HoughLinesP(dilated, lines, 1, CV_PI / 180, 50, 50, 10);
+    cv::HoughLinesP(dilated, lines, 1, CV_PI / 180, 30, 20, 10);
     // 绘制线段
     for (const auto &line : lines) {
         cv::Point p1(line[0], line[1]);
@@ -627,37 +610,13 @@ void SidePark::visualizeLidar(std::vector<float> distances) {
         float slope = static_cast<float>(p2.y - p1.y) / (p2.x - p1.x);
         // 根据斜率选择颜色
         cv::Scalar color = (std::abs(slope) < 0.1) ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 0, 0);  // 红色或蓝色
-        cv::line(img, p1, p2, color, 2);  // 绘制线段
+        cv::line(img, p1, p2, color, 2);                                                             // 绘制线段
     }
     // 显示图像
     cv::imshow("Lidar Visualization", img);
     cv::waitKey(1);
 }
 
-// void SidePark::visualizeLidar(vector<float> distances) {
-//     cv::Mat img = cv::Mat::zeros(HEIGHT, WIDTH, CV_8UC3);
-//     cv::Point center(WIDTH / 2, HEIGHT / 2);
-//     int scalar = 100;
-
-//     // 计算每个距离点的坐标并绘制
-//     for (size_t i = 0; i < distances.size(); ++i) {
-//         float angle = (2 * M_PI / distances.size()) * i;  // 计算当前点的角度
-//         float distance = distances[i] * scalar;
-
-//         // 将距离转换为像素坐标，反转 y 方向以实现顺时针绘制
-//         int x = static_cast<int>(center.x + distance * cos(angle));
-//         int y = static_cast<int>(center.y - distance * sin(angle));  // 反转 y 方向
-
-//         // 确保坐标在图像范围内
-//         if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT) {
-//             img.at<cv::Vec3b>(y, x) = cv::Vec3b(0, 255, 0);  // 使用绿色绘制点
-//         }
-//     }
-
-//     // 显示图像
-//     cv::imshow("Lidar Visualization", img);
-//     cv::waitKey(1);
-// }
 
 void SidePark::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     float front_distance = findFrontDistance(msg->ranges);

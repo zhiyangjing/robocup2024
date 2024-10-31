@@ -145,13 +145,14 @@ public:
     pair<float, float> calculateAverageSlopes(int topN);
     pair<float, float> getLineSlope();
     void lineSlopeStrategy_old(float left_slope, float right_slope);
+    void find_target(float left_slope, float right_slope, int center);
     void lineSlopeStrategy(float left_slope, float right_slope, int center);
     void lineSlopeStrategy(float left_slope, float right_slope);
     void imageCallback(const sensor_msgs::ImageConstPtr &msg);
     void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg);
     float findFrontDistance(vector<float> ranges);
     void visualizeLines(const vector<cv::Vec4i> &lines, int level);
-    void visualizeLidar(vector<float> distances);
+    void lidar_preprocess(vector<float> distances);
     void checkBlueLine();
     void run();
     void stop();
