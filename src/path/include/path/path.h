@@ -326,3 +326,5 @@ public:
     void stop();
 };
 
+
+float calculateSlope(const cv::Vec4i &line);

@@ -12,6 +12,15 @@
 
 using namespace std;
 
+float calculateSlope(const cv::Vec4i &line) {
+    float dx = line[2] - line[0];
+    float dy = line[3] - line[1];
+    if (dx == 0) {
+        return numeric_limits<float>::infinity();  // 处理垂直线
+    }
+    return dy / dx;  // 计算斜率
+}
+
 void detectWhite(const cv::Mat &frame) {
     ROS_INFO(COLOR_RED TAG COLOR_RESET " detect white ");
     // 将输入的 BGR 图像转为 HSV（色相、饱和度、亮度）颜色空间

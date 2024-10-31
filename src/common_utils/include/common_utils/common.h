@@ -2,7 +2,6 @@
 #define TRAFFIC_LIGHT_H
 #include <Eigen/Dense>
 #include <vector>
-#include <opencv2/opencv.hpp>
 
 using Eigen::MatrixXf;
 using Eigen::Vector2f;
