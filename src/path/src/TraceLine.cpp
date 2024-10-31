@@ -136,7 +136,7 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
     blue_line_slopes = Buffer<float>(3);
 
     // 控制点个数
-    int point_nums = 20;
+    int point_nums = 21;
 
     VectorXf weights(3);
     VectorXf x(point_nums);
