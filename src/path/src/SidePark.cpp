@@ -427,7 +427,6 @@ void SidePark::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 
         // 流水线处理
         getLines();
-        getBlueLines();
         linePreprocess();
         auto [neg_slope, pos_slope] = getLineSlope();
         auto center = getCenter();
@@ -436,9 +435,6 @@ void SidePark::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 
         visualizeLines(lines_raw);
         workingTimer += 1200 / frame_rate_;
-        if (workingTimer > blue_negelect_time) {
-            checkBlueLine();
-        }
 
         if (blue_line_found and exit_blue and dir_adjust_finish) {
             // 控制权得尽早交出。

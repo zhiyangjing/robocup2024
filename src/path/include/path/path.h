@@ -140,7 +140,6 @@ public:
     SidePark(int remain_time, ros::NodeHandle &nh);
     void linePreprocess();
     void getLines();
-    void getBlueLines();
     int getCenter();
     float calculateSlope(const cv::Vec4i &line);
     pair<float, float> calculateAverageSlopes(int topN);
@@ -155,7 +154,6 @@ public:
     void visualizeLines(const vector<cv::Vec4i> &lines, int level);
     void get_lidar_line(vector<float> distances);
     void lidarLinePreprocess();
-    void checkBlueLine();
     void run();
     void stop();
     ~SidePark();
