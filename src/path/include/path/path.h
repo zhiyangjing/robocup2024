@@ -97,6 +97,7 @@ private:
     bool visualize_lidar = true;
     bool vertical_blue_lock = false;  // 蓝线垂直锁定，用于优化路口方向，检测到蓝线斜率接近0，则不再调整斜率
     bool enable_blue_lock = true;
+    bool dir_adjust_finish = false;
     int frame_height = 480;
     int frame_width = 640;
     int countdownTimer = 200;  //  单位毫秒，在识别到蓝色线条之后剩余的运行时间
@@ -116,6 +117,7 @@ private:
     Buffer<int> prev_angle;
     Buffer<int> prev_center;
     Buffer<float> blue_horizontal_times;
+    Buffer<float> blue_line_slopes;
     Interpolator interpolator;
     cv::Mat frame;
     vector<cv::Vec4i> lines_raw;                                  // 存储检测到的白色车道线段

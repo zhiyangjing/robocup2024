@@ -133,6 +133,7 @@ TraceLine::TraceLine(int remain_time, ros::NodeHandle &nh) : Ability(remain_time
     prev_angle = Buffer<int>(3);
     prev_center = Buffer<int>(6);
     blue_horizontal_times = Buffer<float>(4, 0);
+    blue_line_slopes = Buffer<float>(3);
 
     // 控制点个数
     int point_nums = 20;
@@ -451,40 +452,42 @@ void TraceLine::checkBlueLine() {
 
     sort(blueLines.begin(), blueLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
     auto longestLine = blueLines[0];
-    if (get<3>(longestLine)[1] > 425 and get<3>(longestLine)[0] > 80 and get<3>(longestLine)[0] < (frame_width - 80)) {
-        if ((get<1>(longestLine) > min_blue_length and blueLines.size() > 6)
-            or (get<1>(longestLine) > 130 and blueLines.size() > 8)) {
+    auto line_length = get<1>(longestLine);
+    auto line_x = get<3>(longestLine)[0];
+    auto line_y = get<3>(longestLine)[1];
+    auto line_slope = get<2>(longestLine);
+
+    blue_line_slopes.push(line_slope);
+
+    if (line_y > 435 and line_x > 80 and line_x < (frame_width - 80)) {
+        if ((line_length > min_blue_length and blueLines.size() > 6) or (line_length > 130 and blueLines.size() > 8)) {
             blue_line_found = true;
             // ROS_INFO(TAG "%s", string(20, '-').c_str());
             ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
             // ROS_INFO(TAG "%s", string(20, '-').c_str());
-            ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d ", get<2>(longestLine),
-                     get<1>(longestLine), get<3>(longestLine)[0], get<3>(longestLine)[1],
-                     static_cast<int>(blueLines.size()));
+            ROS_INFO(TAG "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d ", line_slope,
+                     line_length, line_x, line_y, static_cast<int>(blueLines.size()));
             ROS_INFO(TAG "%s", string(20, '-').c_str());
         }
     }
 
-    if (get<3>(longestLine)[1] > 380) {
-        if ((get<1>(longestLine) > min_blue_length and blueLines.size() > 5)
-            or (get<1>(longestLine) > 138 and blueLines.size() > 8)) {
-            if (get<2>(longestLine) < 0.05) {
+    // if (line_y > 380) {
+    //     if ((line_length > min_blue_length and blueLines.size() > 5) or (line_length > 138 and blueLines.size() > 8)) {
+    //         if (line_slope < 0.05) {
 
-                blue_horizontal_times.push(1.f);
+    //             blue_horizontal_times.push(1.f);
 
-                if (blue_horizontal_times.avg() > 0.6 and enable_blue_lock) {
-                    vertical_blue_lock = true;
-                    ROS_INFO(TAG COLOR_RED "Vertical Blue Line Locked" COLOR_RESET);
-                }
-
-            }
-            ROS_INFO(TAG COLOR_CYAN "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_RESET,
-                     get<2>(longestLine), get<1>(longestLine), get<3>(longestLine)[0], get<3>(longestLine)[1],
-                     static_cast<int>(blueLines.size()));
-        } else {
-            blue_horizontal_times.push(0.f);
-        }
-    }
+    //             if (blue_horizontal_times.avg() > 0.6 and enable_blue_lock) {
+    //                 vertical_blue_lock = true;
+    //                 ROS_INFO(TAG COLOR_RED "Vertical Blue Line Locked" COLOR_RESET);
+    //             }
+    //         }
+    //         ROS_INFO(TAG COLOR_CYAN "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_RESET,
+    //                  line_slope, line_length, line_x, line_y, static_cast<int>(blueLines.size()));
+    //     } else {
+    //         blue_horizontal_times.push(0.f);
+    //     }
+    // }
     // 长度大于特定最小值，并且处于屏幕下方
 }
 
@@ -588,6 +591,23 @@ void TraceLine::lineSlopeStrategy_old(float left_slope, float right_slope) {
 }
 
 void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int center) {
+    if (blue_line_found) {
+        auto slope = blue_line_slopes.avg();
+        if (slope < 0.01) {
+            nh_.setParam("direction", std::string(1, 'W'));
+            nh_.setParam("speed", 2);
+            dir_adjust_finish = true;
+        } else if (slope > 0) {
+            nh_.setParam("direction", std::string(1, 'S'));
+            nh_.setParam("angle", -150);
+            nh_.setParam("speed", 1);
+        } else if (slope < 0) {
+            nh_.setParam("direction", std::string(1, 'S'));
+            nh_.setParam("angle", 150);
+            nh_.setParam("speed", 1);
+        }
+    }
+
     if (left_slope == 0 and right_slope == 0) {
         return;
     }
@@ -665,11 +685,11 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
             checkBlueLine();
         }
 
-        if (blue_line_found and exit_blue) {
+        if (blue_line_found and exit_blue and dir_adjust_finish) {
             // 控制权得尽早交出。
             // 如果是循线+右转，这会导致交出过晚，右转拐弯半径不足。
             // 所以改为由各自下一步自行延时
-            stop();
+            // stop();
             // int speed, frame_rate = 10;
             // nh_.getParam("speed", speed);
             // nh_.getParam("frame_rate", frame_rate);
@@ -677,7 +697,7 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
             // ROS_INFO(TAG "Blue line found");
             // ROS_INFO(TAG "time before exit: %d", countdownTimer);
             // if (countdownTimer <= 0) {
-            //     stop();
+                stop();
             // }
         }
 
