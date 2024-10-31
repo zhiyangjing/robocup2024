@@ -694,6 +694,8 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
         workingTimer += 1200 / frame_rate_;
         if (workingTimer > blue_negelect_time) {
             checkBlueLine();
+        } else {
+            ROS_INFO(TAG COLOR_YELLOW "blue_neglect_time: %d" COLOR_RESET, workingTimer);
         }
 
         if (blue_line_found and exit_blue and dir_adjust_finish) {
