@@ -149,6 +149,17 @@ SidePark::SidePark(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, 
     ROS_INFO(TAG "SidePark constructed succeeded! ");
 }
 
+
+float SidePark::calculateSlope(const cv::Vec4i &line) {
+    float dx = line[2] - line[0];
+    float dy = line[3] - line[1];
+    if (dx == 0) {
+        return numeric_limits<float>::infinity();  // 处理垂直线
+    }
+    return dy / dx;  // 计算斜率
+}
+
+
 void SidePark::linePreprocess() {
     if (lines_raw.empty()) {
         ROS_WARN(TAG "No line to preprocess");

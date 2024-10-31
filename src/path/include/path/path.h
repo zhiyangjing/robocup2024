@@ -141,6 +141,7 @@ public:
     void getLines();
     void getBlueLines();
     int getCenter();
+    float calculateSlope(const cv::Vec4i &line);
     pair<float, float> calculateAverageSlopes(int topN);
     pair<float, float> getLineSlope();
     void lineSlopeStrategy_old(float left_slope, float right_slope);
@@ -310,6 +311,8 @@ private:
 public:
     Park(int remain_time, ros::NodeHandle nh);
     Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params);
+
+    float calculateSlope(const cv::Vec4i &line);
     void moveToPlace();
     void getContour();
     void contourPreprocess();
@@ -325,6 +328,3 @@ public:
     void run();
     void stop();
 };
-
-
-float calculateSlope(const cv::Vec4i &line);

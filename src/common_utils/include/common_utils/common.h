@@ -70,7 +70,6 @@ public:
     float interpolate(const VectorXf point);
 };
 
-float calculateSlope(const cv::Vec4i &line);
 
 #include "common_impl.h"
 #endif  // TRAFFIC_LIGHT_H
