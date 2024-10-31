@@ -14,6 +14,12 @@ using namespace std;
 LightDetector::LightDetector(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, nh) {
     ROS_INFO(TAG "LightDetector Constructed");
     light_states = Buffer<int>(5);
+
+    int video_feed_back_param = 1;
+    nh_.getParam("video_feed_back", video_feed_back_param);
+    video_feed_back = (video_feed_back_param == 1);
+    ROS_INFO(TAG COLOR_MAGENTA "Video feed back %s" COLOR_RESET,
+             video_feed_back ? (COLOR_RED "Enabled") : (COLOR_GREEN "Disable"));
 }
 
 void LightDetector::run() {
@@ -55,8 +61,10 @@ void LightDetector::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
         int y_end = static_cast<int>(frame_height * 0.8);
         cv::line(frame, cv::Point(line_pos, y_start), cv::Point(line_pos, y_end), color, thickness);
 
-        cv::imshow("camera_node Feed", frame);
-        cv::waitKey(30);
+        if (video_feed_back) {
+            cv::imshow("camera_node Feed", frame);
+            cv::waitKey(10);
+        }
 
         ros::spinOnce();  // 处理 ROS 事件
     } catch (cv_bridge::Exception &e) { ROS_ERROR("Could not convert from '%s' to 'bgr8'.", msg->encoding.c_str()); }

@@ -152,6 +152,7 @@ private:
     ros::NodeHandle nh_;
     ros::Subscriber sub_;
     bool is_running_ = false;
+    bool video_feed_back = false;
 
     int frameCount = 0;
     std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
