@@ -472,7 +472,7 @@ const int HEIGHT = 600;
 void SidePark::get_lidar_line(std::vector<float> distances) {
     cv::Mat img = cv::Mat::zeros(HEIGHT, WIDTH, CV_8UC3);
     cv::Point center(WIDTH / 2, HEIGHT / 2);
-    int scalar = 150;
+    int scalar = 200;
     // 计算每个距离点的坐标并绘制为白色点
     for (size_t i = 0; i < distances.size(); ++i) {
         float angle = (2 * M_PI / distances.size()) * i;  // 计算当前点的角度
