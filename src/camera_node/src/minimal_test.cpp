@@ -56,8 +56,8 @@ int main(int argc, char **argv) {
                     cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0), 2);
 
         cv::resize(frame, frame, cv::Size(frame_width, frame_height));
-        cv::imshow("camera_node Feed", frame);
         cv::line(frame, cv::Point(0, frame.rows / 3), cv::Point(frame.cols, frame.rows / 3), cv::Scalar(255, 0, 0), 2);
+        cv::imshow("camera_node Feed", frame);
         int key = cv::waitKey(1);
         if (key == 'q')
             break;
