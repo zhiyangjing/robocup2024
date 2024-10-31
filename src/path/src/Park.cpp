@@ -246,8 +246,8 @@ void Park::contourPreprocess() {
         }
         blueContours.emplace_back(i, cv::contourArea(contour), contour_center);
         double area = cv::contourArea(contour);
-        ROS_INFO(TAG "cnt: %d", (int) contours.size());
-        ROS_INFO(TAG "area: %lf", area);
+        // ROS_INFO(TAG "cnt: %d", (int) contours.size());
+        // ROS_INFO(TAG "area: %lf", area);
         // double perimeter = cv::arcLength(contour, true);
         // double diff_rate = fabs((pow((perimeter / 4), 2) - area) / area);
         // // cout << diff_rate << " " << area << " " << perimeter << endl;
