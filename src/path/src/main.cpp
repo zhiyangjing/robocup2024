@@ -254,8 +254,8 @@ public:
         // states_queue = std::deque<int>({LIGHT_DETECT,TRACE_LINE, ROAD_LEFT_TURN ,UTURN, TRACE_LINE, UTURN, TRACE_LINE, TERMINAL});
         // states_queue = std::deque<int>({TRACE_LINE, STRAIGHT, TRACE_LINE, AVOID, TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE,
         //                                 ROAD_RIGHT_TURN, REVERSE_PARK, TERMINAL});
-        states_queue = std::deque<int>(
-            {TRACE_LINE, AVOID, TRACE_LINE, ROAD_LEFT_TURN, TRACE_LINE, ROAD_RIGHT_TURN, REVERSE_PARK, TERMINAL});
+        states_queue = std::deque<int>({TRACE_LINE, AVOID, TRACE_LINE, ROAD_LEFT_TURN, SIDE_PARK, TRACE_LINE,
+                                        ROAD_RIGHT_TURN, REVERSE_PARK, TERMINAL});
         vector<int> order;
 
         if (nh.getParam("order", order)) {
@@ -357,6 +357,9 @@ public:
             } else if (STATE == BIG_LEFT_TURN) {
                 auto motion_controller = BigLeftTurn(10000, nh_);
                 motion_controller.run();
+            } else if (STATE == SIDE_PARK) {
+                auto side_park = SidePark(1000,nh_);
+                side_park.run();
             } else if (STATE == TERMINAL) {
                 nh_.setParam("speed", 0);
                 nh_.setParam("angle", 0);

@@ -62,7 +62,7 @@ target_link_libraries(
   ${OpenCV_LIBRARIES}
 )
 
-add_executable(path_node src/main.cpp src/light.cpp src/TraceLine.cpp src/Park.cpp )
+add_executable(path_node src/main.cpp src/light.cpp src/TraceLine.cpp src/Park.cpp src/SidePark.cpp)
 
 target_link_libraries(
   path_node

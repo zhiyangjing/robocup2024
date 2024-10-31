@@ -44,89 +44,6 @@ float calculateSlope(const cv::Vec4i &line) {
     return dy / dx;  // 计算斜率
 }
 
-/**
- * @brief 这是一个辅助函数，用于可视化图像
- * @details 标注出识别到的白色区域，同时用红色标注出识别到的线条以及斜率
- * 
- * 
- * @param image 
- */
-void visualizeLineInfo(cv::Mat image) {
-    // 检查输入图像是否为空
-    if (image.empty()) {
-        cerr << "Error: Input image is empty!" << endl;
-        return;
-    }
-    float lowerFraction = 0.4;
-    // 获取图像的高度和宽度
-    int height = image.rows;
-    int width = image.cols;
-
-    // 计算下部分的高度，根据给定的比例
-    int lowerHeight = static_cast<int>(height * lowerFraction);
-    cv::Rect lowerPartRect(0, height - lowerHeight, width, lowerHeight);
-    cv::Mat lowerPart = image(lowerPartRect);  // 提取下部分图像
-
-    // 转换为HSV颜色空间
-    cv::Mat hsv;
-    cv::cvtColor(lowerPart, hsv, cv::COLOR_BGR2HSV);
-
-    // 定义白色的HSV范围
-    cv::Scalar lowerWhite(0, 0, 160);     // 白色下限
-    cv::Scalar upperWhite(180, 30, 255);  // 白色上限
-
-    // 创建白色区域的掩码
-    cv::Mat mask;
-    cv::inRange(hsv, lowerWhite, upperWhite, mask);
-
-    // 形态学操作 - 腐蚀和膨胀
-    int erosion_size = 1;   // 腐蚀结构元素的大小
-    int dilation_size = 1;  // 膨胀结构元素的大小
-
-    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
-                                                cv::Point(erosion_size, erosion_size));
-
-    cv::erode(mask, mask, element);   // 腐蚀
-    cv::dilate(mask, mask, element);  // 膨胀
-
-    // 使用 Canny 边缘检测
-    cv::Mat edges;
-    cv::Canny(mask, edges, 50, 150, 3);
-    // cv::imshow("canny", edges);
-
-    // 存储检测到的线段
-    vector<cv::Vec4i> lines;
-    // 使用 HoughLinesP 检测线段
-    cv::HoughLinesP(edges, lines, 2, CV_PI / 180, 50, 30, 10);
-
-    // 在下半部分的原始图像上绘制绿色轮廓
-    vector<vector<cv::Point>> contours;
-    cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-
-    for (size_t i = 0; i < contours.size(); i++) {
-        cv::Scalar greenColor(0, 255, 0);  // 绿色
-        for (size_t j = 0; j < contours[i].size(); j++) {
-            contours[i][j].y += height - lowerHeight;  // Y 轴偏移
-        }
-        cv::drawContours(image, contours, static_cast<int>(i), greenColor, 2, cv::LINE_8);
-    }
-
-    // 在原始图像上绘制检测到的线段并显示斜率
-    for (size_t i = 0; i < lines.size(); i++) {
-        cv::Vec4i l = lines[i];
-        cv::Point start(l[0], l[1] + (height - lowerHeight));
-        cv::Point end(l[2], l[3] + (height - lowerHeight));
-        cv::line(image, start, end, cv::Scalar(0, 0, 255), 2);
-
-        float slope = calculateSlope(l);
-        string slopeText = "Slope: " + to_string(slope);
-        cv::Point midPoint((start.x + end.x) / 2, (start.y + end.y) / 2);
-        cv::putText(image, slopeText, midPoint, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 1);
-    }
-
-    // cv::imshow("detect line result", image);
-}
-
 SidePark::SidePark(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, nh) {
     prev_neg_slope = Buffer<float>(5);
     prev_pos_slope = Buffer<float>(5);
@@ -134,6 +51,7 @@ SidePark::SidePark(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, 
     prev_center = Buffer<int>(6);
     blue_horizontal_times = Buffer<float>(4, 0);
     blue_line_slopes = Buffer<float>(3);
+    prev_angle_long_term = Buffer<int>(15, 0);
 
     // 控制点个数
     int point_nums = 20;
@@ -596,9 +514,20 @@ void SidePark::lineSlopeStrategy(float left_slope, float right_slope, int center
         //     angle_value *= 0.1;
         // }
 
+        prev_angle_long_term.push(angle_value);
+        if (not turning_stage and prev_angle_long_term.avg() > 160) {
+            turning_stage = true;
+            ROS_INFO(TAG BCOLOR_MAGENTA "Now in Turning Stage" COLOR_RESET);
+        }
+        if (not straight_stage and turning_stage and prev_angle_long_term.avg() < 50) {
+            straight_stage = true;
+            ROS_INFO(TAG BCOLOR_MAGENTA "Now in Straight Stage" COLOR_RESET);
+        }
+
         nh_.setParam("angle", angle_value);
-        ROS_INFO(TAG "left slope: %lf right slope: %lf center: %d angle: %d", left_slope, right_slope, center,
-                 angle_value);
+        if (angle_value)
+            ROS_INFO(TAG "left slope: %lf right slope: %lf center: %d angle: %d", left_slope, right_slope, center,
+                     angle_value);
     }
 }
 
