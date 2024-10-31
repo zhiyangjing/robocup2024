@@ -138,7 +138,7 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
              (visualize_lidar) ? (COLOR_RED "Enabled") : (COLOR_GREEN "Disabled"));
 
     nh_.getParam("min_distance_" + camera + "_park", min_distance);
-    ROS_INFO(TAG COLOR_MAGENTA "Park distance %f" COLOR_RESET, min_distance);
+    ROS_INFO(TAG COLOR_MAGENTA "Park distance %lf" COLOR_RESET, min_distance);
 
     nh_.getParam("window_peroid_times", window_peroid_times);
     ROS_INFO(TAG COLOR_MAGENTA "Window Peroid Time %f" COLOR_RESET, window_peroid_times);
