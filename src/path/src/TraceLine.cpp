@@ -447,7 +447,10 @@ void TraceLine::visualizeLines(const vector<cv::Vec4i> &lines, int level = 0) {
  */
 void TraceLine::checkBlueLine() {
     if (blueLines.empty()) {
+        blue_line_visible = false;
         return;
+    } else {
+        blue_line_visible = true;
     }
 
     sort(blueLines.begin(), blueLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
@@ -457,7 +460,7 @@ void TraceLine::checkBlueLine() {
     auto line_y = get<3>(longestLine)[1];
     auto line_slope = get<2>(longestLine);
 
-    blue_line_slopes.push(line_slope);
+    blue_line_slopes.push(line_slope); 
 
     ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
     // ROS_INFO(TAG "%s", string(20, '-').c_str());
@@ -595,7 +598,7 @@ void TraceLine::lineSlopeStrategy_old(float left_slope, float right_slope) {
 }
 
 void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int center) {
-    if (blue_line_found) {
+    if (blue_line_found and blue_line_visible) {
         auto slope = blue_line_slopes.avg();
         if (slope < 0.01) {
             nh_.setParam("direction", std::string(1, 'W'));
