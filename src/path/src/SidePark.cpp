@@ -474,7 +474,7 @@ const int HEIGHT = 600;
 void SidePark::get_lidar_line(std::vector<float> distances) {
     cv::Mat img = cv::Mat::zeros(HEIGHT, WIDTH, CV_8UC3);
     cv::Point center(WIDTH / 2, HEIGHT / 2);
-    int scalar = 100;
+    int scalar = 150;
     // 计算每个距离点的坐标并绘制为白色点
     for (size_t i = 0; i < distances.size(); ++i) {
         float angle = (2 * M_PI / distances.size()) * i;  // 计算当前点的角度
@@ -500,7 +500,7 @@ void SidePark::get_lidar_line(std::vector<float> distances) {
         cv::Point p1(line[0], line[1]);
         cv::Point p2(line[2], line[3]);
         // 计算线段的斜率
-        float slope = static_cast<float>(p2.y - p1.y) / (p2.x - p1.x);
+        float slope = static_cast<float>(p2.y - p1.y) / (p2.x - p1.x);;
         // 根据斜率选择颜色
         cv::Scalar color = (std::abs(slope) < 0.1) ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 0, 0);  // 红色或蓝色
         cv::line(img, p1, p2, color, 2);                                                             // 绘制线段
