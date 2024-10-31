@@ -597,6 +597,7 @@ void SidePark::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 
 const int WIDTH = 600;
 const int HEIGHT = 600;
+
 void SidePark::visualizeLidar(vector<float> distances) {
     cv::Mat img = cv::Mat::zeros(HEIGHT, WIDTH, CV_8UC3);
     cv::Point center(WIDTH / 2, HEIGHT / 2);
@@ -607,9 +608,9 @@ void SidePark::visualizeLidar(vector<float> distances) {
         float angle = (2 * M_PI / distances.size()) * i;  // 计算当前点的角度
         float distance = distances[i] * scalar;
 
-        // 将距离转换为像素坐标
+        // 将距离转换为像素坐标，反转 y 方向以实现顺时针绘制
         int x = static_cast<int>(center.x + distance * cos(angle));
-        int y = static_cast<int>(center.y + distance * sin(angle));
+        int y = static_cast<int>(center.y - distance * sin(angle));  // 反转 y 方向
 
         // 确保坐标在图像范围内
         if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT) {
