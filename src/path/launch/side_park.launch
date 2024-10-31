@@ -23,7 +23,7 @@
     </node>
     <param name="angle" value="0"/>
     <param name="video_feed_back" value="0"></param>
-    <param name="lidar_visualize" value="0"> </param>
+    <param name="lidar_visualize" value="1"> </param>
     <param name="exit_blue" value="0"> </param>
     <param name="exit_obstacle" value="0"> </param>
     <param name="enable_blue_lock " value="0"> </param>
