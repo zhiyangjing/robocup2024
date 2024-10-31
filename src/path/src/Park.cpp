@@ -64,6 +64,12 @@ Park::Park(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
     times_before_end = frame_rate_ * time_before_exit;
     ROS_INFO(TAG COLOR_MAGENTA "Times before exit: %d" COLOR_RESET, times_before_end);
 
+    int lidar_visualize = 1;
+    nh_.getParam("lidar_visualize", lidar_visualize);
+    visualize_lidar = (lidar_visualize == 1);
+    ROS_INFO(TAG COLOR_MAGENTA "Lidar visualize %s" COLOR_RESET,
+             (visualize_lidar) ? (COLOR_RED "Enabled") : (COLOR_GREEN "Disabled"));
+
     nh_.getParam("window_peroid_times", window_peroid_times);
     ROS_INFO(TAG COLOR_MAGENTA "Window Peroid Time %f" COLOR_RESET, window_peroid_times);
 
@@ -124,6 +130,12 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
     nh_.getParam("time_before_exit", time_before_exit);
     times_before_end = frame_rate_ * time_before_exit;
     ROS_INFO(TAG COLOR_MAGENTA "Times before exit: %d" COLOR_RESET, times_before_end);
+
+    int lidar_visualize = 1;
+    nh_.getParam("lidar_visualize", lidar_visualize);
+    visualize_lidar = (lidar_visualize == 1);
+    ROS_INFO(TAG COLOR_MAGENTA "Lidar visualize %s" COLOR_RESET,
+             (visualize_lidar) ? (COLOR_RED "Enabled") : (COLOR_GREEN "Disabled"));
 
     nh_.getParam("window_peroid_times", window_peroid_times);
     ROS_INFO(TAG COLOR_MAGENTA "Window Peroid Time %f" COLOR_RESET, window_peroid_times);
@@ -508,6 +520,67 @@ void Park::getLines() {
     cv::HoughLinesP(contourImage, lines_raw, 1, CV_PI / 180, 50, 35, 25);
     // cv::HoughLinesP(contourImage, lines_raw, 2, CV_PI / 180, 30, 20, 20);
     // 在获得中点之后再搜索可用线段。
+}
+
+float Park::findFrontDistance(vector<float> ranges) {
+    float distance = 50;
+    int half = ranges.size() / 2;
+    for (int i = half; i < half + 7; i++) {
+        if (ranges[i] > 0.05f) {
+            distance = min(distance, ranges[i]);
+        }
+    }
+    for (int i = half - 1; i >= half - 7; i--) {
+        if (ranges[i] > 0.05f) {
+            distance = min(distance, ranges[i]);
+        }
+    }
+    if (distance >= 50) {
+        return 50.f;
+    } else {
+        return distance;
+    }
+}
+
+const int WIDTH = 600;
+const int HEIGHT = 600;
+void Park::visualizeLidar(vector<float> distances) {
+    cv::Mat img = cv::Mat::zeros(HEIGHT, WIDTH, CV_8UC3);
+    cv::Point center(WIDTH / 2, HEIGHT / 2);
+    int scalar = 100;
+
+    // 计算每个距离点的坐标并绘制
+    for (size_t i = 0; i < distances.size(); ++i) {
+        float angle = (2 * M_PI / distances.size()) * i;  // 计算当前点的角度
+        float distance = distances[i] * scalar;
+
+        // 将距离转换为像素坐标
+        int x = static_cast<int>(center.x + distance * cos(angle));
+        int y = static_cast<int>(center.y + distance * sin(angle));
+
+        // 确保坐标在图像范围内
+        if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT) {
+            img.at<cv::Vec3b>(y, x) = cv::Vec3b(0, 255, 0);  // 使用绿色绘制点
+        }
+    }
+
+    // 显示图像
+    cv::imshow("Lidar Visualization", img);
+    cv::waitKey(1);
+}
+
+void Park::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
+    float front_distance = findFrontDistance(msg->ranges);
+    if (visualize_lidar) {
+        visualizeLidar(msg->ranges);
+    }
+    if (front_distance > min_distance) {
+        return;
+    } else if (exit_obstacle) {
+        ROS_INFO(TAG COLOR_RED "front distance:  %f" COLOR_RESET, front_distance);
+        ROS_INFO(TAG COLOR_RED "TraceLine exit because of obstacle" COLOR_RESET);
+        stop();
+    }
 }
 
 void Park::imageCallback(const sensor_msgs::ImageConstPtr &msg) {

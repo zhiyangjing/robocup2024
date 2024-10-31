@@ -185,7 +185,9 @@ private:
     bool video_feed_back = true;
     bool exit_park = true;  // 满足条件后是否退出，测试使用
     bool third_stage_begin = false;
+    bool visualize_lidar;
     int third_stage_begin_times = 0;  // 一个用于统计第多少次没有找到车库后边缘线的变量
+    int min_distance;
     ros::Subscriber sub_;
     cv::Mat frame;
     string camera = "back";  // 视频流的方向
@@ -240,6 +242,9 @@ public:
     void getIntersection();
     void getContourCenter();
     void getLines();
+    float findFrontDistance(vector<float> ranges);
+    void Park::visualizeLidar(vector<float> distances);
+    void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg);
     void imageCallback(const sensor_msgs::ImageConstPtr &msg);
     void run();
     void stop();
