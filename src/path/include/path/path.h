@@ -182,7 +182,7 @@ public:
 class Park : public Ability {
 private:
     bool is_running_ = false;
-    bool video_feed_back = true;
+    bool video_feed_back = false;
     bool exit_park = true;  // 满足条件后是否退出，测试使用
     bool third_stage_begin = false;
     bool visualize_lidar;

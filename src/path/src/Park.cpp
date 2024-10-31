@@ -70,6 +70,12 @@ Park::Park(int remain_time, ros::NodeHandle nh) : Ability(remain_time, nh) {
     ROS_INFO(TAG COLOR_MAGENTA "Lidar visualize %s" COLOR_RESET,
              (visualize_lidar) ? (COLOR_RED "Enabled") : (COLOR_GREEN "Disabled"));
 
+    int video_feed_back_param = 1;
+    nh_.getParam("video_feed_back", video_feed_back_param);
+    video_feed_back = (video_feed_back_param == 1);
+    ROS_INFO(TAG COLOR_MAGENTA "Video feed back %s" COLOR_RESET,
+             video_feed_back ? (COLOR_RED "Enabled") : (COLOR_GREEN "Disable"));
+
     nh_.getParam("window_peroid_times", window_peroid_times);
     ROS_INFO(TAG COLOR_MAGENTA "Window Peroid Time %f" COLOR_RESET, window_peroid_times);
 
@@ -142,6 +148,12 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
 
     nh_.getParam("window_peroid_times", window_peroid_times);
     ROS_INFO(TAG COLOR_MAGENTA "Window Peroid Time %f" COLOR_RESET, window_peroid_times);
+
+    int video_feed_back_param = 1;
+    nh_.getParam("video_feed_back", video_feed_back_param);
+    video_feed_back = (video_feed_back_param == 1);
+    ROS_INFO(TAG COLOR_MAGENTA "Video feed back %s" COLOR_RESET,
+             video_feed_back ? (COLOR_RED "Enabled") : (COLOR_GREEN "Disable"));
 
     ROS_INFO(TAG COLOR_MAGENTA "Park node started" COLOR_RESET);
 }
@@ -619,8 +631,10 @@ void Park::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
     checkBottomLine();  // 依赖于getLines()
     moveToPlace();
 
-    cv::imshow("camera_node Feed", frame);
-    cv::waitKey(10);
+    if (video_feed_back) {
+        cv::imshow("camera_node Feed", frame);
+        cv::waitKey(10);
+    }
 
     ros::spinOnce();  // 处理 ROS 事件
 }
