@@ -12,8 +12,6 @@
 
 using namespace std;
 
-
-
 SidePark::SidePark(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, nh) {
     prev_neg_slope = Buffer<float>(5);
     prev_pos_slope = Buffer<float>(5);
@@ -149,7 +147,6 @@ SidePark::SidePark(int remain_time, ros::NodeHandle &nh) : Ability(remain_time, 
     ROS_INFO(TAG "SidePark constructed succeeded! ");
 }
 
-
 float SidePark::calculateSlope(const cv::Vec4i &line) {
     float dx = line[2] - line[0];
     float dy = line[3] - line[1];
@@ -158,7 +155,6 @@ float SidePark::calculateSlope(const cv::Vec4i &line) {
     }
     return dy / dx;  // 计算斜率
 }
-
 
 void SidePark::linePreprocess() {
     if (lines_raw.empty()) {
@@ -598,30 +594,77 @@ void SidePark::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 const int WIDTH = 600;
 const int HEIGHT = 600;
 
-void SidePark::visualizeLidar(vector<float> distances) {
+#include <cmath>
+#include <opencv2/opencv.hpp>
+#include <vector>
+
+const int WIDTH = 600;
+const int HEIGHT = 600;
+
+void SidePark::visualizeLidar(std::vector<float> distances) {
     cv::Mat img = cv::Mat::zeros(HEIGHT, WIDTH, CV_8UC3);
     cv::Point center(WIDTH / 2, HEIGHT / 2);
     int scalar = 100;
-
-    // 计算每个距离点的坐标并绘制
+    // 计算每个距离点的坐标并绘制为白色点
     for (size_t i = 0; i < distances.size(); ++i) {
         float angle = (2 * M_PI / distances.size()) * i;  // 计算当前点的角度
         float distance = distances[i] * scalar;
-
         // 将距离转换为像素坐标，反转 y 方向以实现顺时针绘制
         int x = static_cast<int>(center.x + distance * cos(angle));
         int y = static_cast<int>(center.y - distance * sin(angle));  // 反转 y 方向
-
         // 确保坐标在图像范围内
         if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT) {
-            img.at<cv::Vec3b>(y, x) = cv::Vec3b(0, 255, 0);  // 使用绿色绘制点
+            img.at<cv::Vec3b>(y, x) = cv::Vec3b(255, 255, 255);  // 使用白色绘制点
         }
     }
-
+    // 应用形态学膨胀
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5));  // 结构元素
+    cv::Mat dilated;
+    cv::cvtColor(img, dilated, cv::COLOR_BGR2GRAY);              // 转为灰度图
+    cv::threshold(dilated, dilated, 1, 255, cv::THRESH_BINARY);  // 二值化
+    cv::dilate(dilated, dilated, kernel);                        // 膨胀操作
+    // Hough变换识别线段
+    std::vector<cv::Vec4i> lines;
+    cv::HoughLinesP(dilated, lines, 1, CV_PI / 180, 50, 50, 10);
+    // 绘制线段
+    for (const auto &line : lines) {
+        cv::Point p1(line[0], line[1]);
+        cv::Point p2(line[2], line[3]);
+        // 计算线段的斜率
+        float slope = static_cast<float>(p2.y - p1.y) / (p2.x - p1.x);
+        // 根据斜率选择颜色
+        cv::Scalar color = (std::abs(slope) < 0.1) ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 0, 0);  // 红色或蓝色
+        cv::line(img, p1, p2, color, 2);  // 绘制线段
+    }
     // 显示图像
     cv::imshow("Lidar Visualization", img);
     cv::waitKey(1);
 }
+
+// void SidePark::visualizeLidar(vector<float> distances) {
+//     cv::Mat img = cv::Mat::zeros(HEIGHT, WIDTH, CV_8UC3);
+//     cv::Point center(WIDTH / 2, HEIGHT / 2);
+//     int scalar = 100;
+
+//     // 计算每个距离点的坐标并绘制
+//     for (size_t i = 0; i < distances.size(); ++i) {
+//         float angle = (2 * M_PI / distances.size()) * i;  // 计算当前点的角度
+//         float distance = distances[i] * scalar;
+
+//         // 将距离转换为像素坐标，反转 y 方向以实现顺时针绘制
+//         int x = static_cast<int>(center.x + distance * cos(angle));
+//         int y = static_cast<int>(center.y - distance * sin(angle));  // 反转 y 方向
+
+//         // 确保坐标在图像范围内
+//         if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT) {
+//             img.at<cv::Vec3b>(y, x) = cv::Vec3b(0, 255, 0);  // 使用绿色绘制点
+//         }
+//     }
+
+//     // 显示图像
+//     cv::imshow("Lidar Visualization", img);
+//     cv::waitKey(1);
+// }
 
 void SidePark::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     float front_distance = findFrontDistance(msg->ranges);
