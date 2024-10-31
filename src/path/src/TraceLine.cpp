@@ -421,12 +421,12 @@ void TraceLine::getBlueLines() {
     // cv::drawContours(frame, contours, -1, cv::Scalar(255, 100, 0), 2);  // 红色，线宽2
 }
 
-void TraceLine::visualizeLines(const vector<cv::Vec4i> &lines, int level = 0) {
+void TraceLine::visualizeLines(const vector<cv::Vec4i> &lines, int level = 0, int type = 0) {
     for (size_t i = 0; i < lines.size(); i++) {
         cv::Vec4i l = lines[i];
         cv::Point start(l[0], l[1] + upperHeight);
         cv::Point end(l[2], l[3] + upperHeight);
-        cv::line(frame, start, end, cv::Scalar(0, 0, 255), 2);
+        cv::line(frame, start, end, type == 0 ? cv::Scalar(0, 0, 255) : cv::Scalar(255, 0, 0), 2);
 
         if (level > 0) {
             float slope = calculateSlope(l);
@@ -690,8 +690,10 @@ void TraceLine::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
         cv::circle(frame, cv::Point(center, frame_height - 10), 3, cv::Scalar(255, 0, 0),
                    cv::FILLED);  // 使用 cv::FILLED 填充圆
 
-        visualizeLines(lines_raw);
-        visualizeLines(blue_lines_raw, 0);
+        if (video_feed_back) {
+            visualizeLines(lines_raw);
+            visualizeLines(blue_lines_raw, 0);
+        }
         workingTimer += 1200 / frame_rate_;
         if (workingTimer > blue_negelect_time) {
             checkBlueLine();

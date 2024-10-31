@@ -207,7 +207,7 @@ public:
     void imageCallback(const sensor_msgs::ImageConstPtr &msg);
     void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg);
     float findFrontDistance(vector<float> ranges);
-    void visualizeLines(const vector<cv::Vec4i> &lines, int level);
+    void visualizeLines(const vector<cv::Vec4i> &lines, int level = 0,int type = 0) ;
     void visualizeLidar(vector<float> distances);
     void checkBlueLine();
     void run();
