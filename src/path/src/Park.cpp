@@ -587,15 +587,15 @@ void Park::visualizeLidar(vector<float> distances) {
 }
 
 void Park::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
-    float back_distance = findDistance(msg->ranges);
+    float distance = findDistance(msg->ranges);
     if (visualize_lidar) {
         visualizeLidar(msg->ranges);
     }
-    if (back_distance > min_distance) {
+    if (distance > min_distance) {
         return;
     } else if (exit_park) {
         nh_.setParam("speed", 0);
-        ROS_INFO(TAG COLOR_RED "front distance:  %f" COLOR_RESET, back_distance);
+        ROS_INFO(TAG COLOR_RED "front distance:  %lf" COLOR_RESET, distance);
         ROS_INFO(TAG COLOR_RED "TraceLine exit because of obstacle" COLOR_RESET);
         stop();
     }
