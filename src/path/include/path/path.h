@@ -195,7 +195,7 @@ private:
     int target_index = 0;  // 0 代表左侧车库，1代表右侧车库
     int first_stage_param = -2;
     int offset_x = 0;  // 用于矫正前后摄像头中心
-    float offset_top_ratio = 0.1;
+    float offset_top_ratio = 0.3;
     float offset_bottom_ratio = 0.1;
     int offset_top = static_cast<int>(offset_top_ratio * frame_height);
     int offset_bottom = static_cast<int>(offset_bottom_ratio * frame_height);
