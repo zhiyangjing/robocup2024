@@ -599,7 +599,7 @@ void TraceLine::lineSlopeStrategy_old(float left_slope, float right_slope) {
 void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int center) {
     if (blue_line_found and blue_line_visible) {
         auto slope = blue_line_slopes.avg();
-        if (slope < 0.01) {
+        if (fabs(slope < 0.01)) {
             nh_.setParam("direction", std::string(1, 'W'));
             nh_.setParam("speed", 2);
             nh_.setParam("angle", 0);
