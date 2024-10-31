@@ -43,7 +43,7 @@ target_link_libraries(
   ${OpenCV_LIBRARIES}
 )
 
-add_executable(side_park src/trace_line.cpp src/SidePark.cpp)
+add_executable(side_park src/side_park.cpp src/SidePark.cpp)
 
 target_link_libraries(
   side_park
