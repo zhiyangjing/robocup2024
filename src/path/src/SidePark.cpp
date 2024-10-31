@@ -407,7 +407,34 @@ void SidePark::find_target(float left_slope, float right_slope, int center) {
             }
         }
     }
-    if (is_straight) {}
+    if (is_straight) {
+        vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> candidate;
+        for (int i = 0; i < (int) lidarLines.size(); i++) {
+            auto &line = lidarLines[i];
+            auto line_length = get<1>(line);
+            auto line_x = get<3>(line)[0];
+            auto line_y = get<3>(line)[1];
+            auto line_slope = get<2>(line);
+            if (line_y > (HEIGHT * 0.5f) and line_y < HEIGHT * (5.0f / 6.0f)) {
+                candidate.push_back(line);
+            }
+        }
+        sort(candidate.begin(), candidate.end(),
+             [](const auto &a, const auto &b) { return get<3>(a)[1] > get<3>(b)[1]; });
+        if (not candidate.empty()) {
+            auto target = candidate[0];
+            if (get<3>(target)[0] > 290) {
+                nh_.setParam("speed", 1);
+                nh_.setParam("direction", std::string(1, 'W'));
+            } else if (get<3>(target)[0] < 310) {
+                nh_.setParam("speed", 1);
+                nh_.setParam("direction", std::string(1, 'S'));
+            } else {
+                nh_.setParam("speed", 0);
+                ROS_INFO(TAG "Moved to target place");
+            }
+        }
+    }
 }
 
 // 图像处理函数
