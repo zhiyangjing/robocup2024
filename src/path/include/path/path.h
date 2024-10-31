@@ -141,6 +141,7 @@ public:
     void getLines();
     void getBlueLines();
     int getCenter();
+    float calculateSlope(const cv::Vec4i &line);
     pair<float, float> calculateAverageSlopes(int topN);
     pair<float, float> getLineSlope();
     void lineSlopeStrategy_old(float left_slope, float right_slope);
@@ -203,6 +204,7 @@ private:
 public:
     TraceLine(int remain_time, ros::NodeHandle &nh);
     TraceLine(int remain_time, ros::NodeHandle &nh, TraceLineInitParams params);
+    float calculateSlope(const cv::Vec4i &line);
     void linePreprocess();
     void getLines();
     void getBlueLines();

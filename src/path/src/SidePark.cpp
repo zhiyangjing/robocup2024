@@ -12,30 +12,8 @@
 
 using namespace std;
 
-void detectWhite(const cv::Mat &frame) {
-    ROS_INFO(COLOR_RED TAG COLOR_RESET " detect white ");
-    // 将输入的 BGR 图像转为 HSV（色相、饱和度、亮度）颜色空间
-    cv::Mat hsvFrame;
-    cv::cvtColor(frame, hsvFrame, cv::COLOR_BGR2HSV);
 
-    // 定义白色的阈值范围
-    // 白色的 HSV 值接近 (0, 0, 255)，因此饱和度 (S) 要低，亮度 (V) 要高
-    cv::Scalar lowerWhite(0, 0, 160);     // 最低值 (0, 0, 200)
-    cv::Scalar upperWhite(180, 30, 255);  // 最高值 (180, 55, 255)
-
-    // 创建白色部分的遮罩
-    cv::Mat mask;
-    cv::inRange(hsvFrame, lowerWhite, upperWhite, mask);
-
-    // 查找遮罩中的轮廓
-    vector<vector<cv::Point>> contours;
-    cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-
-    // 在原始帧上用红色绘制轮廓
-    cv::drawContours(frame, contours, -1, cv::Scalar(0, 0, 255), 2);  // 红色，线宽2
-}
-
-float calculateSlope(const cv::Vec4i &line) {
+float SidePark::calculateSlope(const cv::Vec4i &line) {
     float dx = line[2] - line[0];
     float dy = line[3] - line[1];
     if (dx == 0) {
