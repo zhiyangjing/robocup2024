@@ -594,13 +594,6 @@ void SidePark::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 const int WIDTH = 600;
 const int HEIGHT = 600;
 
-#include <cmath>
-#include <opencv2/opencv.hpp>
-#include <vector>
-
-const int WIDTH = 600;
-const int HEIGHT = 600;
-
 void SidePark::visualizeLidar(std::vector<float> distances) {
     cv::Mat img = cv::Mat::zeros(HEIGHT, WIDTH, CV_8UC3);
     cv::Point center(WIDTH / 2, HEIGHT / 2);
