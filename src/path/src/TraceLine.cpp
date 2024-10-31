@@ -597,7 +597,7 @@ void TraceLine::lineSlopeStrategy_old(float left_slope, float right_slope) {
 }
 
 void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int center) {
-    if (blue_line_found and blue_line_visible) {
+    if (blue_line_found and blue_line_visible and not dir_adjust_finish) {
         auto slope = blue_line_slopes.avg();
         if (fabs(slope) < 0.01) {
             nh_.setParam("direction", std::string(1, 'W'));
@@ -605,15 +605,16 @@ void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int cente
             nh_.setParam("angle", 0);
             ROS_INFO(TAG COLOR_GREEN "blue slope: %f angle: %d", slope, 0);
             dir_adjust_finish = true;
+            blue_line_found = false;
         } else if (slope > 0) {
             nh_.setParam("direction", std::string(1, 'S'));
-            nh_.setParam("angle", -150);
-            ROS_INFO(TAG BCOLOR_YELLOW "blue slope: %f angle: %d" COLOR_RESET, slope, -150);
+            nh_.setParam("angle", -170);
+            ROS_INFO(TAG BCOLOR_YELLOW "blue slope: %f angle: %d" COLOR_RESET, slope, -170);
             nh_.setParam("speed", 1);
         } else if (slope < 0) {
             nh_.setParam("direction", std::string(1, 'S'));
-            nh_.setParam("angle", 150);
-            ROS_INFO(TAG BCOLOR_YELLOW "blue slope: %f angle: %d" COLOR_RESET, slope, 150);
+            nh_.setParam("angle", 170);
+            ROS_INFO(TAG BCOLOR_YELLOW "blue slope: %f angle: %d" COLOR_RESET, slope, 170);
             nh_.setParam("speed", 1);
         }
     } else {
