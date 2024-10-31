@@ -596,7 +596,7 @@ void Park::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     } else if (exit_park) {
         nh_.setParam("speed", 0);
         ROS_INFO(TAG COLOR_RED "front distance:  %lf" COLOR_RESET, distance);
-        ROS_INFO(TAG COLOR_RED "TraceLine exit because of obstacle" COLOR_RESET);
+        ROS_INFO(TAG COLOR_RED "Park exit because of sign distance" COLOR_RESET);
         stop();
     }
 }
