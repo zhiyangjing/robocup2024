@@ -179,24 +179,6 @@ void SidePark::linePreprocess() {
             }
         }
     }
-
-    if (blue_lines_raw.empty()) {
-        ROS_INFO("No blue line to preprocess");
-        return;
-    }
-
-    blueLines.clear();
-    for (const auto &line : blue_lines_raw) {
-        float slope = calculateSlope(line);
-
-        if (fabs(slope) > 0.5) {
-            continue;  // 去除竖向线段
-        }
-
-        double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
-        blueLines.emplace_back(line, lineLength, slope,
-                               cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight));
-    }
 }
 
 // 计算平均斜率的函数
@@ -229,53 +211,6 @@ pair<float, float> SidePark::calculateAverageSlopes(int topN) {
     return {negAverage, posAverage};
 }
 
-void SidePark::getBlueLines() {
-    // 检查输入图像是否为空
-    if (frame.empty()) {
-
-        cerr << "Error: Input image is empty!" << endl;
-        return;
-    }
-    // 获取图像的高度和宽度
-
-    // 计算下部分的高度，根据给定的比例
-    cv::Rect lowerPartRect(0, frame_height - lowerHeight, frame_width, lowerHeight);
-    cv::Mat lowerPart = frame(lowerPartRect);  // 提取下部分图像
-
-    // 转换为HSV颜色空间
-    cv::Mat hsv;
-    cv::cvtColor(lowerPart, hsv, cv::COLOR_BGR2HSV);
-
-    cv::Scalar lowerBlue(110, 28, 0);
-    cv::Scalar upperBlue(150, 185, 255);
-
-    cv::Mat mask;
-    cv::inRange(hsv, lowerBlue, upperBlue, mask);
-
-    int erosion_size = 1;   // 腐蚀结构元素的大小
-    int dilation_size = 1;  // 膨胀结构元素的大小
-
-    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
-                                                cv::Point(erosion_size, erosion_size));
-
-    cv::erode(mask, mask, element);   // 腐蚀
-    cv::dilate(mask, mask, element);  // 膨胀
-    // cv::imshow("mask:", mask);
-
-    // 使用 Canny 边缘检测
-    cv::Mat edges;
-    cv::Canny(mask, edges, 50, 150, 3);
-    // cv::imshow("edges:", edges);
-
-    // 使用 HoughLinesP 检测线段，调大最后一个参数，识别到的直线更长
-    cv::HoughLinesP(edges, blue_lines_raw, 2, CV_PI / 70, 40, 40, 50);
-
-    // vector<vector<cv::Point>> contours;
-    // cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-    // // 在原始帧上用红色绘制轮廓
-    // cv::drawContours(frame, contours, -1, cv::Scalar(255, 100, 0), 2);  // 红色，线宽2
-}
-
 void SidePark::visualizeLines(const vector<cv::Vec4i> &lines, int level = 0) {
     for (size_t i = 0; i < lines.size(); i++) {
         cv::Vec4i l = lines[i];
@@ -294,62 +229,6 @@ void SidePark::visualizeLines(const vector<cv::Vec4i> &lines, int level = 0) {
             cv::putText(frame, slopeText, midPoint, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 1);
         }
     }
-}
-
-/**
- * @brief 检测蓝色横线，作为阶段切换的标志，一般在返回true时，车体距离蓝线还有35cm
- * 
- */
-void SidePark::checkBlueLine() {
-    if (blueLines.empty()) {
-        blue_line_visible = false;
-        return;
-    } else {
-        blue_line_visible = true;
-    }
-
-    sort(blueLines.begin(), blueLines.end(), [](const auto &a, const auto &b) { return get<1>(a) > get<1>(b); });
-    auto longestLine = blueLines[0];
-    auto line_length = get<1>(longestLine);
-    auto line_x = get<3>(longestLine)[0];
-    auto line_y = get<3>(longestLine)[1];
-    auto line_slope = get<2>(longestLine);
-
-    blue_line_slopes.push(line_slope);
-
-    // ROS_INFO(TAG "%s", string(20, '-').c_str());
-    ROS_INFO(TAG COLOR_BLUE "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_RESET,
-             line_slope, line_length, line_x, line_y, static_cast<int>(blueLines.size()));
-
-    if (line_y > 435 and line_x > 80 and line_x < (frame_width - 80)) {
-        if ((line_length > min_blue_length and blueLines.size() > 6) or (line_length > 130 and blueLines.size() > 8)) {
-            blue_line_found = true;
-            // ROS_INFO(TAG "%s", string(20, '-').c_str());
-            ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected! <-- ready to adjust" COLOR_RESET);
-            // ROS_INFO(TAG "%s", string(20, '-').c_str());
-            ROS_INFO(TAG COLOR_BLUE "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_BLUE,
-                     line_slope, line_length, line_x, line_y, static_cast<int>(blueLines.size()));
-        }
-    }
-
-    // if (line_y > 380) {
-    //     if ((line_length > min_blue_length and blueLines.size() > 5) or (line_length > 138 and blueLines.size() > 8)) {
-    //         if (line_slope < 0.05) {
-
-    //             blue_horizontal_times.push(1.f);
-
-    //             if (blue_horizontal_times.avg() > 0.6 and enable_blue_lock) {
-    //                 vertical_blue_lock = true;
-    //                 ROS_INFO(TAG COLOR_RED "Vertical Blue Line Locked" COLOR_RESET);
-    //             }
-    //         }
-    //         ROS_INFO(TAG COLOR_CYAN "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_RESET,
-    //                  line_slope, line_length, line_x, line_y, static_cast<int>(blueLines.size()));
-    //     } else {
-    //         blue_horizontal_times.push(0.f);
-    //     }
-    // }
-    // 长度大于特定最小值，并且处于屏幕下方
 }
 
 void SidePark::getLines() {
@@ -513,7 +392,24 @@ void SidePark::lineSlopeStrategy(float left_slope, float right_slope) {
 }
 
 void SidePark::find_target(float left_slope, float right_slope, int center) {
+    // 第一阶段，对正
+    auto diff = left_slope + right_slope;
+    if (not is_straight) {
+        if (fabs(diff) < 0.02) {
+            is_straight = true;
+        } else {
+            if (diff > 0) {
+                nh_.setParam("angle", -100);
+                nh_.setParam("speed", 1);
+            } else if (diff < 0) {
+                nh_.setParam("angle", 100);
+                nh_.setParam("speed", 1);
+            }
+        }
+    }
+    if (is_straight) {
 
+    }
 }
 
 // 图像处理函数
@@ -539,7 +435,6 @@ void SidePark::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
                    cv::FILLED);  // 使用 cv::FILLED 填充圆
 
         visualizeLines(lines_raw);
-        visualizeLines(blue_lines_raw, 0);
         workingTimer += 1200 / frame_rate_;
         if (workingTimer > blue_negelect_time) {
             checkBlueLine();
@@ -560,9 +455,12 @@ void SidePark::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
             stop();
             // }
         }
+        if (not straight_stage) {
+            lineSlopeStrategy(neg_slope, pos_slope, center);
+        }
 
         if (straight_stage) {
-            find_target(float left_slope, float right_slope, int center);
+            find_target(neg_slope, pos_slope, center);
         }
 
         if (video_feed_back) {
@@ -577,7 +475,7 @@ void SidePark::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
 const int WIDTH = 600;
 const int HEIGHT = 600;
 
-void SidePark::lidar_preprocess(std::vector<float> distances) {
+void SidePark::get_lidar_line(std::vector<float> distances) {
     cv::Mat img = cv::Mat::zeros(HEIGHT, WIDTH, CV_8UC3);
     cv::Point center(WIDTH / 2, HEIGHT / 2);
     int scalar = 100;
@@ -600,10 +498,9 @@ void SidePark::lidar_preprocess(std::vector<float> distances) {
     cv::threshold(dilated, dilated, 1, 255, cv::THRESH_BINARY);  // 二值化
     cv::dilate(dilated, dilated, kernel);                        // 膨胀操作
     // Hough变换识别线段
-    std::vector<cv::Vec4i> lines;
-    cv::HoughLinesP(dilated, lines, 1, CV_PI / 180, 30, 20, 10);
+    cv::HoughLinesP(dilated, lidar_lines_raw, 1, CV_PI / 180, 30, 20, 10);
     // 绘制线段
-    for (const auto &line : lines) {
+    for (const auto &line : lidar_lines_raw) {
         cv::Point p1(line[0], line[1]);
         cv::Point p2(line[2], line[3]);
         // 计算线段的斜率
@@ -617,11 +514,32 @@ void SidePark::lidar_preprocess(std::vector<float> distances) {
     cv::waitKey(1);
 }
 
+void SidePark::lidarLinePreprocess() {
+    if (lidar_lines_raw.empty()) {
+        ROS_WARN(TAG "No line to preprocess");
+    } else {
+        lidarLines.clear();
+        for (const auto &line : lidar_lines_raw) {
+            float slope = calculateSlope(line);
+
+            if (fabs(slope) < 0.4 or fabs(slope) > 2.5) {
+                continue;  // 去除横向线段
+            }
+
+            double lineLength = cv::norm(cv::Point(line[0], line[1]) - cv::Point(line[2], line[3]));
+            if (slope < 0.1) {
+                lidarLines.emplace_back(line, lineLength, slope,
+                                        cv::Vec2i((line[0] + line[2]) / 2, (line[1] + line[3]) / 2 + upperHeight));
+            }
+        }
+    }
+}
 
 void SidePark::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     float front_distance = findFrontDistance(msg->ranges);
     if (visualize_lidar) {
-        visualizeLidar(msg->ranges);
+        get_lidar_line(msg->ranges);
+        lidarLinePreprocess();
     }
     if (front_distance > min_distance) {
         return;

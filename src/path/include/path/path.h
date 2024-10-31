@@ -92,6 +92,7 @@ private:
     // ---------------------------------
     bool turning_stage = false;
     bool straight_stage = false;
+    bool is_straight = false;  // 是否对正
     // ---------------------------------
     bool is_running_ = false;
     bool blue_line_found = false;  // 只有在足够靠近智能车才会被设置为true
@@ -129,11 +130,11 @@ private:
     // ----------------------
     Interpolator interpolator;
     cv::Mat frame;
-    vector<cv::Vec4i> lines_raw;                                  // 存储检测到的白色车道线段
-    vector<cv::Vec4i> blue_lines_raw;                             // 存储检测到的蓝色线段
-    vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> posLines;   // 线段，长度，斜率 , 中点
-    vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> negLines;   // 线段，长度，斜率 , 中点
-    vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> blueLines;  // 线段，长度，斜率 , 中点
+    vector<cv::Vec4i> lines_raw;                                 // 存储检测到的白色车道线段
+    vector<cv::Vec4i> lidar_lines_raw;                           // 存储检测到的蓝色线段
+    vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> posLines;  // 线段，长度，斜率 , 中点
+    vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> negLines;  // 线段，长度，斜率 , 中点
+    vector<tuple<cv::Vec4i, float, float, cv::Vec2i>> lidarLines;
 
 public:
     SidePark(int remain_time, ros::NodeHandle &nh);
@@ -152,7 +153,8 @@ public:
     void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg);
     float findFrontDistance(vector<float> ranges);
     void visualizeLines(const vector<cv::Vec4i> &lines, int level);
-    void lidar_preprocess(vector<float> distances);
+    void get_lidar_line(vector<float> distances);
+    void lidarLinePreprocess();
     void checkBlueLine();
     void run();
     void stop();
