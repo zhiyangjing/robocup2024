@@ -460,12 +460,12 @@ void TraceLine::checkBlueLine() {
     auto line_y = get<3>(longestLine)[1];
     auto line_slope = get<2>(longestLine);
 
-    blue_line_slopes.push(line_slope); 
+    blue_line_slopes.push(line_slope);
 
     ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
     // ROS_INFO(TAG "%s", string(20, '-').c_str());
-    ROS_INFO(TAG COLOR_BLUE "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_RESET, line_slope, line_length,
-             line_x, line_y, static_cast<int>(blueLines.size()));
+    ROS_INFO(TAG COLOR_BLUE "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_RESET,
+             line_slope, line_length, line_x, line_y, static_cast<int>(blueLines.size()));
 
     if (line_y > 435 and line_x > 80 and line_x < (frame_width - 80)) {
         if ((line_length > min_blue_length and blueLines.size() > 6) or (line_length > 130 and blueLines.size() > 8)) {
@@ -473,8 +473,8 @@ void TraceLine::checkBlueLine() {
             // ROS_INFO(TAG "%s", string(20, '-').c_str());
             ROS_INFO(TAG COLOR_BLUE "Road Blue Line detected!" COLOR_RESET);
             // ROS_INFO(TAG "%s", string(20, '-').c_str());
-            ROS_INFO(TAG COLOR_BLUE "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_BLUE, line_slope,
-                     line_length, line_x, line_y, static_cast<int>(blueLines.size()));
+            ROS_INFO(TAG COLOR_BLUE "slope : %f length: %f center_x:  %d center_y: %d blueLines size:  %d " COLOR_BLUE,
+                     line_slope, line_length, line_x, line_y, static_cast<int>(blueLines.size()));
         }
     }
 
@@ -603,6 +603,7 @@ void TraceLine::lineSlopeStrategy(float left_slope, float right_slope, int cente
         if (slope < 0.01) {
             nh_.setParam("direction", std::string(1, 'W'));
             nh_.setParam("speed", 2);
+            nh_.setParam("angle", 0);
             dir_adjust_finish = true;
         } else if (slope > 0) {
             nh_.setParam("direction", std::string(1, 'S'));
