@@ -54,6 +54,8 @@
     <param name="exit_park" value="1"> </param>
     <param name="target" value="right"></param>
     <param name="enable_blue_lock " value="1"> </param>
+    <param name="min_distance_front_park" value="0.2"></param>
+    <param name="min_distance_back_park" value="0.2"></param>
     <rosparam file="$(find path)/launch/times.yaml"></rosparam>
     <rosparam file="$(find path)/launch/order.yaml"></rosparam>
 </launch>

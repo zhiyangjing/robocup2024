@@ -137,7 +137,7 @@ Park::Park(int remain_time, ros::NodeHandle &nh, ParkInitParams params) : Abilit
     ROS_INFO(TAG COLOR_MAGENTA "Lidar visualize %s" COLOR_RESET,
              (visualize_lidar) ? (COLOR_RED "Enabled") : (COLOR_GREEN "Disabled"));
 
-    nh_.getParam("min_distance_park", min_distance);
+    nh_.getParam("min_distance_" + camera + "_park", min_distance);
     ROS_INFO(TAG COLOR_MAGENTA "Park distance %f" COLOR_RESET, min_distance);
 
     nh_.getParam("window_peroid_times", window_peroid_times);
@@ -525,17 +525,31 @@ void Park::getLines() {
     // 在获得中点之后再搜索可用线段。
 }
 
-float Park::findBackDistance(vector<float> ranges) {
+float Park::findDistance(vector<float> ranges) {
     float distance = 50;
     int half = ranges.size() / 2;
-    for (int i = half; i < half + 7; i++) {
-        if (ranges[i] > 0.05f) {
-            distance = min(distance, ranges[i]);
+    if (camera == "back") {
+        for (int i = half; i < half + 7; i++) {
+            if (ranges[i] > 0.05f) {
+                distance = min(distance, ranges[i]);
+            }
         }
-    }
-    for (int i = half - 1; i >= half - 7; i--) {
-        if (ranges[i] > 0.05f) {
-            distance = min(distance, ranges[i]);
+        for (int i = half - 1; i >= half - 7; i--) {
+            if (ranges[i] > 0.05f) {
+                distance = min(distance, ranges[i]);
+            }
+        }
+    } else {
+        for (int i = 0; i < 7; i++) {
+            if (ranges[i] > 0.1f) {
+                distance = min(distance, ranges[i]);
+            }
+        }
+        int length = ranges.size();
+        for (int i = length - 1; i >= length - 7; i--) {
+            if (ranges[i] > 0.1f) {
+                distance = min(distance, ranges[i]);
+            }
         }
     }
     if (distance >= 50) {
@@ -573,7 +587,7 @@ void Park::visualizeLidar(vector<float> distances) {
 }
 
 void Park::laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
-    float back_distance = findBackDistance(msg->ranges);
+    float back_distance = findDistance(msg->ranges);
     if (visualize_lidar) {
         visualizeLidar(msg->ranges);
     }

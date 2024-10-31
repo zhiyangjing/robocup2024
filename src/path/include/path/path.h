@@ -242,7 +242,7 @@ public:
     void getIntersection();
     void getContourCenter();
     void getLines();
-    float findBackDistance(vector<float> ranges);
+    float findDistance(vector<float> ranges);
     void Park::visualizeLidar(vector<float> distances);
     void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg);
     void imageCallback(const sensor_msgs::ImageConstPtr &msg);
