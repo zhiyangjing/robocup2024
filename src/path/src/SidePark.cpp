@@ -398,9 +398,12 @@ void SidePark::find_target(float left_slope, float right_slope, int center) {
     // 第一阶段，对正
     auto diff = left_slope + right_slope;
     if (not is_straight) {
-        if (fabs(diff) < 0.02) {
+        if (fabs(diff) < 0.05) {
             is_straight = true;
+            nh_.setParam("speed", 0);
+            ROS_INFO(TAG BCOLOR_MAGENTA "is_straight" COLOR_RESET);
         } else {
+            ROS_INFO(TAG BCOLOR_YELLOW "diff: %f" COLOR_RESET, diff);
             if (diff > 0) {
                 nh_.setParam("angle", -100);
                 nh_.setParam("speed", 1);
@@ -415,10 +418,11 @@ void SidePark::find_target(float left_slope, float right_slope, int center) {
         for (int i = 0; i < (int) lidarLines.size(); i++) {
             auto &line = lidarLines[i];
             auto line_length = get<1>(line);
+            auto line_slope = get<2>(line);
             auto line_x = get<3>(line)[0];
             auto line_y = get<3>(line)[1];
             auto line_slope = get<2>(line);
-            if (line_y > (HEIGHT * 0.5f) and line_y < HEIGHT * (5.0f / 6.0f)) {
+            if (line_y > (HEIGHT * 0.5f) and line_y < HEIGHT * (5.0f / 6.0f) and fabs(line_slope) < 0.15) {
                 candidate.push_back(line);
             }
         }
