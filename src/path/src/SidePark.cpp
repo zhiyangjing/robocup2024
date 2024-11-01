@@ -424,14 +424,17 @@ void SidePark::find_target(float left_slope, float right_slope, int center) {
         }
         sort(candidate.begin(), candidate.end(),
              [](const auto &a, const auto &b) { return get<3>(a)[1] > get<3>(b)[1]; });
+        ROS_INFO(TAG "candidate size: %d", (int) candidate.size());
         if (not candidate.empty()) {
             auto target = candidate[0];
             if (get<3>(target)[0] > 290) {
                 nh_.setParam("speed", 1);
                 nh_.setParam("direction", std::string(1, 'W'));
+                ROS_INFO(TAG "move forward: %d", (int) candidate.size());
             } else if (get<3>(target)[0] < 310) {
                 nh_.setParam("speed", 1);
                 nh_.setParam("direction", std::string(1, 'S'));
+                ROS_INFO(TAG "move backward: %d", (int) candidate.size());
             } else {
                 nh_.setParam("speed", 0);
                 ROS_INFO(TAG "Moved to target place");
@@ -495,7 +498,6 @@ void SidePark::imageCallback(const sensor_msgs::ImageConstPtr &msg) {
         ros::spinOnce();  // 处理 ROS 事件
     } catch (cv_bridge::Exception &e) { ROS_ERROR("Could not convert from '%s' to 'bgr8'.", msg->encoding.c_str()); }
 }
-
 
 void SidePark::get_lidar_line(std::vector<float> distances) {
     cv::Mat img = cv::Mat::zeros(HEIGHT, WIDTH, CV_8UC3);
