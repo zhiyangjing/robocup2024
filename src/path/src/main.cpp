@@ -215,56 +215,56 @@ public:
         ros::Rate loop_rate(rate_num);  // 设置循环频率为10Hz
         nh_.getParam("speed", speed);
 
-        ROS_INFO(TAG BCOLOR_WHITE "直行" COLOR_RESET);
+        ROS_INFO(TAG BCOLOR_BLUE "直行" COLOR_RESET);
         nh_.setParam("direction", std::string(1, 'W'));  // 改为前进
         for (int i = 0; i < static_cast<int>((stages_time[0] * speed / 2) * rate_num); ++i) {
             nh_.setParam("angle", 0);
             loop_rate.sleep();
         }
 
-        ROS_INFO(TAG BCOLOR_WHITE "右转100" COLOR_RESET);
+        ROS_INFO(TAG BCOLOR_BLUE "右转100" COLOR_RESET);
         for (int i = 0; i < static_cast<int>((stages_time[1] * speed / 2) * rate_num); ++i) {
             nh_.setParam("angle", 100);
             loop_rate.sleep();
         }
 
 
-        ROS_INFO(TAG BCOLOR_WHITE "左200" COLOR_RESET);
+        ROS_INFO(TAG BCOLOR_BLUE "左200" COLOR_RESET);
         for (int i = 0; i < static_cast<int>((stages_time[2] * speed / 2) * rate_num); ++i) {
             nh_.setParam("angle", -200);
             loop_rate.sleep();
         }
 
 
-        ROS_INFO(TAG BCOLOR_WHITE "左200" COLOR_RESET);
+        ROS_INFO(TAG BCOLOR_BLUE "左200" COLOR_RESET);
         for (int i = 0; i < static_cast<int>((stages_time[3] * speed / 2) * rate_num); ++i) {
             nh_.setParam("angle", -200);
             loop_rate.sleep();
         }
 
         nh_.setParam("direction", std::string(1, 'S'));
-        ROS_INFO(TAG BCOLOR_WHITE "后200" COLOR_RESET);
+        ROS_INFO(TAG BCOLOR_BLUE "后200" COLOR_RESET);
         for (int i = 0; i < static_cast<int>((stages_time[4] * speed / 2) * rate_num); ++i) {
             nh_.setParam("angle", -200);
             loop_rate.sleep();
         }
 
         nh_.setParam("direction", std::string(1, 'W'));
-        ROS_INFO(TAG BCOLOR_WHITE "左200" COLOR_RESET);
+        ROS_INFO(TAG BCOLOR_BLUE "左200" COLOR_RESET);
         for (int i = 0; i < static_cast<int>((stages_time[5] * speed / 2) * rate_num); ++i) {
             nh_.setParam("angle", 200);
             loop_rate.sleep();
         }
 
         nh_.setParam("direction", std::string(1, 'S'));
-        ROS_INFO(TAG BCOLOR_WHITE "后200" COLOR_RESET);
+        ROS_INFO(TAG BCOLOR_BLUE "后200" COLOR_RESET);
         for (int i = 0; i < static_cast<int>((stages_time[6] * speed / 2) * rate_num); ++i) {
             nh_.setParam("angle", -200);
             loop_rate.sleep();
         }
 
         nh_.setParam("direction", std::string(1, 'W'));
-        ROS_INFO(TAG BCOLOR_WHITE "左200" COLOR_RESET);
+        ROS_INFO(TAG BCOLOR_BLUE "左200" COLOR_RESET);
         for (int i = 0; i < static_cast<int>((stages_time[5] * speed / 2) * rate_num); ++i) {
             nh_.setParam("angle", 200);
             loop_rate.sleep();
