@@ -173,26 +173,26 @@ public:
         }
 
         ROS_INFO(TAG COLOR_BLUE "Going Straight" COLOR_RESET);
-        nh_.setParam("angle", 0);
         for (int i = 0; i < static_cast<int>((stages_time[1] * speed / 2) * rate_num); ++i) {
+            nh_.setParam("angle", 0);
             loop_rate.sleep();
         }
 
         ROS_INFO(TAG COLOR_BLUE "Going Right" COLOR_RESET);
-        nh_.setParam("angle", 150);
         for (int i = 0; i < static_cast<int>((stages_time[2] * speed / 2) * rate_num); ++i) {
+            nh_.setParam("angle", 200);
             loop_rate.sleep();
         }
 
         ROS_INFO(TAG COLOR_BLUE "Going Straight" COLOR_RESET);
-        nh_.setParam("angle", 0);
         for (int i = 0; i < static_cast<int>((stages_time[3] * speed / 2) * rate_num); ++i) {
+            nh_.setParam("angle", 0);
             loop_rate.sleep();
         }
 
         ROS_INFO(TAG COLOR_BLUE "Going Left" COLOR_RESET);
-        nh_.setParam("angle", -200);
         for (int i = 0; i < static_cast<int>((stages_time[4] * speed / 2) * rate_num); ++i) {
+            nh_.setParam("angle", -200);
             loop_rate.sleep();
         }
 
@@ -358,7 +358,7 @@ public:
                 auto motion_controller = BigLeftTurn(10000, nh_);
                 motion_controller.run();
             } else if (STATE == SIDE_PARK) {
-                auto side_park = SidePark(1000,nh_);
+                auto side_park = SidePark(1000, nh_);
                 side_park.run();
             } else if (STATE == TERMINAL) {
                 nh_.setParam("speed", 0);
