@@ -418,7 +418,6 @@ void SidePark::find_target(float left_slope, float right_slope, int center) {
         for (int i = 0; i < (int) lidarLines.size(); i++) {
             auto &line = lidarLines[i];
             auto line_length = get<1>(line);
-            auto line_slope = get<2>(line);
             auto line_x = get<3>(line)[0];
             auto line_y = get<3>(line)[1];
             auto line_slope = get<2>(line);
