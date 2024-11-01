@@ -311,7 +311,7 @@ void TraceLine::linePreprocess() {
         for (const auto &line : lines_raw) {
             float slope = calculateSlope(line);
 
-            if (fabs(slope) < 0.3 or fabs(slope) > 2.5) {
+            if (fabs(slope) < 0.35 or fabs(slope) > 2.5) {
                 continue;  // 去除横向线段
             }
 
