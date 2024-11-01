@@ -20,6 +20,15 @@ avoid_times:
   - 2
   - 3
 
+uturn_times:
+   - 2
+   - 4
+   - 2
+   - 4
+   - 2
+   - 8
+
+
 
 road_left_turn_times:
   - 4 # 直行
