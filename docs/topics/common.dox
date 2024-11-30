@@ -1,0 +1,12 @@
+/*!
+\~chinese
+\defgroup common 通用模块
+\brief 几个模块公用的部分
+
+
+
+\detail 包括多维插值工具类 `Interpolator` （在巡线倒车等中都有使用）、
+用于对获取到的数据进行平均的工具类 `Buffer`、
+以及用于终端颜色的宏
+
+*/

@@ -1,0 +1,10 @@
+/*!
+\~chinese
+\defgroup TraceLine 巡线模块
+\brief TraceLine主要负责通过路边的白线来确定自身方位
+\detail
+
+\section 基础功能列表
+
+
+*/

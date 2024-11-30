@@ -5,4 +5,5 @@ devel
 data/video/*
 data/src_videos/*
 data/src_images/*
+docs/doc_build/*
 

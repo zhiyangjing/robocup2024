@@ -7,6 +7,11 @@ using Eigen::MatrixXf;
 using Eigen::Vector2f;
 using Eigen::VectorXf;
 
+
+/** \addtogroup common
+ * @{
+ * 
+ */
 enum TrafficLight {
     RED = 0,   // 红灯
     GREEN = 1  // 绿灯
@@ -70,6 +75,7 @@ public:
     float interpolate(const VectorXf point);
 };
 
+/** @} */
 
 #include "common_impl.h"
 #endif  // TRAFFIC_LIGHT_H

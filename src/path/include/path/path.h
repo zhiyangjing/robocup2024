@@ -25,6 +25,11 @@ enum States {
     SIDE_PARK
 };
 
+
+/**
+ * @brief 一个抽象类，由此产生所有的其他能力(巡线、倒车等等)
+ * 
+ */
 class Ability {
 public:
     virtual void run() = 0;
@@ -35,15 +40,24 @@ protected:
     int remain_time_;
 };
 
-struct TraceLineInitParams {
-    MatrixXf ref_points;
-    VectorXf ref_value;
-    VectorXf weights;
-};
 
 /**
- * @brief Park类用于垂直的库，根据不同的param实现fowardPark，backwardPark
+ * \ingroup TraceLine
+ * @brief 
  * 
+ */
+struct TraceLineInitParams {
+    /*! \~chinese 参考点的个数 */
+    MatrixXf ref_points; 
+    VectorXf ref_value; //< 参考点的具体值
+    VectorXf weights; // 参考点的权重
+};
+
+
+
+/**
+ * \ingroup Park
+ * @brief 用于给Park类传参的类，根据不同的param实现fowardPark，backwardPark
  */
 struct ParkInitParams {
     MatrixXf ref_points;      // 参考点坐标
@@ -159,6 +173,12 @@ public:
     ~SidePark();
 };
 
+
+/**
+ * \ingroup TraceLine
+ * @brief 
+ * 
+ */
 class TraceLine : public Ability {
 private:
     ros::Subscriber sub_;        // 图像的订阅者

@@ -5,6 +5,8 @@
 #include <ros/ros.h>
 #include <stddef.h>
 // 构造函数
+
+
 template<typename T> Buffer<T>::Buffer() {
     buffer = nullptr;
     printf("size location: %pl\n", &size);

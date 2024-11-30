@@ -1,0 +1,36 @@
+/*!
+\~chinese
+\page structure 项目结构
+
+按照所实现的功能，SmartCar 的源代码被划分为若干模块（src路径下的几个文件夹）（注意，非 C++ 20 引入的原生 module），每个模块的源代码存放于一个子目录中。整个项目的结构如下：
+
+```
+smart_car
+├── README.md
+├── build // 使用catkin_make 之后生成
+├── data
+│   ├── runtime_images  // 运行过程中保留的图像文件，储存地址
+│   ├── src_images      // 用于测试的原图片
+│   ├── src_videos      // 用于测试的视频
+│   └── video           
+├── devel               // 使用catkin_make 之后生成
+├── docs                // 与文档生成相关
+├── resources
+│   └── icons
+├── sc.sh               // 代码同步脚本（详情参见工作流部分）
+├── src                 // 主体代码
+│   ├── CMakeLists.txt -> /opt/ros/melodic/share/catkin/cmake/toplevel.cmake   // 使用catkin_make创建项目时生成的软连接，需要替换
+│   ├── camera_node     // 与视频输出有关
+│   ├── common_utils    // 公共函数、宏定义
+│   ├── cv_bridge       // 外部库，opencv与ros的图片消息转接库（直接使用，无需改动）
+│   ├── lsx10           // 外部库，与雷达相关
+│   ├── path            // 与巡线等相关代码（核心）
+│   ├── test_pkg        // 测试代码的库（实验性代码，非正式）
+│   ├── toplevel.cmake  // catkin_make 自动生成
+│   └── vehicle_control // 与电控代码交互部分
+└── v1_0.code-workspace
+```
+
+点击左侧导航栏上的 *专题* 页面可以显示模块简介，在 *专题* 页面上点击模块名则可以查看模块内的各种定义。
+
+*/

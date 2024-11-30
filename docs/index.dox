@@ -1,0 +1,36 @@
+/*!
+\~english
+\mainpage SmartCar Development Documents
+
+\image html smart_car.png "" width=128px
+\image latex smart_car.png "" width=0.2\textwidth
+
+\~chinese
+\mainpage SmartCar 开发者文档
+
+\image html smart_car.png "我们希望 SmartCar 成为一颗种子，传播渺小的热爱和友善" width=128px
+\image latex smart_car.png "我们希望 SmartCar 成为一颗种子，传播渺小的热爱和友善" width=0.2\textwidth
+
+Smart是2024年robocup智能车1：12赛项的代码框架，本文档解释了代码的含义
+
+\section 功能定位
+
+良好的代码规范是持续开发的必要工具。
+
+目前 SmartCar 提供（或计划提供）的功能包括：
+
+- 巡线功能（能够依据路边的白线进行直行、拐弯等功能）
+- 停车（包括正向停车与倒车入库）
+- 红绿灯识别（通过识别颜色决定运动状态）
+
+然而还有许多功能尚未实现
+
+- 标志牌的识别
+- 精准的停车
+- 对于车辆目前在车道位置的感应
+
+\section 鸣谢
+
+感谢XJTU robocup活动队智能车项目组往届成员的努力与付出，在很大深度上收到了过往框架的启发
+
+*/

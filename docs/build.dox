@@ -1,0 +1,56 @@
+/*!
+\~chinese
+\page build 构建
+
+\section environment 编译和运行环境
+
+编译和运行的环境必须满足如下条件：
+
+- 提供支持 C++ 14 标准以上的编译器、不低于 3.10 版本的 CMake
+- 64 位操作系统
+
+本项目基于Ubuntu18.04发行版，ros版本为melodic。
+
+\section dependencies 依赖
+
+这个项目依赖于如下的第三方库：
+
+- Opencv
+- Eigen
+- cv_bridge
+- spdlog 1.14.1, MIT License
+
+\section requests 工具需求
+
+- 支持 C++ 14 标准的编译器
+  - CLion 与 配置了C/C++、CMake插件的Vscode均可
+- CMake 3.14 及以上（推荐使用最新的稳定版本）
+
+
+\section compilation 编译
+
+以下的所有说明中，均以“终端”代指终端模拟器而非 shell。不清楚二者区别的话，可以简单认为“终端”就是指能执行命令的窗口。
+
+\subsection linux
+
+```
+# 初次编译
+catkin_make -DCATKIN_WHITELIST_PACKAGES=lslidar_msgs
+
+catkin_make -DCATKIN_WHITELIST_PACKAGES=
+
+# 后续编译
+catkin_make
+
+# 编译指定包
+catkin_make --pkg <package_name>
+```
+
+\section run 运行
+```bash
+
+roslaunch vehicle_control vehicle_control
+
+roslaunch path path_node.launch
+```
+ */

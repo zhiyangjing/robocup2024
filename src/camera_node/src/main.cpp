@@ -9,6 +9,9 @@
 
 using namespace std;
 
+/** \addtogroup camera
+ * @{
+ */
 class CameraNode {
 private:
     ros::Publisher pub_;
@@ -65,6 +68,11 @@ public:
     }
     ~CameraNode() { cap_.release(); }
 };
+/**
+ * @}
+ * 
+ */
+
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "camera_node");

@@ -1,0 +1,7 @@
+/*!
+\~chinese
+\defgroup camera 摄像模块
+\brief 包括了前后摄像头话题的发布、可视化hsv范围调节、视频录制等功能
+
+*/
+
